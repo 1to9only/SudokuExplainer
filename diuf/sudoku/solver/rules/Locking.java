@@ -42,7 +42,7 @@ public class Locking implements IndirectHintProducer {
     private <S extends Grid.Region, T extends Grid.Region> void getHints(
             Grid grid, Class<S> regionType1, Class<T> regionType2,
             HintsAccumulator accu) throws InterruptedException {
-        assert (regionType1 == Grid.Block.class) != (regionType2 == Grid.Block.class);
+//a     assert (regionType1 == Grid.Block.class) != (regionType2 == Grid.Block.class);
 
         // Iterate on pairs of parts
         for (int i1 = 0; i1 < 9; i1++) {

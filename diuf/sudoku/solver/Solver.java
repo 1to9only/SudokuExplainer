@@ -411,7 +411,7 @@ public class Solver {
             Hint hint = accu.getHint();
             if (hint == null)
                 throw new UnsupportedOperationException("Failed to solve this Sudoku");
-            assert hint instanceof Rule;
+//a         assert hint instanceof Rule;
             Rule rule = (Rule)hint;
             if (usedRules.containsKey(rule))
                 usedRules.put(rule, usedRules.get(rule) + 1);
@@ -457,7 +457,7 @@ public class Solver {
                     System.err.println("Failed to solve:\n" + grid.toString());
                     return Double.MAX_VALUE;
                 }
-                assert hint instanceof Rule;
+//a             assert hint instanceof Rule;
                 Rule rule = (Rule)hint;
                 double ruleDiff = rule.getDifficulty();
                 if (ruleDiff > difficulty)
@@ -502,7 +502,7 @@ public class Solver {
                     difficulty = 20.0;
                     break;
                 }
-                assert hint instanceof Rule;
+//a             assert hint instanceof Rule;
                 Rule rule = (Rule)hint;
                 double ruleDiff = rule.getDifficulty();
                 if (ruleDiff > difficulty)

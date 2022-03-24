@@ -56,7 +56,7 @@ public class AlignedExclusion implements IndirectHintProducer {
             }
         }
 
-        assert candidateList.size() == cellExcluders.size();
+//a     assert candidateList.size() == cellExcluders.size();
         if (cellExcluders.size() < degree)
             return;
 
@@ -106,7 +106,7 @@ public class AlignedExclusion implements IndirectHintProducer {
 
                     // Add the tail cells
                     int[] tindexes = tailSetPerm.nextBitNums();
-                    assert tindexes.length == degree - 2;
+//a                 assert tindexes.length == degree - 2;
                     for (int i = 0; i < tindexes.length; i++) {
                         cells[i + 2] = tailCells.get(tindexes[i]);
                         cardinalities[i + 2] = cells[i + 2].getPotentialValues().cardinality();
@@ -152,7 +152,7 @@ public class AlignedExclusion implements IndirectHintProducer {
                                 int p = values.nextSetBit(0);
                                 for (int j = 0; j < potIndexes[i]; j++)
                                     p = values.nextSetBit(p + 1);
-                                assert p >= 0;
+//a                             assert p >= 0;
                                 potentials[i] = p;
                             }
 
@@ -162,7 +162,7 @@ public class AlignedExclusion implements IndirectHintProducer {
                             Permutations perm = new Permutations(2, degree);
                             while (perm.hasNext()) {
                                 int[] cellIndexes = perm.nextBitNums();
-                                assert cellIndexes.length == 2;
+//a                             assert cellIndexes.length == 2;
                                 int p1 = potentials[cellIndexes[0]];
                                 int p2 = potentials[cellIndexes[1]];
                                 if (p1 == p2) {

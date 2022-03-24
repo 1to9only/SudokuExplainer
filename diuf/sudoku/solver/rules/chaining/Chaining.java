@@ -285,7 +285,7 @@ public class Chaining implements IndirectHintProducer {
         }
         for (Potential dstOn : cycles) {
             // Cycle found !!
-            assert dstOn.isOn; // Cycles are only looked for from "on" potentials
+//a         assert dstOn.isOn; // Cycles are only looked for from "on" potentials
             Potential dstOff = getReversedCycle(dstOn);
             ChainingHint hint = createCycleHint(grid, dstOn, dstOff, isYChainEnabled,
                     isXChainEnabled);
@@ -631,8 +631,8 @@ public class Chaining implements IndirectHintProducer {
                     if (!isParent(p, pOff)) {
                         // Not processed yet
                         pendingOff.add(pOff);
-                        assert length >= 1;
-                        if (length >= 1) // Seems this can be removed!
+//a                     assert length >= 1;
+//                      if (length >= 1) // Seems this can be removed!
                             toOff.add(pOff);
                     }
                 }
@@ -650,8 +650,8 @@ public class Chaining implements IndirectHintProducer {
                     if (!toOn.contains(pOn)) {
                         // Not processed yet
                         pendingOn.add(pOn);
-                        assert length >= 1;
-                        if (length >= 1) // Seems this can be removed
+//a                     assert length >= 1;
+//                      if (length >= 1) // Seems this can be removed
                             toOn.add(pOn);
                     }
                 }
@@ -817,7 +817,7 @@ public class Chaining implements IndirectHintProducer {
                             if (hint instanceof ChainingHint)
                                 nested = (ChainingHint)hint;
                             Map<Cell,BitSet> removable = hint.getRemovablePotentials();
-                            assert !removable.isEmpty();
+//a                         assert !removable.isEmpty();
                             for (Cell cell : removable.keySet()) {
                                 BitSet values = removable.get(cell);
                                 for (int value = values.nextSetBit(0); value != -1; value = values.nextSetBit(value + 1)) {
@@ -826,7 +826,7 @@ public class Chaining implements IndirectHintProducer {
                                             hint.toString(), nested);
                                     for (Potential p : parents) {
                                         Potential real = offPotentials.get(p);
-                                        assert real != null;
+//a                                     assert real != null;
                                         toOff.parents.add(real);
                                     }
                                     result.add(toOff);
@@ -850,18 +850,18 @@ public class Chaining implements IndirectHintProducer {
         Collection<Cell> cells = new LinkedHashSet<Cell>();
         Potential p = dstOn;
         while (!p.parents.isEmpty()) {
-            assert p.parents.size() == 1;
+//a         assert p.parents.size() == 1;
             cells.add(p.cell);
             p = p.parents.get(0);
         }
-        assert p.equals(dstOn); // dstOn should occur at begin and end
+//a     assert p.equals(dstOn); // dstOn should occur at begin and end
 
         // Build canceled potentials
         Collection<Potential> cancelForw = new LinkedHashSet<Potential>();
         Collection<Potential> cancelBack = new LinkedHashSet<Potential>();
         p = dstOn;
         while (!p.parents.isEmpty()) {
-            assert p.parents.size() == 1;
+//a         assert p.parents.size() == 1;
             Cell srcCell = grid.getCell(p.cell.getX(), p.cell.getY());
             for (Cell cell : srcCell.getHouseCells()) {
                 if (!cells.contains(cell) && cell.hasPotentialValue(p.value)) {
@@ -873,7 +873,7 @@ public class Chaining implements IndirectHintProducer {
             }
             p = p.parents.get(0);
         }
-        assert p.equals(dstOn); // dstOn should occur at begin and end
+//a     assert p.equals(dstOn); // dstOn should occur at begin and end
 
         // Build removable potentials
         Collection<Potential> cancel = cancelForw;

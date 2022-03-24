@@ -53,7 +53,7 @@ public class AlignedPairExclusion extends AlignedExclusion {
             }
         }
 
-        assert candidateList.size() == cellExcluders.size();
+//a     assert candidateList.size() == cellExcluders.size();
         if (cellExcluders.size() < 2)
             return;
 

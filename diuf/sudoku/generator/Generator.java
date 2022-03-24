@@ -31,7 +31,7 @@ public class Generator {
      * @return the generated grid
      */
     public Grid generate(List<Symmetry> symmetries, double minDifficulty, double maxDifficulty) {
-        assert !symmetries.isEmpty() : "No symmetries specified";
+//a     assert !symmetries.isEmpty() : "No symmetries specified";
         Random random = new Random();
         int symmetryIndex = random.nextInt(symmetries.size());
         while (true) {
@@ -69,7 +69,7 @@ public class Generator {
         // Build the solution
         Grid grid = new Grid();
         boolean result = analyser.solveRandom(grid, rnd);
-        assert result;
+//a     assert result;
         Grid solution = new Grid();
         grid.copyTo(solution);
 
@@ -118,8 +118,8 @@ public class Generator {
                         // Cells successfully removed: still a unique solution
                         isSuccess = true;
                         successes += 1;
-                    } else if (state == 0) {
-                        assert false : "Invalid grid";
+                    } else if (state == 0) { ;
+//a                     assert false : "Invalid grid";
                     } else {
                         // Failed. Put the cells back and try with next cell
                         for (Point p : points)

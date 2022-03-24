@@ -264,7 +264,7 @@ public class BivalueUniversalGrave implements IndirectHintProducer {
             }
             if (region != null) {
                 // OK, this is a BUG type 4
-                assert common.cardinality() == 1;
+//a             assert common.cardinality() == 1;
                 int value = common.nextSetBit(0);
                 Map<Cell, BitSet> removablePotentials = new HashMap<Cell, BitSet>();
                 BitSet b1 = (BitSet)c1.getPotentialValues().clone();

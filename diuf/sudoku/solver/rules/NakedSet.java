@@ -21,7 +21,7 @@ public class NakedSet implements IndirectHintProducer {
     private int degree;
 
     public NakedSet(int degree) {
-        assert degree > 1 && degree <= 4;
+//a     assert degree > 1 && degree <= 4;
         this.degree = degree;
     }
 
@@ -45,7 +45,7 @@ public class NakedSet implements IndirectHintProducer {
                 // Iterate on tuples of positions
                 while (perm.hasNext()) {
                     int[] indexes = perm.nextBitNums();
-                    assert indexes.length == degree;
+//a                 assert indexes.length == degree;
 
                     // Build the cell tuple
                     Cell[] cells = new Cell[degree];

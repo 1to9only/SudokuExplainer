@@ -146,7 +146,7 @@ public class AlignedExclusionHint extends IndirectHint implements Rule {
      * @return whether this combination is relevent
      */
     private boolean isRelevent(int[] combination) {
-        assert combination.length == cells.length;
+//a     assert combination.length == cells.length;
         Map<Cell, BitSet> removables = super.getRemovablePotentials();
         for (int i = 0; i < combination.length; i++) {
             Cell cell = cells[i];

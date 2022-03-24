@@ -25,7 +25,7 @@ public class HiddenSet implements IndirectHintProducer {
 
 
     public HiddenSet(int degree, boolean isDirect) {
-        assert degree > 1 && degree <= 4;
+//a     assert degree > 1 && degree <= 4;
         this.degree = degree;
         this.isDirect = isDirect;
     }
@@ -53,7 +53,7 @@ public class HiddenSet implements IndirectHintProducer {
                 // Iterate on tuple of values
                 while (perm.hasNext()) {
                     int[] values = perm.nextBitNums();
-                    assert values.length == degree;
+//a                 assert values.length == degree;
 
                     // Build the value tuple
                     for (int i = 0; i < values.length; i++)

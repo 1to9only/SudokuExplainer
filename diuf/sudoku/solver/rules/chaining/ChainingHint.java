@@ -242,14 +242,14 @@ public abstract class ChainingHint extends IndirectHint implements Rule, HasPare
                     Potential.Cause cause = p.cause;
                     if (cause == null) {
                         // This is the initial assumption
-                        assert (this instanceof CycleHint) || p.parents.isEmpty();
+//a                     assert (this instanceof CycleHint) || p.parents.isEmpty();
                         if (this instanceof CellChainingHint)
                             cause = Potential.Cause.NakedSingle;
                         else if (this instanceof RegionChainingHint)
                             cause = Chaining.getRegionCause(((RegionChainingHint)this).getRegion());
                     }
                     if (p.isOn && cause != null) {
-                        assert !cause.equals(Potential.Cause.Advanced);
+//a                     assert !cause.equals(Potential.Cause.Advanced);
                         Cell curCell = p.cell;
                         if (cause.equals(Potential.Cause.NakedSingle)) {
                             Cell actCell = currentGrid.getCell(curCell.getX(), curCell.getY());

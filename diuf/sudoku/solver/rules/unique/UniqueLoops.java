@@ -59,7 +59,7 @@ public class UniqueLoops implements IndirectHintProducer {
                 if (potentials.cardinality() == 2) {
                     int v1 = potentials.nextSetBit(0);
                     int v2 = potentials.nextSetBit(v1 + 1);
-                    assert v1 > 0 && v2 > 0;
+//a                 assert v1 > 0 && v2 > 0;
                     List<Cell> tempLoop = new ArrayList<Cell>();
                     Collection<List<Cell>> results = new ArrayList<List<Cell>>();
                     checkForLoops(grid, cell, v1, v2, tempLoop, 2, new BitSet(10), null, results);
@@ -84,7 +84,7 @@ public class UniqueLoops implements IndirectHintProducer {
                                     extraValues.or(c.getPotentialValues());
                                 extraValues.clear(v1);
                                 extraValues.clear(v2);
-                                assert extraValues.cardinality() == 1;
+//a                             assert extraValues.cardinality() == 1;
                                 UniqueLoopHint hint = createType2Hint(grid, loop, extraCells, v1, v2);
                                 if (!result.contains(hint) && hint.isWorth())
                                     result.add(hint);
@@ -295,7 +295,7 @@ public class UniqueLoops implements IndirectHintProducer {
                         Permutations perm2 = new Permutations(degree, 9);
                         while (perm2.hasNext()) {
                             int[] indexes = perm2.nextBitNums();
-                            assert indexes.length == degree;
+//a                         assert indexes.length == degree;
                             if (containsFirst(indexes, index1, index2)) {
                                 // This permutation contains c1 (but not c2)
                                 BitSet[] potentials = new BitSet[degree];

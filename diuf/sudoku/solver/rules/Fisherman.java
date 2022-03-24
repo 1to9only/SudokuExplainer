@@ -38,7 +38,7 @@ public class Fisherman implements IndirectHintProducer {
     private <S extends Grid.Region,T extends Grid.Region> void getHints(Grid grid,
             Class<S> partType1, Class<T> partType2,
             HintsAccumulator accu) throws InterruptedException {
-        assert !partType1.equals(partType2);
+//a     assert !partType1.equals(partType2);
 
         // Get occurance count for each value
         int[] occurances = new int[10];
@@ -50,7 +50,7 @@ public class Fisherman implements IndirectHintProducer {
         Permutations perm = new Permutations(degree, 9);
         while (perm.hasNext()) {
             int[] indexes = perm.nextBitNums();
-            assert indexes.length == degree;
+//a         assert indexes.length == degree;
 
             BitSet myIndexes = new BitSet(9);
             for (int i = 0; i < indexes.length; i++)
@@ -95,7 +95,7 @@ public class Fisherman implements IndirectHintProducer {
             if (myIndexes.get(i))
                 parts2.add(myParts[i]);
         }
-        assert parts1.size() == parts2.size();
+//a     assert parts1.size() == parts2.size();
         Grid.Region[] allParts = new Grid.Region[parts1.size() + parts2.size()];
         for (int i = 0; i < parts1.size(); i++) {
             allParts[i * 2] = parts1.get(i);

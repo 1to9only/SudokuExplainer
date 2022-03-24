@@ -19,7 +19,7 @@ public class FastSinCos {
             angle -= PI2;
         else if (angle < -Math.PI)
             angle += PI2;
-        assert angle >= -Math.PI && angle <= Math.PI;
+//a     assert angle >= -Math.PI && angle <= Math.PI;
         return angle;
     }
 

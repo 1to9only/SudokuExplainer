@@ -93,7 +93,7 @@ public class Cell {
      * @see #getHouseCells()
      */
     public void setValueAndCancel(int value) {
-        assert value != 0;
+//a     assert value != 0;
         this.value = value;
         this.potentialValues.clear();
         for (Class<? extends Grid.Region> regionType : grid.getRegionTypes()) {
@@ -265,7 +265,7 @@ public class Cell {
      * @param other the cell to copy this cell to
      */
     public void copyTo(Cell other) {
-        assert this.x == other.x && this.y == other.y;
+//a     assert this.x == other.x && this.y == other.y;
         other.value = this.value;
         other.potentialValues = (BitSet)this.potentialValues.clone();
     }
