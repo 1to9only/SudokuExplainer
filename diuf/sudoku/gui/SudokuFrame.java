@@ -60,7 +60,7 @@ public class SudokuFrame extends JFrame implements Asker {
     private JCheckBox chkFilter = null;
     private JButton btnCheckValidity = null;
     private JButton btnApplyHint = null;
-    private JComboBox cmbViewSelector = null;
+    private JComboBox<String> cmbViewSelector = null;
     private JPanel hintsSouthPanel = null;
     private JPanel ratingPanel = null;
     private JLabel jLabel = null;
@@ -86,7 +86,7 @@ public class SudokuFrame extends JFrame implements Asker {
     private JMenuItem mitSolve = null;
     private JMenuItem mitResetPotentials = null;
     private JMenuItem mitClearHints = null;
-    private File defaultDirectory = null;
+    private File defaultDirectory = new File("").getAbsoluteFile();
     private JRadioButton rdbView1 = null;
     private JRadioButton rdbView2 = null;
     private JMenu optionsMenu = null;
@@ -333,7 +333,7 @@ public class SudokuFrame extends JFrame implements Asker {
             menuItem.setName(laf.getClassName());
             try {
                 Class<?> lafClass = Class.forName(laf.getClassName());
-                LookAndFeel instance = (LookAndFeel)lafClass.newInstance();
+                LookAndFeel instance = (LookAndFeel)lafClass.getConstructor().newInstance();
                 menuItem.setToolTipText(instance.getDescription());
             } catch(Exception ex) {
                 ex.printStackTrace();
@@ -686,9 +686,9 @@ public class SudokuFrame extends JFrame implements Asker {
         return btnApplyHint;
     }
 
-    private JComboBox getCmbViewSelector() {
+    private JComboBox<String> getCmbViewSelector() {
         if (cmbViewSelector == null) {
-            cmbViewSelector = new JComboBox();
+            cmbViewSelector = new JComboBox<String>();
             cmbViewSelector.setToolTipText("Toggle view (only for chaining hints)");
             cmbViewSelector.addItemListener(new java.awt.event.ItemListener() {
                 public void itemStateChanged(java.awt.event.ItemEvent e) {
@@ -781,7 +781,7 @@ public class SudokuFrame extends JFrame implements Asker {
     }
 
     private void setCommand(JMenuItem item, char cmd) {
-        item.setAccelerator(KeyStroke.getKeyStroke(cmd, InputEvent.CTRL_MASK));
+        item.setAccelerator(KeyStroke.getKeyStroke(cmd, InputEvent.CTRL_DOWN_MASK));
     }
 
     private JMenu getFileMenu() {
@@ -809,7 +809,7 @@ public class SudokuFrame extends JFrame implements Asker {
         if (mitNew == null) {
             mitNew = new JMenuItem();
             mitNew.setText("New");
-            mitNew.setAccelerator(KeyStroke.getKeyStroke('N', InputEvent.CTRL_MASK));
+            mitNew.setAccelerator(KeyStroke.getKeyStroke('N', InputEvent.CTRL_DOWN_MASK));
             mitNew.setMnemonic(java.awt.event.KeyEvent.VK_N);
             mitNew.setToolTipText("Clear the grid");
             mitNew.addActionListener(new java.awt.event.ActionListener() {
@@ -1022,7 +1022,7 @@ public class SudokuFrame extends JFrame implements Asker {
             getMitGetSmallClue().setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_F6, 0));
             toolMenu.add(getMitGetBigClue());
             getMitGetBigClue().setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_F6,
-                    InputEvent.SHIFT_MASK));
+                    InputEvent.SHIFT_DOWN_MASK));
             toolMenu.addSeparator();
             toolMenu.add(getMitSolve());
             getMitSolve().setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_F8, 0));

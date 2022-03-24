@@ -171,7 +171,7 @@ public class SudokuPanel extends JPanel {
                         repaint();
                     }
                 } else if (code >= KeyEvent.VK_1 && code <= KeyEvent.VK_9) {
-                    if ((e.getModifiers() & InputEvent.CTRL_MASK) != 0) {
+                    if ((e.getModifiersEx() & InputEvent.CTRL_DOWN_MASK) != 0) {
                         int value = (code - KeyEvent.VK_0);
                         if (selectedCell != null) {
                             engine.candidateTyped(selectedCell, value);
