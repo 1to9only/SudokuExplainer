@@ -10,12 +10,13 @@ import java.io.*;
 import java.util.*;
 
 import diuf.sudoku.*;
+import static diuf.sudoku.Settings.*;
 import diuf.sudoku.solver.*;
 
 public class serate {
-    static String FORMAT = "%r/%p/%d";
-    static String RELEASE = "2009-01-01";
-    static String VERSION = "1.2.1.3";
+    static String FORMAT = "%g ED=%r/%p/%d";
+    static String THISRELEASE = "" + VERSION + "-" + REVISION + "-" + SUBREV;
+    static String THISVERSION = "" + VERSION + "." + REVISION + "." + SUBREV;
     static void help(int html) {
         if (html != 0) {
             System.err.println("<!DOCTYPE HTML PUBLIC \"-//IETF//DTD HTML//EN\">");
@@ -84,9 +85,9 @@ public class serate {
         System.err.println("  SudokuExplainer(1), sudoku(1)");
         System.err.println("");
         System.err.println("IMPLEMENTATION");
-        System.err.println("  version     serate " + VERSION + " (Sudoku Explainer) " + RELEASE);
-        System.err.println("  author      Nicolas Juillerat");
-        System.err.println("  copyright   Copyright (c) 2006-2009 Nicolas Juillerat");
+        System.err.println("  version     serate " + THISVERSION + " (Sudoku Explainer) " + THISRELEASE);
+        System.err.println("  authors     Nicolas Juillerat, 1to9only");
+        System.err.println("  copyright   Copyright (c) 2006-2009 Nicolas Juillerat, (c) 2019-2022 1to9only");
         System.err.println("  license     Lesser General Public License (LGPL)");
         if (html != 0) {
             System.err.println("</PRE>");
@@ -159,8 +160,8 @@ public class serate {
                     c = s.charAt(1);
                     if (s.length() > 2)
                         v = s.substring(2);
-                    else if (++arg < args.length)
-                        v = args[arg];
+                    else if ( ( c=='f' || c=='i' || c=='o') && ( (arg+1) < args.length) )
+                        v = args[++arg];
                 }
                 switch (c) {
                 case 'f':
@@ -190,8 +191,8 @@ public class serate {
                 case 'o':
                     output = v;
                     break;
-                case 'V':
-                    System.out.println(VERSION);
+                case 'V': case 'v':
+                    System.out.println(THISVERSION);
                     System.exit(0);
                     break;
                 default:
