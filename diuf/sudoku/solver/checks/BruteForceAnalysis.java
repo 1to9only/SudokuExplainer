@@ -158,7 +158,7 @@ public class BruteForceAnalysis implements WarningHintProducer {
         Hint hint = null;
         do {
             if (hint != null)
-                hint.apply();
+                hint.apply(grid);
             SingleHintAccumulator accu = new SingleHintAccumulator();
             try {
                 nakedSingle.getHints(grid, accu);

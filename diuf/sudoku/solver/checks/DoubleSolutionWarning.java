@@ -32,15 +32,15 @@ public class DoubleSolutionWarning extends WarningHint {
     }
 
     @Override
-    public void apply() {
+    public void apply(Grid targetGrid) {
         if (lastViewNum == 0)
-            solution1.copyTo(grid);
+            solution1.copyTo(targetGrid);
         else
-            solution2.copyTo(grid);
+            solution2.copyTo(targetGrid);
         // Clear all potentials
         for (int y = 0; y < 9; y++) {
             for (int x = 0; x < 9; x++) {
-                grid.getCell(x, y).clearPotentialValues();
+                targetGrid.getCell(x, y).clearPotentialValues();
             }
         }
     }

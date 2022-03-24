@@ -6,6 +6,7 @@
 package diuf.sudoku.solver.rules.chaining;
 
 import java.util.*;
+import java.util.concurrent.ConcurrentLinkedQueue;
 
 import diuf.sudoku.*;
 import diuf.sudoku.Grid.*;
@@ -24,6 +25,7 @@ public class Chaining implements IndirectHintProducer {
     private final boolean isDynamic;
     private final boolean isNisho;
     private final int level;
+    private final boolean parallel;
     private Grid saveGrid = new Grid();
     private List<IndirectHintProducer> otherRules;
     private Grid lastGrid = null;
@@ -38,11 +40,12 @@ public class Chaining implements IndirectHintProducer {
      * @param isNishio Whether Nishio mode is activated
      * Only used if <tt>isDynamic</tt> and <tt>isMultiple</tt> are <tt>false</tt>.
      */
-    public Chaining(boolean isMultipleEnabled, boolean isDynamic, boolean isNishio, int level) {
+    public Chaining(boolean isMultipleEnabled, boolean isDynamic, boolean isNishio, int level, boolean parallel) {
         this.isMultipleEnabled = isMultipleEnabled;
         this.isDynamic = isDynamic;
         this.isNisho = isNishio;
         this.level = level;
+        this.parallel = parallel;
     }
 
     boolean isDynamic() {
@@ -97,6 +100,7 @@ public class Chaining implements IndirectHintProducer {
             result.addAll(yLoops);
             result.addAll(xyLoops);
         }
+        if(result.isEmpty()) { return result; }
 
         /*
          * Sort the resulting hints. The hints with the shortest chain length
@@ -106,15 +110,12 @@ public class Chaining implements IndirectHintProducer {
             public int compare(ChainingHint h1, ChainingHint h2) {
                 double d1 = h1.getDifficulty();
                 double d2 = h2.getDifficulty();
-                if (d1 < d2)
-                    return -1;
-                else if (d1 > d2)
-                    return 1;
+                if (d1 < d2) return -1;
+                if (d1 > d2) return 1;
                 int l1 = h1.getComplexity();
                 int l2 = h2.getComplexity();
-                if (l1 == l2)
-                    return h1.getSortKey() - h2.getSortKey();
-                return l1 - l2;
+                if (l1 != l2) return l1 - l2;
+                return h1.getSortKey() - h2.getSortKey();
             }
         });
         return result;
@@ -127,8 +128,9 @@ public class Chaining implements IndirectHintProducer {
         for (int y = 0; y < 9; y++) {
             for (int x = 0; x < 9; x++) {
                 Cell cell = grid.getCell(x, y);
-                int cardinality = cell.getPotentialValues().cardinality();
+//c             int cardinality = cell.getPotentialValues().cardinality();
                 if (cell.getValue() == 0) { // the cell is empty
+                int cardinality = cell.getPotentialValues().cardinality();
                     if (cardinality > 1) {
                         // Iterate on all potential values that are not alone
                         for (int value = 1; value <= 9; value++) {
@@ -151,15 +153,8 @@ public class Chaining implements IndirectHintProducer {
      * @param isXChainEnabled whether X-Links are used in "off to on" searches
      * @return the hints found
      */
-    private List<ChainingHint> getMultipleChainsHintList(Grid grid) {
+    private List<ChainingHint> getMultipleChainsHintList(Grid grid, Cell cell, int cardinality) {
         List<ChainingHint> result = new ArrayList<ChainingHint>();
-        // Iterate on all empty cells
-        for (int y = 0; y < 9; y++) {
-            for (int x = 0; x < 9; x++) {
-                Cell cell = grid.getCell(x, y);
-                int cardinality = cell.getPotentialValues().cardinality();
-                if (cell.getValue() == 0) { // the cell is empty
-                    if (cardinality > 2 || (cardinality > 1 && isDynamic)) {
                         // Prepare storage and accumulator for "Cell Reduction"
                         Map<Integer, LinkedSet<Potential>> valueToOn =
                             new HashMap<Integer, LinkedSet<Potential>>();
@@ -178,8 +173,7 @@ public class Chaining implements IndirectHintProducer {
                                 LinkedSet<Potential> onToOff = new LinkedSet<Potential>();
                                 boolean doDouble = (cardinality >= 3 && !isNisho && isDynamic);
                                 boolean doContradiction = isDynamic || isNisho;
-                                doBinaryChaining(grid, pOn, pOff, result, onToOn, onToOff,
-                                        doDouble, doContradiction);
+                                doBinaryChaining(grid, pOn, pOff, result, onToOn, onToOff, doDouble, doContradiction);
 
                                 if (!isNisho) {
                                     // Do region chaining
@@ -216,13 +210,74 @@ public class Chaining implements IndirectHintProducer {
                                 }
                             }
                         }
+        return result;
+    }
 
+    private List<ChainingHint> getMultipleChainsHintList(Grid grid) {
+        List<ChainingHint> result = new ArrayList<ChainingHint>();
+        List<Cell> cellsToProcess = new ArrayList<Cell>();
+        // Iterate on all empty cells
+        for (int y = 0; y < 9; y++) {
+            for (int x = 0; x < 9; x++) {
+                Cell cell = grid.getCell(x, y);
+//c             int cardinality = cell.getPotentialValues().cardinality();
+                if (cell.getValue() == 0) { // the cell is empty
+                int cardinality = cell.getPotentialValues().cardinality();
+                    if (cardinality > 2 || (cardinality > 1 && isDynamic)) {
+                        if (!parallel) {
+                            result.addAll(getMultipleChainsHintList(grid, cell, cardinality));
+                        }
+                        else {
+                            cellsToProcess.add(cell);
+                        }
                     } // Cardinality > 1
-
                 } // if empty
             } // for x
         } // for y
+        if (!parallel) { return result; }
+        if(cellsToProcess.isEmpty()) { return result; }
+
+        //process the collected cells in parallel
+        ConcurrentLinkedQueue<ChainingHint> parallelResult = new ConcurrentLinkedQueue<ChainingHint>();
+        List<MultipleChainsHintsCollector> threads = new ArrayList<MultipleChainsHintsCollector>();
+        Thread lastThread = null;
+        for(Cell cell : cellsToProcess) {
+            MultipleChainsHintsCollector t = new MultipleChainsHintsCollector(this, grid, cell, parallelResult, lastThread);
+            threads.add(t);
+            t.start();
+            lastThread = t;
+        }
+        try {
+            lastThread.join();
+        } catch (InterruptedException e) {}
+        result.addAll(parallelResult);
         return result;
+    }
+
+    class MultipleChainsHintsCollector extends Thread {
+        private Chaining chaining;
+        private ConcurrentLinkedQueue<ChainingHint> accumulator;
+        private final Grid grid = new Grid();
+        private final Cell cell;
+        private final Thread previousThread;
+        MultipleChainsHintsCollector(Chaining caller, Grid grid, Cell cell, ConcurrentLinkedQueue<ChainingHint> result, Thread lastThread) {
+            this.chaining = new Chaining(caller.isMultipleEnabled, caller.isDynamic, caller.isNisho, caller.level, false);
+            accumulator = result;
+            grid.copyTo(this.grid);
+            this.cell = this.grid.getCell(cell.getX(), cell.getY());
+            previousThread = lastThread;
+        }
+        @Override
+        public void run() {
+            int cardinality = this.cell.getPotentialValues().cardinality();
+            List<ChainingHint> result = chaining.getMultipleChainsHintList(this.grid, this.cell, cardinality);
+            if ( previousThread != null ) {
+                try {
+                    previousThread.join();
+                } catch (InterruptedException e) {}
+            }
+            accumulator.addAll(result);
+        }
     }
 
     private Potential getReversedCycle(Potential org) {
@@ -788,15 +843,15 @@ public class Chaining implements IndirectHintProducer {
             otherRules.add(new Fisherman(2));
             if (level < 4) {
                 if (level >= 2)
-                    otherRules.add(new Chaining(false, false, false, 0)); // Forcing chains
+                    otherRules.add(new Chaining(false, false, false, 0, false)); // Forcing chains
                 if (level >= 3)
-                    otherRules.add(new Chaining(true, false, false, 0)); // Multiple forcing chains
+                    otherRules.add(new Chaining(true, false, false, 0, false)); // Multiple forcing chains
             } else {
                 // Dynamic Forcing Chains already cover Simple and Multiple Forcing Chains
                 if (level >= 4)
-                    otherRules.add(new Chaining(true, true, false, 0)); // Dynamic FC
+                    otherRules.add(new Chaining(true, true, false, 0, false)); // Dynamic FC
                 if (level >= 5)
-                    otherRules.add(new Chaining(true, true, false, level - 3));
+                    otherRules.add(new Chaining(true, true, false, level - 3, false));
             }
         }
         int index = 0;

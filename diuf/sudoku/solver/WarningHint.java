@@ -21,7 +21,7 @@ public abstract class WarningHint extends IndirectHint {
     }
 
     @Override
-    public void apply() {
+    public void apply(Grid targetGrid) {
     }
 
     @Override

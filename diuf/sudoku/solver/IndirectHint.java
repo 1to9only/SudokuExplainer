@@ -69,13 +69,17 @@ public abstract class IndirectHint extends Hint {
      * Apply this hint on the grid (passed to the constructor).
      */
     @Override
-    public void apply() {
+    public void apply(Grid targetGrid) {
         for (Cell cell : removablePotentials.keySet()) {
             BitSet cellRemovablePotentials = removablePotentials.get(cell);
-            cell.removePotentialValues(cellRemovablePotentials);
+            Cell targetCell = targetGrid.getCell(cell.getX(), cell.getY());
+            targetCell.removePotentialValues(cellRemovablePotentials);
         }
-        if (getCell() != null)
-            getCell().setValueAndCancel(getValue());
+        Cell cell = getCell();
+        if (cell != null) {
+            Cell targetCell = targetGrid.getCell(cell.getX(), cell.getY());
+            targetCell.setValueAndCancel(getValue());
+        }
     }
 
 //  Visual representation
