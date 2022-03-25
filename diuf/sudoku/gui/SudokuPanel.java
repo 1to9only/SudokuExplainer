@@ -104,10 +104,12 @@ public class SudokuPanel extends JPanel {
                             repaintCell(target);
                         }
                     } else {
-                        if (target.getValue() == 0) {
+                        if (target.getValue() == 0) { // if unsolved cell and
+                          if ( target.hasPotentialValue( value) ) { // has potential candidate
                             // Set the cell's value
                             engine.cellValueTyped(target, value);
                             repaint();
+                          }
                         } else {
                             // Clear the cell's value
                             engine.cellValueTyped(target, 0);
