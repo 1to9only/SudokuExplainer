@@ -20,9 +20,10 @@ public class Settings {
 
     private static Settings instance = null;
 
-    private boolean isRCNotation = false;
+    private boolean isRCNotation = true;
     private boolean isAntialiasing = true;
     private boolean isShowingCandidates = true;
+    private boolean isShowingCandidateMasks = false;
     private String lookAndFeelClassName = null;
 
     private EnumSet<SolvingTechnique> techniques;
@@ -40,8 +41,10 @@ public class Settings {
     }
 
     public void setRCNotation(boolean isRCNotation) {
+      if ( this.isRCNotation != isRCNotation ) {
         this.isRCNotation = isRCNotation;
         save();
+      }
     }
 
     public boolean isRCNotation() {
@@ -49,8 +52,10 @@ public class Settings {
     }
 
     public void setAntialiasing(boolean isAntialiasing) {
+      if ( this.isAntialiasing != isAntialiasing ) {
         this.isAntialiasing = isAntialiasing;
         save();
+      }
     }
 
     public boolean isAntialiasing() {
@@ -58,12 +63,25 @@ public class Settings {
     }
 
     public void setShowingCandidates(boolean value) {
+      if ( this.isShowingCandidates != value ) {
         this.isShowingCandidates = value;
         save();
+      }
     }
 
     public boolean isShowingCandidates() {
         return this.isShowingCandidates;
+    }
+
+    public void setShowingCandidateMasks(boolean value) {
+      if ( this.isShowingCandidateMasks != value ) {
+        this.isShowingCandidateMasks = value;
+        save();
+      }
+    }
+
+    public boolean isShowingCandidateMasks() {
+        return this.isShowingCandidateMasks;
     }
 
     public String getLookAndFeelClassName() {
@@ -71,8 +89,10 @@ public class Settings {
     }
 
     public void setLookAndFeelClassName(String lookAndFeelClassName) {
+      if ( !(this.lookAndFeelClassName.equals(lookAndFeelClassName)) ) {
         this.lookAndFeelClassName = lookAndFeelClassName;
         save();
+      }
     }
 
     public EnumSet<SolvingTechnique> getTechniques() {
@@ -127,6 +147,7 @@ public class Settings {
             isRCNotation = prefs.getBoolean("isRCNotation", isRCNotation);
             isAntialiasing = prefs.getBoolean("isAntialiasing", isAntialiasing);
             isShowingCandidates = prefs.getBoolean("isShowingCandidates", isShowingCandidates);
+            isShowingCandidateMasks = prefs.getBoolean("isShowingCandidateMasks", isShowingCandidateMasks);
             lookAndFeelClassName = prefs.get("lookAndFeelClassName", lookAndFeelClassName);
         } catch (SecurityException ex) {
             // Maybe we are running from an applet. Do nothing
@@ -141,6 +162,7 @@ public class Settings {
             prefs.putBoolean("isRCNotation", isRCNotation);
             prefs.putBoolean("isAntialiasing", isAntialiasing);
             prefs.putBoolean("isShowingCandidates", isShowingCandidates);
+            prefs.putBoolean("isShowingCandidateMasks", isShowingCandidateMasks);
             if (lookAndFeelClassName != null)
                 prefs.put("lookAndFeelClassName", lookAndFeelClassName);
             try {

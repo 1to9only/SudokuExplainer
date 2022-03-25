@@ -56,6 +56,8 @@ public class SudokuPanel extends JPanel {
     private Font bigFont;
     private Font legendFont;
 
+    private Color candidateMaskColor = new Color(0, 255, 255, 127);     // candidate mask
+    private Color potentialMaskColor = new Color(0, 255, 0, 127);       // potential mask
 
     public SudokuPanel(SudokuFrame parent) {
         super();
@@ -92,7 +94,11 @@ public class SudokuPanel extends JPanel {
                 setFocusedCell(null);
             }
             @Override
-            public void mouseClicked(java.awt.event.MouseEvent e) {
+            public void mouseReleased(java.awt.event.MouseEvent e) {
+                // Workaround mouseClicked won't be fired while moving mouse
+                // http://stackoverflow.com/questions/3382330/mouselistener-for-jpanel-missing-mouseclicked-events
+                if (!SudokuPanel.this.contains(e.getPoint()))
+                    return;
                 Cell target = getCellAt(e.getX(), e.getY());
                 if (target == selectedCell && target != null) {
                     int value = getCandidateAt(e.getX(), e.getY());
@@ -335,7 +341,13 @@ public class SudokuPanel extends JPanel {
     private void setSelectedCell(Cell cell) {
         repaintCell(this.selectedCell);
         this.selectedCell = cell;
-        repaintCell(this.selectedCell);
+        boolean showing = Settings.getInstance().isShowingCandidateMasks();
+        if ( showing == false ) {
+            repaintCell(this.selectedCell);
+        }
+        else {
+            repaint();
+        }
     }
 
     private void setFocusedCandidate(int value) {
@@ -415,7 +427,7 @@ public class SudokuPanel extends JPanel {
     }
 
     private void initFillColor(Graphics g, Cell cell) {
-        Color col;
+        Color col = Color.white;
         if (redCells != null && redCells.contains(cell))
             col = Color.red;
         else if (greenCells != null && greenCells.contains(cell))
@@ -424,18 +436,35 @@ public class SudokuPanel extends JPanel {
             col = Color.orange;
         else if (cell == focusedCell)
             col = Color.yellow;
-        else
-            col = Color.white;
+        else {
+            boolean showing = Settings.getInstance().isShowingCandidateMasks();
+            if ( showing == true ) {
+                // Selected candidates color
+                int value = -1;
+                if (null != selectedCell) {
+                    value = selectedCell.getValue();
+                }
+                if ( value > 0 ) {
+                    if ( value == cell.getValue()) {
+                        col = candidateMaskColor;
+                    }
+                    else
+                    if ( cell.hasPotentialValue(value)) {
+                        col = potentialMaskColor;
+                    }
+                }
+            }
+        }
         g.setColor(col);
     }
 
     private void initValueColor(Graphics g, Cell cell) {
         Color col = Color.black;
-        if (cell == selectedCell)
-            col = new Color(
-                    (col.getRed() + Color.orange.getRed()) / 2,
-                    (col.getGreen() + Color.orange.getGreen()) / 2,
-                    (col.getBlue() + Color.orange.getBlue()) / 2);
+    //  if (cell == selectedCell)
+    //      col = new Color(
+    //              (col.getRed() + Color.orange.getRed()) / 2,
+    //              (col.getGreen() + Color.orange.getGreen()) / 2,
+    //              (col.getBlue() + Color.orange.getBlue()) / 2);
         g.setColor(col);
     }
 
