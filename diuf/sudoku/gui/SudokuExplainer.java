@@ -9,6 +9,8 @@ import java.io.*;
 import java.util.*;
 
 import javax.swing.*;
+import javax.swing.UIManager.*;
+import com.formdev.flatlaf.*;
 
 import diuf.sudoku.*;
 import diuf.sudoku.io.*;
@@ -622,12 +624,14 @@ public class SudokuExplainer {
      */
     public static void main(String[] args) {
         try {
-            String lookAndFeelClassName = Settings.getInstance().getLookAndFeelClassName();
-            if (lookAndFeelClassName == null)
-                lookAndFeelClassName = UIManager.getSystemLookAndFeelClassName();
-            UIManager.setLookAndFeel(lookAndFeelClassName);
+//          String lookAndFeelClassName = Settings.getInstance().getLookAndFeelClassName();
+//          if (lookAndFeelClassName == null)
+//              lookAndFeelClassName = UIManager.getSystemLookAndFeelClassName();
+//          UIManager.setLookAndFeel(lookAndFeelClassName);
+            UIManager.setLookAndFeel( new FlatDarkLaf());
         } catch(Exception e) {
-            e.printStackTrace();
+//          e.printStackTrace();
+            System.err.println( "Failed to initialize new LookAndFeel");
         }
         SwingUtilities.invokeLater(new Runnable() {
             public void run() {

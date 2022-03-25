@@ -25,64 +25,24 @@ public class GenerateDialog extends JDialog {
 
     private enum Difficulty {
         Easy {
-
-            @Override
-            public double getMinDifficulty() {
-                return 1.0;
-            }
-
-            @Override
-            public double getMaxDifficulty() {
-                return 1.2;
-            }
+            @Override public double getMinDifficulty() { return 1.0; }
+            @Override public double getMaxDifficulty() { return 1.2; }
         },
         Medium {
-
-            @Override
-            public double getMinDifficulty() {
-                return 1.3;
-            }
-
-            @Override
-            public double getMaxDifficulty() {
-                return 1.5;
-            }
+            @Override public double getMinDifficulty() { return 1.3; }
+            @Override public double getMaxDifficulty() { return 1.5; }
         },
         Hard {
-
-            @Override
-            public double getMinDifficulty() {
-                return 1.6;
-            }
-
-            @Override
-            public double getMaxDifficulty() {
-                return 2.5;
-            }
+            @Override public double getMinDifficulty() { return 1.6; }
+            @Override public double getMaxDifficulty() { return 2.5; }
         },
         Fiendish {
-
-            @Override
-            public double getMinDifficulty() {
-                return 2.6;
-            }
-
-            @Override
-            public double getMaxDifficulty() {
-                return 6.0;
-            }
+            @Override public double getMinDifficulty() { return 2.6; }
+            @Override public double getMaxDifficulty() { return 6.0; }
         },
         Diabolical {
-
-            @Override
-            public double getMinDifficulty() {
-                return 6.1;
-            }
-
-            @Override
-            public double getMaxDifficulty() {
-                return 11.0;
-            }
+            @Override public double getMinDifficulty() { return 6.1; }
+            @Override public double getMaxDifficulty() { return 11.0; }
         };
 
         public abstract double getMinDifficulty();
@@ -120,11 +80,26 @@ public class GenerateDialog extends JDialog {
     }
 
     private void initParameters() {
-        symmetries.add(Symmetry.Orthogonal);
-        symmetries.add(Symmetry.BiDiagonal);
-        symmetries.add(Symmetry.Rotational180);
-        symmetries.add(Symmetry.Rotational90);
-        symmetries.add(Symmetry.Full);
+        Settings settings = Settings.getInstance();
+        if ( settings.isVertical() )      { symmetries.add(Symmetry.Vertical); }
+        if ( settings.isHorizontal() )    { symmetries.add(Symmetry.Horizontal); }
+        if ( settings.isDiagonal() )      { symmetries.add(Symmetry.Diagonal); }
+        if ( settings.isAntiDiagonal() )  { symmetries.add(Symmetry.AntiDiagonal); }
+        if ( settings.isBiDiagonal() )    { symmetries.add(Symmetry.BiDiagonal); }
+        if ( settings.isOrthogonal() )    { symmetries.add(Symmetry.Orthogonal); }
+        if ( settings.isRotational180() ) { symmetries.add(Symmetry.Rotational180); }
+        if ( settings.isRotational90() )  { symmetries.add(Symmetry.Rotational90); }
+        if ( settings.isNone() )          { symmetries.add(Symmetry.None); }
+        if ( settings.isFull() )          { symmetries.add(Symmetry.Full); }
+
+        if ( settings.isEasy() )       { difficulty = Difficulty.Easy; }
+        if ( settings.isMedium() )     { difficulty = Difficulty.Medium; }
+        if ( settings.isHard() )       { difficulty = Difficulty.Hard; }
+        if ( settings.isFiendish() )   { difficulty = Difficulty.Fiendish; }
+        if ( settings.isDiabolical() ) { difficulty = Difficulty.Diabolical; }
+
+        if ( settings.isExact() ) { isExact = true; }
+        if (!settings.isExact() ) { isExact = false; }
 
         sudokuList.add(engine.getGrid());
     }
@@ -248,8 +223,28 @@ public class GenerateDialog extends JDialog {
                 public void actionPerformed(ActionEvent e) {
                     if (chkSymmetry.isSelected()) {
                         symmetries.add(symmetry);
+                        if ( symmetry == Symmetry.Vertical )      { Settings.getInstance().setVertical( true); }
+                        if ( symmetry == Symmetry.Horizontal )    { Settings.getInstance().setHorizontal( true); }
+                        if ( symmetry == Symmetry.Diagonal )      { Settings.getInstance().setDiagonal( true); }
+                        if ( symmetry == Symmetry.AntiDiagonal )  { Settings.getInstance().setAntiDiagonal( true); }
+                        if ( symmetry == Symmetry.BiDiagonal )    { Settings.getInstance().setBiDiagonal( true); }
+                        if ( symmetry == Symmetry.Orthogonal )    { Settings.getInstance().setOrthogonal( true); }
+                        if ( symmetry == Symmetry.Rotational180 ) { Settings.getInstance().setRotational180( true); }
+                        if ( symmetry == Symmetry.Rotational90 )  { Settings.getInstance().setRotational90( true); }
+                        if ( symmetry == Symmetry.None )          { Settings.getInstance().setNone( true); }
+                        if ( symmetry == Symmetry.Full )          { Settings.getInstance().setFull( true); }
                     } else {
                         symmetries.remove(symmetry);
+                        if ( symmetry == Symmetry.Vertical )      { Settings.getInstance().setVertical( false); }
+                        if ( symmetry == Symmetry.Horizontal )    { Settings.getInstance().setHorizontal( false); }
+                        if ( symmetry == Symmetry.Diagonal )      { Settings.getInstance().setDiagonal( false); }
+                        if ( symmetry == Symmetry.AntiDiagonal )  { Settings.getInstance().setAntiDiagonal( false); }
+                        if ( symmetry == Symmetry.BiDiagonal )    { Settings.getInstance().setBiDiagonal( false); }
+                        if ( symmetry == Symmetry.Orthogonal )    { Settings.getInstance().setOrthogonal( false); }
+                        if ( symmetry == Symmetry.Rotational180 ) { Settings.getInstance().setRotational180( false); }
+                        if ( symmetry == Symmetry.Rotational90 )  { Settings.getInstance().setRotational90( false); }
+                        if ( symmetry == Symmetry.None )          { Settings.getInstance().setNone( false); }
+                        if ( symmetry == Symmetry.Full )          { Settings.getInstance().setFull( false); }
                     }
                 }
             });
@@ -262,14 +257,24 @@ public class GenerateDialog extends JDialog {
         diffChooserPanel.setLayout(new BoxLayout(diffChooserPanel, BoxLayout.X_AXIS));
         difficultyPanel.add(diffChooserPanel, BorderLayout.NORTH);
         final JComboBox<Difficulty> selDifficulty = new JComboBox<Difficulty>();
-        for (Difficulty d : Difficulty.values()) {
-            selDifficulty.addItem(d);
-        }
+        for (Difficulty d : Difficulty.values()) { if ( d == difficulty ) { selDifficulty.addItem(d); } }
+        for (Difficulty d : Difficulty.values()) { if ( d != difficulty ) { selDifficulty.addItem(d); } }
         selDifficulty.setToolTipText("Choose the difficulty of the Sudoku to generate");
         selDifficulty.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
                 difficulty = (Difficulty)selDifficulty.getSelectedItem();
                 lblDifficulty.setText(difficulty.getHtmlDescription());
+                if ( difficulty == Difficulty.Easy )       { Settings.getInstance().setEasy( true);}
+                if ( difficulty == Difficulty.Medium )     { Settings.getInstance().setMedium( true);}
+                if ( difficulty == Difficulty.Hard )       { Settings.getInstance().setHard( true);}
+                if ( difficulty == Difficulty.Fiendish )   { Settings.getInstance().setFiendish( true);}
+                if ( difficulty == Difficulty.Diabolical ) { Settings.getInstance().setDiabolical( true);}
+                if ( difficulty != Difficulty.Easy )       { Settings.getInstance().setEasy( false);}
+                if ( difficulty != Difficulty.Medium )     { Settings.getInstance().setMedium( false);}
+                if ( difficulty != Difficulty.Hard )       { Settings.getInstance().setHard( false);}
+                if ( difficulty != Difficulty.Fiendish )   { Settings.getInstance().setFiendish( false);}
+                if ( difficulty != Difficulty.Diabolical ) { Settings.getInstance().setDiabolical( false);}
+                Settings.getInstance().saveChanged();
             }
         });
         diffChooserPanel.add(selDifficulty);
@@ -278,8 +283,10 @@ public class GenerateDialog extends JDialog {
         chkExactDifficulty.setMnemonic(KeyEvent.VK_E);
         chkExactDifficulty.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
-                if (chkExactDifficulty.isSelected())
+                if (chkExactDifficulty.isSelected()) {
                     isExact = true;
+                    Settings.getInstance().setExact(true);
+                }
             }
         });
         diffChooserPanel.add(chkExactDifficulty);
@@ -288,15 +295,18 @@ public class GenerateDialog extends JDialog {
         chkMaximumDifficulty.setMnemonic(KeyEvent.VK_M);
         chkMaximumDifficulty.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
-                if (chkMaximumDifficulty.isSelected())
+                if (chkMaximumDifficulty.isSelected()) {
                     isExact = false;
+                    Settings.getInstance().setExact(false);
+                }
             }
         });
         diffChooserPanel.add(chkMaximumDifficulty);
         ButtonGroup group = new ButtonGroup();
         group.add(chkExactDifficulty);
         group.add(chkMaximumDifficulty);
-        chkExactDifficulty.setSelected(true);
+        if (  isExact ) chkExactDifficulty.setSelected(true);
+        if ( !isExact ) chkMaximumDifficulty.setSelected(true);
 
         JPanel pnlDifficulty = new JPanel();
         pnlDifficulty.setLayout(new BorderLayout());
@@ -336,6 +346,7 @@ public class GenerateDialog extends JDialog {
             }
         });
         optionPanel.add(chkAnalysis);
+        chkAnalysis.setSelected(false);
     }
 
     private void generate() {

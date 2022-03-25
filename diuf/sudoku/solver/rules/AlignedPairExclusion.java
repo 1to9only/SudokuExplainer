@@ -37,8 +37,7 @@ public class AlignedPairExclusion extends AlignedExclusion {
                     // degree)
                     Collection<Cell> excludingCells = new ArrayList<Cell>();
                     for (Cell excludingCell : cell.getHouseCells()) {
-                        int exclCardinality = excludingCell.getPotentialValues()
-                                .cardinality();
+                        int exclCardinality = excludingCell.getPotentialValues().cardinality();
                         if (exclCardinality == 1)
                             hasNakedSingle = true;
                         else if (exclCardinality == 2)
@@ -103,8 +102,7 @@ public class AlignedPairExclusion extends AlignedExclusion {
                         // excluder cells
                         if (isAllowed) {
                             for (Cell excludingCell : commonExcluders) {
-                                BitSet values = (BitSet)excludingCell.getPotentialValues()
-                                .clone();
+                                BitSet values = (BitSet)excludingCell.getPotentialValues().clone();
                                 for (int i = 0; i < 2; i++)
                                     values.clear(potentials[i]);
                                 if (values.isEmpty()) {
@@ -130,8 +128,7 @@ public class AlignedPairExclusion extends AlignedExclusion {
                 for (int i = 0; i < 2; i++) {
                     Cell cell = cells[i];
                     BitSet values = cell.getPotentialValues();
-                    for (int p = values.nextSetBit(0); p >= 0; p = values
-                    .nextSetBit(p + 1)) {
+                    for (int p = values.nextSetBit(0); p >= 0; p = values.nextSetBit(p + 1)) {
                         boolean isValueAllowed = false;
                         for (int[] combinations : allowedPotentialCombinations) {
                             if (combinations[i] == p) {

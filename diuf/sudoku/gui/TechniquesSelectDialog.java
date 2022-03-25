@@ -40,8 +40,7 @@ public class TechniquesSelectDialog extends JDialog {
 
     private void fillTechniques() {
         selectedTechniques = Settings.getInstance().getTechniques();
-        for (final SolvingTechnique technique : SolvingTechnique.class
-                .getEnumConstants()) {
+        for (final SolvingTechnique technique : SolvingTechnique.class.getEnumConstants()) {
             final JCheckBox chkSelect = new JCheckBox();
             chkSelect.setText(technique.toString());
             chkSelect.setSelected(selectedTechniques.contains(technique));
@@ -108,8 +107,7 @@ public class TechniquesSelectDialog extends JDialog {
                 public void actionPerformed(java.awt.event.ActionEvent e) {
                     if (!selectedTechniques.contains(SolvingTechnique.HiddenSingle)
                             && !selectedTechniques.contains(SolvingTechnique.NakedSingle)) {
-                        int result = JOptionPane
-                        .showConfirmDialog(
+                        int result = JOptionPane.showConfirmDialog(
                                 TechniquesSelectDialog.this,
                                 "Warning: you have disabled both Hidden Single and Naked Single.\n"
                                 + "Without them, the Sudoku Explainer will fail to solve most Sudokus.\n"
@@ -160,8 +158,7 @@ public class TechniquesSelectDialog extends JDialog {
             flowLayout.setAlignment(FlowLayout.LEFT);
             lblExplanations = new JLabel();
             lblExplanations.setText("Select the solving techniques to use:");
-            lblExplanations
-            .setToolTipText("Solving techniques that are not selected will not be used when solving or analyzing a Sudoku");
+            lblExplanations.setToolTipText("Solving techniques that are not selected will not be used when solving or analyzing a Sudoku");
             textPanel = new JPanel();
             textPanel.setLayout(flowLayout);
             textPanel.add(lblExplanations, null);
