@@ -40,13 +40,13 @@ public class UniqueLoopType3NakedHint extends UniqueLoopHint {
     }
 
     private Map<Cell, BitSet> appendOrangePotentials(Map<Cell, BitSet> potentials) {
-        BitSet nakedSet = new BitSet(10);
+        BitSet nakedSet = new BitSet(9);
         for (int i = 0; i < nakedValues.length; i++)
             nakedSet.set(nakedValues[i]);
         for (Cell cell : cells)
             potentials.put(cell, nakedSet);
 
-        BitSet otherSet = new BitSet(10);
+        BitSet otherSet = new BitSet(9);
         for (int i = 0; i < otherValues.length; i++)
             otherSet.set(otherValues[i]);
         BitSet prevSet = potentials.get(c1);
@@ -95,8 +95,7 @@ public class UniqueLoopType3NakedHint extends UniqueLoopHint {
         String cell1 = c1.toString();
         String cell2 = c2.toString();
         String valuesOrName = ValuesFormatter.formatValues(otherValues, " or ");
-        final String[] setNames = new String[] {"Pair", "Triplet", "Quad", "Set (5)",
-                "Set (6)", "Set (7)"};
+        final String[] setNames = new String[] {"Pair", "Triplet", "Quad", "Quintuplet", "Sextuplet", "Septuplet", "Octuplet"};
         String setName = setNames[nakedValues.length - 2];
         String otherCells = ValuesFormatter.formatCells(cells, " and ");
         String valuesAndName = ValuesFormatter.formatValues(nakedValues, " and ");

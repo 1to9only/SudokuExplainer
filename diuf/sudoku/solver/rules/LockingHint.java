@@ -169,8 +169,7 @@ public class LockingHint extends IndirectHint implements Rule, HasParentPotentia
         int degree = regions.length / 2;
         if (degree == 1)
             return toHtml1();
-        final String[] numberNames = new String[] {"two", "three", "four", "five", "six",
-                "seven", "eight"};
+        final String[] numberNames = new String[] {"two", "three", "four", "five", "six", "seven", "eight"};
         String result = HtmlLoader.loadHtml(this, "LockingHint.html");
         String ruleName = getName();
         String valueName = Integer.toString(value);

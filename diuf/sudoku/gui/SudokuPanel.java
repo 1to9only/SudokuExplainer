@@ -229,7 +229,7 @@ public class SudokuPanel extends JPanel {
     private Cell getCellAt(int x, int y) {
         int cx = (x - LEGEND_GAP_SIZE) / CELL_OUTER_SIZE;
         int cy = (y - GRID_GAP_SIZE) / CELL_OUTER_SIZE;
-        if (cx < 0 || cx >= 9 || cy < 0 || cy >= 9)
+        if (x < LEGEND_GAP_SIZE || cx < 0 || cx >= 9 || cy < 0 || cy >= 9)
             return null;
         return grid.getCell(cx, cy);
     }
@@ -459,7 +459,7 @@ public class SudokuPanel extends JPanel {
     }
 
     private void initValueColor(Graphics g, Cell cell) {
-        Color col = Color.black;
+        Color col = cell.isGiven() ? Color.black : Color.blue;
     //  if (cell == selectedCell)
     //      col = new Color(
     //              (col.getRed() + Color.orange.getRed()) / 2,
@@ -526,7 +526,7 @@ public class SudokuPanel extends JPanel {
 
     private void paintLegend(Graphics g) {
         g.setFont(legendFont);
-        g.setColor(new Color(0, 32, 64));
+        g.setColor(Color.gray); // R=128, G=128, B=128
         Settings settings = Settings.getInstance();
         for (int i = 0; i < 9; i++) {
             String xLegend;
@@ -539,8 +539,19 @@ public class SudokuPanel extends JPanel {
                 yLegend = "R" + (i + 1);
             else
                 yLegend = Integer.toString(i + 1);
+          if (engine.isValueAllSolved(grid, i+1)) {
+            g.setColor(Color.lightGray); // R=192, G=192, B=192
             drawStringCentered(g, yLegend,
                     LEGEND_GAP_SIZE / 2, CELL_OUTER_SIZE * i + GRID_GAP_SIZE + CELL_OUTER_SIZE / 2);
+            g.setColor(Color.darkGray); // R=64, G=64, B=64
+            drawStringCentered(g, yLegend,
+                    LEGEND_GAP_SIZE/2+1, CELL_OUTER_SIZE * i + GRID_GAP_SIZE + CELL_OUTER_SIZE/2+1);
+          } else {
+            g.setColor(Color.gray); // R=128, G=128, B=128
+            drawStringCentered(g, yLegend,
+                    LEGEND_GAP_SIZE / 2, CELL_OUTER_SIZE * i + GRID_GAP_SIZE + CELL_OUTER_SIZE / 2);
+          }
+            g.setColor(Color.gray); // R=128, G=128, B=128
             drawStringCentered(g, xLegend,
                     LEGEND_GAP_SIZE + i * CELL_OUTER_SIZE + CELL_OUTER_SIZE / 2,
                     CELL_OUTER_SIZE * 9 + GRID_GAP_SIZE + LEGEND_GAP_SIZE / 2);
@@ -563,18 +574,50 @@ public class SudokuPanel extends JPanel {
     }
 
     private void paintGrid(Graphics g) {
+            int lineWidth, offset;
         for (int i = 0; i <= 9; i++) {
-            int lineWidth;
             if (i % 3 == 0) {
                 lineWidth = 4;
                 g.setColor(Color.black);
             } else {
                 lineWidth = 2;
                 g.setColor(Color.blue.darker());
-            }
-            int offset = lineWidth / 2;
+            offset = lineWidth / 2;
+            // vertical lines
             g.fillRect(i * CELL_OUTER_SIZE - offset, 0 - offset, lineWidth, GRID_SIZE + lineWidth);
+            }
+            if (i % 3 == 0) {
+                lineWidth = 4;
+                g.setColor(Color.black);
+            } else {
+                lineWidth = 2;
+                g.setColor(Color.blue.darker());
+            offset = lineWidth / 2;
+            // horizontal lines
             g.fillRect(0 - offset, i * CELL_OUTER_SIZE - offset, GRID_SIZE + lineWidth, lineWidth);
+            }
+        }
+        for (int i = 0; i <= 9; i++) {
+            if (i % 3 == 0) {
+                lineWidth = 4;
+                g.setColor(Color.black);
+            offset = lineWidth / 2;
+            // vertical lines
+            g.fillRect(i * CELL_OUTER_SIZE - offset, 0 - offset, lineWidth, GRID_SIZE + lineWidth);
+            } else {
+                lineWidth = 2;
+                g.setColor(Color.blue.darker());
+            }
+            if (i % 3 == 0) {
+                lineWidth = 4;
+                g.setColor(Color.black);
+            offset = lineWidth / 2;
+            // horizontal lines
+            g.fillRect(0 - offset, i * CELL_OUTER_SIZE - offset, GRID_SIZE + lineWidth, lineWidth);
+            } else {
+                lineWidth = 2;
+                g.setColor(Color.blue.darker());
+            }
         }
     }
 

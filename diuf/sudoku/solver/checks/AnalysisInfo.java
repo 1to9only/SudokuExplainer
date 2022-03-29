@@ -44,10 +44,16 @@ public class AnalysisInfo extends WarningHint {
         StringBuilder details = new StringBuilder();
         for (String ruleName : ruleNames.keySet()) {
             int count = ruleNames.get(ruleName);
+            double minRuleDifficulty = getMinRuleDifficulty(ruleName);
+            double maxRuleDifficulty = getMaxRuleDifficulty(ruleName);
             details.append(Integer.toString(count));
             details.append(" x ");
             details.append(ruleName);
-            details.append("<br>\n");
+          if ( minRuleDifficulty == maxRuleDifficulty ) {
+            details.append(" ("+format.format(minRuleDifficulty)+")"); }
+          if ( minRuleDifficulty != maxRuleDifficulty ) {
+            details.append(" ("+format.format(minRuleDifficulty)+"-"+format.format(maxRuleDifficulty)+")"); }
+            details.append("<br>\r\n");
         }
         String result = HtmlLoader.loadHtml(this, "Analysis.html");
         result = HtmlLoader.format(result, format.format(difficulty), details);
@@ -59,6 +65,30 @@ public class AnalysisInfo extends WarningHint {
         for (Rule rule : rules.keySet()) {
             if (rule.getDifficulty() > difficulty)
                 difficulty = rule.getDifficulty();
+        }
+        return difficulty;
+    }
+
+    public double getMinRuleDifficulty(String ruleName) {
+        double difficulty = 20.0;
+        for (Rule rule : rules.keySet()) {
+            if (rule.getName().equals(ruleName)) {
+                if ( difficulty > rule.getDifficulty() ) {
+                    difficulty = rule.getDifficulty();
+                }
+            }
+        }
+        return difficulty;
+    }
+
+    public double getMaxRuleDifficulty(String ruleName) {
+        double difficulty = 0.0;
+        for (Rule rule : rules.keySet()) {
+            if (rule.getName().equals(ruleName)) {
+                if ( difficulty < rule.getDifficulty() ) {
+                    difficulty = rule.getDifficulty();
+                }
+            }
         }
         return difficulty;
     }

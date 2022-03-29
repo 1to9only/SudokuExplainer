@@ -70,10 +70,13 @@ public class SudokuFrame extends JFrame implements Asker {
     private JMenuBar jJMenuBar = null;
     private JMenu fileMenu = null;
     private JMenuItem mitNew = null;
+    private JMenuItem mitRestart = null;
     private JMenuItem mitQuit = null;
     private JMenuItem mitLoad = null;
+    private JMenuItem mitSave81 = null;
     private JMenuItem mitSave = null;
     private JMenu editMenu = null;
+    private JMenuItem mitCopy81 = null;
     private JMenuItem mitCopy = null;
     private JMenuItem mitClear = null;
     private JMenuItem mitPaste = null;
@@ -170,7 +173,7 @@ public class SudokuFrame extends JFrame implements Asker {
             if (currentHint instanceof DirectHint) {
                 DirectHint dHint = (DirectHint)currentHint;
                 sudokuPanel.setGreenCells(Collections.singleton(dHint.getCell()));
-                BitSet values = new BitSet(10);
+                BitSet values = new BitSet(9);
                 values.set(dHint.getValue());
                 sudokuPanel.setGreenPotentials(Collections.singletonMap(
                         dHint.getCell(), values));
@@ -819,11 +822,13 @@ public class SudokuFrame extends JFrame implements Asker {
             setCommand(getMitNew(), 'N');
             fileMenu.add(getMitGenerate());
             setCommand(getMitGenerate(), 'G');
+            fileMenu.add(getMitRestart());
             fileMenu.addSeparator();
             fileMenu.add(getMitLoad());
             setCommand(getMitLoad(), 'O');
             fileMenu.add(getMitSave());
             setCommand(getMitSave(), 'S');
+            fileMenu.add(getMitSave81());
             fileMenu.addSeparator();
             fileMenu.add(getMitQuit());
             setCommand(getMitQuit(), 'Q');
@@ -845,6 +850,20 @@ public class SudokuFrame extends JFrame implements Asker {
             });
         }
         return mitNew;
+    }
+
+    private JMenuItem getMitRestart() {
+        if (mitRestart == null) {
+            mitRestart = new JMenuItem();
+            mitRestart.setText("Restart...");
+            mitRestart.setToolTipText("Restart the grid");
+            mitRestart.addActionListener(new java.awt.event.ActionListener() {
+                public void actionPerformed(java.awt.event.ActionEvent e) {
+                    engine.restartGrid();
+                }
+            });
+        }
+        return mitRestart;
     }
 
     private JMenuItem getMitQuit() {
@@ -912,6 +931,47 @@ public class SudokuFrame extends JFrame implements Asker {
         return mitLoad;
     }
 
+    private JMenuItem getMitSave81() {
+        if (mitSave81 == null) {
+            mitSave81 = new JMenuItem();
+            mitSave81.setText("Save 81-chars...");
+            mitSave81.setToolTipText("Open the file selector to save the (sudoku) grid to a file");
+            mitSave81.addActionListener(new java.awt.event.ActionListener() {
+                public void actionPerformed(java.awt.event.ActionEvent e) {
+                    try {
+                        JFileChooser chooser = new JFileChooser();
+                        chooser.setFileFilter(new TextFileFilter());
+                        if (defaultDirectory != null)
+                            chooser.setCurrentDirectory(defaultDirectory);
+                        int result = chooser.showSaveDialog(SudokuFrame.this);
+                        defaultDirectory = chooser.getCurrentDirectory();
+                        if (result == JFileChooser.APPROVE_OPTION) {
+                            File file = chooser.getSelectedFile();
+                            try {
+                                if (!file.getName().endsWith(".txt") &&
+                                        file.getName().indexOf('.') < 0)
+                                    file = new File(file.getCanonicalPath() + ".txt");
+                            } catch (IOException ex) {
+                                ex.printStackTrace();
+                            }
+                            if (file.exists()) {
+                                if (JOptionPane.showConfirmDialog(SudokuFrame.this,
+                                        "The file \"" + file.getName() + "\" already exists.\n" +
+                                        "Do you want to replace the existing file ?",
+                                        "Save", JOptionPane.OK_CANCEL_OPTION) != JOptionPane.OK_OPTION)
+                                    return;
+                            }
+                            engine.saveGrid81(file);
+                        }
+                    } catch (AccessControlException ex) {
+                        warnAccessError(ex);
+                    }
+                }
+            });
+        }
+        return mitSave81;
+    }
+
     private JMenuItem getMitSave() {
         if (mitSave == null) {
             mitSave = new JMenuItem();
@@ -959,6 +1019,7 @@ public class SudokuFrame extends JFrame implements Asker {
             editMenu = new JMenu();
             editMenu.setText("Edit");
             editMenu.setMnemonic(java.awt.event.KeyEvent.VK_E);
+            editMenu.add(getMitCopy81());
             editMenu.add(getMitCopy());
             setCommand(getMitCopy(), 'C');
             editMenu.add(getMitPaste());
@@ -968,6 +1029,24 @@ public class SudokuFrame extends JFrame implements Asker {
             setCommand(getMitClear(), 'E');
         }
         return editMenu;
+    }
+
+    private JMenuItem getMitCopy81() {
+        if (mitCopy81 == null) {
+            mitCopy81 = new JMenuItem();
+            mitCopy81.setText("Copy 81-chars");
+            mitCopy81.setToolTipText("Copy the (sudoku) grid to the clipboard as plain text");
+            mitCopy81.addActionListener(new java.awt.event.ActionListener() {
+                public void actionPerformed(java.awt.event.ActionEvent e) {
+                    try {
+                        engine.copyGrid81();
+                    } catch (AccessControlException ex) {
+                        warnAccessError(ex);
+                    }
+                }
+            });
+        }
+        return mitCopy81;
     }
 
     private JMenuItem getMitCopy() {

@@ -38,14 +38,14 @@ import diuf.sudoku.tools.*;
  */
 public class Solver {
 
-    private static final String ADVANCED_WARNING1 =
-        "This Sudoku seems to require advanced techniques\n" +
-        "that may take a very long computing time.\n" +
-        "Do you want to continue anyway?";
-    private static final String ADVANCED_WARNING2 =
-        "The next solving techniques are advanced ones\n" +
-        "that may take a very long computing time.\n" +
-        "Do you want to continue anyway?";
+//  private static final String ADVANCED_WARNING1 =
+//      "This Sudoku seems to require advanced techniques\n" +
+//      "that may take a very long computing time.\n" +
+//      "Do you want to continue anyway?";
+//  private static final String ADVANCED_WARNING2 =
+//      "The next solving techniques are advanced ones\n" +
+//      "that may take a very long computing time.\n" +
+//      "Do you want to continue anyway?";
 
     public double difficulty;
     public double pearl;
@@ -62,7 +62,7 @@ public class Solver {
     private List<IndirectHintProducer> advancedHintProducers;
     private List<IndirectHintProducer> experimentalHintProducers;
 
-    private boolean isUsingAdvanced = false;
+//  private boolean isUsingAdvanced = false;
 
 
     private class DefaultHintsAccumulator implements HintsAccumulator {
@@ -266,7 +266,7 @@ public class Solver {
             HintsAccumulator accu, Asker asker) {
 
         int oldPriority = lowerPriority();
-        boolean isAdvanced = false;
+    //  boolean isAdvanced = false;
         try {
             for (HintProducer producer : directHintProducers)
                 gatherProducer(previousHints, result, accu, producer);
@@ -287,22 +287,22 @@ public class Solver {
                 if (hint instanceof WarningHint)
                     hasWarning = true;
             }
-            // We have not been interrupted yet. So no rule has been found yet
-            if (!hasWarning &&
-                    !(advancedHintProducers.isEmpty() && experimentalHintProducers.isEmpty()) &&
-                    (isUsingAdvanced || asker.ask(ADVANCED_WARNING2))) {
-                isAdvanced = true;
-                isUsingAdvanced = true;
+    //      // We have not been interrupted yet. So no rule has been found yet
+    //      if (!hasWarning &&
+    //              !(advancedHintProducers.isEmpty() && experimentalHintProducers.isEmpty()) &&
+    //              (isUsingAdvanced || asker.ask(ADVANCED_WARNING2))) {
+    //          isAdvanced = true;
+    //          isUsingAdvanced = true;
                 for (HintProducer producer : advancedHintProducers)
                     gatherProducer(previousHints, result, accu, producer);
                 for (HintProducer producer : experimentalHintProducers) {
-                    if (result.isEmpty() && Settings.getInstance().isUsingAllTechniques())
+    //              if (result.isEmpty() && Settings.getInstance().isUsingAllTechniques())
                         gatherProducer(previousHints, result, accu, producer);
                 }
-            }
+    //      }
         } catch (InterruptedException willProbablyHappen) {}
-        if (!isAdvanced)
-            isUsingAdvanced = false;
+    //  if (!isAdvanced)
+    //      isUsingAdvanced = false;
         normalPriority(oldPriority);
     }
 
@@ -329,16 +329,18 @@ public class Solver {
                 for (IndirectHintProducer producer : chainingHintProducers2)
                     producer.getHints(grid, accu);
             }
-            if (result.isEmpty() &&
-                    !(advancedHintProducers.isEmpty() && experimentalHintProducers.isEmpty()) &&
-                    (isUsingAdvanced || asker.ask(ADVANCED_WARNING2))) {
-                isUsingAdvanced = true;
+            if (result.isEmpty()) {
+    //          &&  !(advancedHintProducers.isEmpty() && experimentalHintProducers.isEmpty()) &&
+    //              (isUsingAdvanced || asker.ask(ADVANCED_WARNING2))) {
+    //          isUsingAdvanced = true;
                 for (IndirectHintProducer producer : advancedHintProducers) {
-                    if (result.isEmpty())
+    //              if (result.isEmpty())
                         producer.getHints(grid, accu);
                 }
+            }
+            if (result.isEmpty()) {
                 for (IndirectHintProducer producer : experimentalHintProducers) {
-                    if (result.isEmpty() && Settings.getInstance().isUsingAllTechniques())
+    //              if (result.isEmpty() && Settings.getInstance().isUsingAllTechniques())
                         producer.getHints(grid, accu);
                 }
             }
@@ -347,7 +349,7 @@ public class Solver {
         return result;
     }
 
-    private boolean isSolved() {
+    public boolean isSolved() {
         for (int y = 0; y < 9; y++) {
             for (int x = 0; x < 9; x++) {
                 if (grid.getCellValue(x, y) == 0)
@@ -385,7 +387,7 @@ public class Solver {
         int oldPriority = lowerPriority();
         // rebuildPotentialValues();
         Map<Rule,Integer> usedRules = new TreeMap<Rule,Integer>(new RuleComparer());
-        boolean isUsingAdvanced = false;
+    //  boolean isUsingAdvanced = false;
         while (!isSolved()) {
             SingleHintAccumulator accu = new SingleHintAccumulator();
             try {
@@ -397,16 +399,16 @@ public class Solver {
                     producer.getHints(grid, accu);
                 for (IndirectHintProducer producer : chainingHintProducers2)
                     producer.getHints(grid, accu);
-                if (!(advancedHintProducers.isEmpty() && experimentalHintProducers.isEmpty()) &&
-                        (asker == null || isUsingAdvanced || asker.ask(ADVANCED_WARNING1))) {
-                    isUsingAdvanced = true;
+    //          if (!(advancedHintProducers.isEmpty() && experimentalHintProducers.isEmpty()) &&
+    //                  (asker == null || isUsingAdvanced || asker.ask(ADVANCED_WARNING1))) {
+    //              isUsingAdvanced = true;
                     for (IndirectHintProducer producer : advancedHintProducers)
                         producer.getHints(grid, accu);
                     for (IndirectHintProducer producer : experimentalHintProducers) {
-                        if (Settings.getInstance().isUsingAllTechniques())
+    //                  if (Settings.getInstance().isUsingAllTechniques())
                             producer.getHints(grid, accu);
                     }
-                }
+    //          }
             } catch (InterruptedException willHappen) {}
             Hint hint = accu.getHint();
             if (hint == null)
@@ -438,7 +440,7 @@ public class Solver {
     public double analyseDifficulty(double min, double max) {
         int oldPriority = lowerPriority();
         try {
-            double difficulty = Double.NEGATIVE_INFINITY;
+            double difficulty = 0.0;
             while (!isSolved()) {
                 SingleHintAccumulator accu = new SingleHintAccumulator();
                 try {
@@ -478,7 +480,7 @@ public class Solver {
         Grid backup = new Grid();
         grid.copyTo(backup);
         try {
-            difficulty = Double.NEGATIVE_INFINITY;
+            difficulty = 0.0;
             pearl = 0.0;
             diamond = 0.0;
             while (!isSolved()) {
@@ -527,6 +529,109 @@ public class Solver {
         } finally {
             backup.copyTo(grid);
         }
+    }
+
+    public void getHintsHint() {
+            difficulty = 0.0;
+            pearl = 0.0;
+            diamond = 0.0;
+            while (!isSolved()) {
+                SingleHintAccumulator accu = new SingleHintAccumulator();
+                long tt = System.currentTimeMillis(); long hh, mm, ss, ms;
+                try {
+                    for (HintProducer producer : directHintProducers)
+                        producer.getHints(grid, accu);
+                    for (IndirectHintProducer producer : indirectHintProducers)
+                        producer.getHints(grid, accu);
+                    for (IndirectHintProducer producer : chainingHintProducers)
+                        producer.getHints(grid, accu);
+                    for (IndirectHintProducer producer : chainingHintProducers2)
+                        producer.getHints(grid, accu);
+                    for (IndirectHintProducer producer : advancedHintProducers)
+                        producer.getHints(grid, accu);
+                    for (IndirectHintProducer producer : experimentalHintProducers)
+                        producer.getHints(grid, accu);
+                } catch (InterruptedException willHappen) {}
+                tt = System.currentTimeMillis() - tt;
+                Hint hint = accu.getHint();
+                if (hint == null) {
+                    difficulty = 20.0;
+                    break;
+                }
+//a             assert hint instanceof Rule;
+                Rule rule = (Rule)hint;
+                double ruleDiff = rule.getDifficulty();
+                if (ruleDiff > difficulty)
+                    difficulty = ruleDiff;
+                hint.apply(grid);
+
+                String s = "";
+                for (int i = 0; i < 81; i++) {
+                    int n = grid.getCellValue(i % 9, i / 9);
+                    s += (n==0)?".":n;
+//                  s += (n==0)?".":"@ABCDEFGHIJKLMNOPQRSTUVWXYZ".substring(n,n+1);
+                }
+                s += " ";
+                ms= tt % 1000; tt = tt / 1000;
+                ss= tt % 60;   tt = tt / 60;
+                mm= tt % 60;   hh = tt / 60;
+            //  if ( hh < 10 ) { s += "0"; } s += "" + hh + ":";
+                if ( mm < 10 ) { s += "0"; } s += "" + mm + ":";
+                if ( ss < 10 ) { s += "0"; } s += "" + ss + ".";
+                if ( ms < 100) { s += "0"; }
+                if ( ms < 10 ) { s += "0"; } s += "" + ms + " ";
+                int w = (int)((ruleDiff + 0.05) * 10);
+                int p = w % 10;
+                w /= 10;
+                String t = "" + w + "." + p + ", " + hint.toString();
+                System.err.println(t);
+                System.err.flush();
+                s += w + "." + p;
+                s += ", " + hint.toString();
+                if (hint instanceof IndirectHint) {
+                    IndirectHint iHint = (IndirectHint)hint;
+                    if ( iHint.isWorth() ) {
+                        int countCells = 0;
+                        Map<Cell, BitSet> getPots = iHint.getRemovablePotentials();
+                        Map<Integer, BitSet> remPots = new TreeMap<Integer, BitSet>();
+                        for (Cell cell : getPots.keySet()) {
+                            remPots.put(cell.getY()*9+cell.getX(), getPots.get(cell));
+                        }
+                        for (int cellindex : remPots.keySet()) {
+                            BitSet cellPots = remPots.get(cellindex);
+                            if ( countCells == 0 ) { s += ":"; }
+                            if ( countCells > 0 ) { s += ","; }
+                            s += " r" + (cellindex/9+1) + "c" + (cellindex%9+1) + "<>";
+                            int countPots = 0;
+                            for (int pv=1; pv<=9; pv++ ) {
+                                if ( cellPots.get( pv) ) { if ( countPots != 0 ) { s += ","; } s += pv; countPots++; }
+                            }
+                            countCells++;
+                        }
+                        Cell cell = iHint.getCell();
+                        if (cell != null) {
+                            s += ", r" + (cell.getY()+1) + "c" + (cell.getX()+1) + "=" + iHint.getValue();
+                        }
+                    }
+                }
+                if (hint instanceof DirectHint) {
+                    DirectHint iHint = (DirectHint)hint;
+                    Cell cell = iHint.getCell();
+                    if (cell != null) {
+                        s += ": r" + (cell.getY()+1) + "c" + (cell.getX()+1) + "=" + iHint.getValue();
+                    }
+                }
+                System.out.println(s);
+                System.out.flush();
+
+                if (pearl == 0.0) {
+                    if (diamond == 0.0)
+                        diamond = difficulty;
+                    if (hint.getCell() != null) {
+                        pearl = difficulty;
+                    }
+                }
+            }
     }
 
     public Map<String, Integer> toNamedList(Map<Rule, Integer> rules) {

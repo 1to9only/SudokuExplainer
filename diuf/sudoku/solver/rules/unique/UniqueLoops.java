@@ -62,7 +62,7 @@ public class UniqueLoops implements IndirectHintProducer {
 //a                 assert v1 > 0 && v2 > 0;
                     List<Cell> tempLoop = new ArrayList<Cell>();
                     Collection<List<Cell>> results = new ArrayList<List<Cell>>();
-                    checkForLoops(grid, cell, v1, v2, tempLoop, 2, new BitSet(10), null, results);
+                    checkForLoops(grid, cell, v1, v2, tempLoop, 2, new BitSet(9), null, results);
                     for (List<Cell> loop : results) {
                         // Potential loop found. Check validity
                         if (isValidLoop(grid, loop)) {
@@ -79,7 +79,7 @@ public class UniqueLoops implements IndirectHintProducer {
                                     result.add(hint);
                             } else if (extraCells.size() > 2) {
                                 // Only type 2 is possible
-                                BitSet extraValues = new BitSet(10);
+                                BitSet extraValues = new BitSet(9);
                                 for (Cell c : extraCells)
                                     extraValues.or(c.getPotentialValues());
                                 extraValues.clear(v1);
@@ -147,6 +147,7 @@ public class UniqueLoops implements IndirectHintProducer {
         for (Class<? extends Grid.Region> regionType : grid.getRegionTypes()) {
             if (!regionType.equals(lastRegionType)) {
                 Grid.Region region = grid.getRegionAt(regionType, cell.getX(), cell.getY());
+              if ( region != null ) {
                 for (int i = 0; i < 9; i++) {
                     Cell next = region.getCell(i);
                     if (loop.get(0).equals(next) && loop.size() >= 4) {
@@ -177,6 +178,7 @@ public class UniqueLoops implements IndirectHintProducer {
                         }
                     } // Not in the loop yet
                 } // for i
+              }
             } // not last region type
         } // for regionType
         // Rollback
@@ -203,6 +205,7 @@ public class UniqueLoops implements IndirectHintProducer {
         for (Cell cell : loop) {
             for (Class<? extends Grid.Region> regionType : grid.getRegionTypes()) {
                 Grid.Region region = grid.getRegionAt(regionType, cell.getX(), cell.getY());
+              if ( region != null ) {
                 if (isOdd) {
                     if (visitedOdd.contains(region))
                         return false;
@@ -214,6 +217,7 @@ public class UniqueLoops implements IndirectHintProducer {
                     else
                         visitedEven.add(region);
                 }
+              }
             }
             isOdd = !isOdd;
         }
@@ -224,7 +228,7 @@ public class UniqueLoops implements IndirectHintProducer {
     private UniqueLoopHint createType1Hint(List<Cell> loop, Cell rescueCell,
             int v1, int v2) {
         Map<Cell, BitSet> removable = new HashMap<Cell, BitSet>();
-        BitSet values = new BitSet(10);
+        BitSet values = new BitSet(9);
         values.set(v1);
         values.set(v2);
         removable.put(rescueCell, values);
@@ -283,6 +287,7 @@ public class UniqueLoops implements IndirectHintProducer {
         for (int degree = extra.cardinality(); degree <= 7; degree++) {
             for (Class<? extends Grid.Region> regionType : grid.getRegionTypes()) {
                 Grid.Region region = grid.getRegionAt(regionType, c1);
+              if ( region != null ) {
                 if (region.equals(grid.getRegionAt(regionType, c2))) {
                     // Region common to c1 and c2
                     int nbEmptyCells = region.getEmptyCellCount();
@@ -359,7 +364,7 @@ public class UniqueLoops implements IndirectHintProducer {
                                     CommonTuples.searchCommonTupleLight(potentialIndexes, degree);
                                 if (commonPotentialPositions != null) {
                                     // Potential hidden set found
-                                    BitSet hiddenValues = new BitSet(10);
+                                    BitSet hiddenValues = new BitSet(9);
                                     for (int i = 0; i < values.length; i++)
                                         hiddenValues.set(values[i]);
                                     UniqueLoopHint hint = createType3HiddenHint(loop, v1, v2, extra, hiddenValues, region,
@@ -372,6 +377,7 @@ public class UniqueLoops implements IndirectHintProducer {
                     }
 
                 } // region common to c1 and c2
+              }
             } // for regionType
         } // for degree
         return result;
@@ -396,7 +402,7 @@ public class UniqueLoops implements IndirectHintProducer {
             if (potentialIndexes.get(i)) {
                 Cell cell = region.getCell(i);
                 if (!cell.equals(c1) && !cell.equals(c2)) {
-                    BitSet values = new BitSet(10);
+                    BitSet values = new BitSet(9);
                     for (int value = 1; value <= 9; value++) {
                         if (!hiddenValues.get(value) && cell.hasPotentialValue(value)) {
                             values.set(value);
@@ -439,7 +445,7 @@ public class UniqueLoops implements IndirectHintProducer {
             if (!Arrays.asList(cells).contains(otherCell)
                     && !c1.equals(otherCell) && !c2.equals(otherCell)) {
                 // Get removable potentials
-                BitSet removablePotentials = new BitSet(10);
+                BitSet removablePotentials = new BitSet(9);
                 for (int value = 1; value <= 9; value++) {
                     if (commonPotentialValues.get(value) && otherCell.hasPotentialValue(value))
                         removablePotentials.set(value);
@@ -459,6 +465,7 @@ public class UniqueLoops implements IndirectHintProducer {
         Grid.Region r2 = null;
         for (Class<? extends Grid.Region> regionType : grid.getRegionTypes()) {
             Grid.Region region = grid.getRegionAt(regionType, c1.getX(), c1.getY());
+          if ( region != null ) {
             if (region.equals(grid.getRegionAt(regionType, c2.getX(), c2.getY()))) {
                 // Region common to c1 and c2
                 boolean hasValue1 = false;
@@ -477,6 +484,7 @@ public class UniqueLoops implements IndirectHintProducer {
                 if (!hasValue2)
                     r2 = region;
             }
+          }
         }
         Grid.Region region = null;
         int lockValue = -1;

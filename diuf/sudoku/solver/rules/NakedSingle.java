@@ -21,21 +21,23 @@ public class NakedSingle implements DirectHintProducer {
      * corresponding hints
      */
     public void getHints(Grid grid, HintsAccumulator accu) throws InterruptedException {
-        Grid.Region[] parts = grid.getRegions(Grid.Row.class);
-        // Iterate on parts
-        for (Grid.Region part : parts) {
+    //  Grid.Region[] parts = grid.getRegions(Grid.Row.class);
+    //  // Iterate on parts
+    //  for (Grid.Region part : parts) {
             // Iterate on cells
-            for (int index = 0; index < 9; index++) {
-                Cell cell = part.getCell(index);
+            for (int index = 0; index < 81; index++) {
+                Cell cell = grid.getCell(index%9,index/9);
+              if ( cell.getValue() == 0 ) {
                 // Get the cell's potential values
                 BitSet potentialValues = cell.getPotentialValues();
                 if (potentialValues.cardinality() == 1) {
                     // One potential value -> solution found
-                    int uniqueValue = potentialValues.nextSetBit(0);
-                    accu.add(new NakedSingleHint(this, null, cell, uniqueValue));
+                //  int uniqueValue = potentialValues.nextSetBit(0);
+                    accu.add(new NakedSingleHint(this, null, cell, potentialValues.nextSetBit(0)));
                 }
+              }
             }
-        }
+    //  }
     }
 
     @Override

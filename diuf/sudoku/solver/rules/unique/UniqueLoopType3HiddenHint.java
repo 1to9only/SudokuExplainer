@@ -48,7 +48,7 @@ public class UniqueLoopType3HiddenHint extends UniqueLoopHint {
             Cell cell = region.getCell(index);
             BitSet values = potentials.get(cell);
             if (values == null) {
-                values = new BitSet(10);
+                values = new BitSet(9);
                 potentials.put(cell, values);
             }
             values.or(hiddenValues);
@@ -101,8 +101,7 @@ public class UniqueLoopType3HiddenHint extends UniqueLoopHint {
         String cell1 = c1.toString();
         String cell2 = c2.toString();
         String valuesOrName = ValuesFormatter.formatValues(otherValues, " or ");
-        final String[] setNames = new String[] {"Pair", "Triplet", "Quad", "Set (5)",
-                "Set (6)", "Set (7)"};
+        final String[] setNames = new String[] {"Pair", "Triplet", "Quad", "Quintuplet", "Sextuplet", "Septuplet", "Octuplet"};
         String setName = setNames[hiddenValues.cardinality() - 2];
         Cell[] cells = new Cell[hiddenIndexes.length];
         for (int i = 0; i < cells.length; i++)

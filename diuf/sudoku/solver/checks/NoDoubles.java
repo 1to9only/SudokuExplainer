@@ -27,7 +27,8 @@ public class NoDoubles implements WarningHintProducer {
             // Iterate on occurances of a region
             for (int i = 0; i < 9; i++) {
                 final Grid.Region region = regions[i];
-                BitSet values = new BitSet(10);
+              if ( region != null ) {
+                BitSet values = new BitSet(9);
 
                 // Iterate on cells of a region
                 for (int j = 0; j < 9; j++) {
@@ -62,6 +63,7 @@ public class NoDoubles implements WarningHintProducer {
                             values.set(value);
                     }
                 }
+              }
             }
         }
     }
@@ -74,7 +76,8 @@ public class NoDoubles implements WarningHintProducer {
             // Iterate on occurances of a region
             for (int i = 0; i < 9; i++) {
                 final Grid.Region region = regions[i];
-                BitSet values = new BitSet(10);
+              if ( region != null ) {
+                BitSet values = new BitSet(9);
 
                 // Iterate on cells of a region
                 for (int j = 0; j < 9; j++) {
@@ -87,6 +90,7 @@ public class NoDoubles implements WarningHintProducer {
                             values.set(value);
                     }
                 }
+              }
             }
         }
         return true;

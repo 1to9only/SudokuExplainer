@@ -67,7 +67,7 @@ public class CycleHint extends ChainingHint {
             BitSet values = removable.get(c);
             BitSet reds = result.get(c);
             if (reds == null) {
-                reds = new BitSet(10);
+                reds = new BitSet(9);
                 result.put(c, reds);
             }
             reds.or(values);

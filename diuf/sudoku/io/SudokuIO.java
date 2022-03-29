@@ -45,158 +45,180 @@ public class SudokuIO {
     private static final String WARNING_MSG = "Warning: the Sudoku format was not recognized.\nThe Sudoku may not have been read correctly";
 
     private static int loadFromReader(Grid grid, Reader reader) throws IOException {
-        boolean isValid = true;
         List<String> lines = new ArrayList<String>();
         LineNumberReader lineReader = new LineNumberReader(reader);
         String line = lineReader.readLine();
         while (line != null) {
-            if (line.length() >= 9)
-                lines.add(line);
-            else
-                isValid = false;
+            lines.add(line);
             line = lineReader.readLine();
         }
-        if (lines.size() >= 9 && lines.size() <= 30) {
+        if (lines.size() > 1) {
+            String allLines = "";
             String[] arrLines = new String[lines.size()];
             lines.toArray(arrLines);
             for (int i = 0; i < arrLines.length; i++)
-                arrLines[i] = arrLines[i].trim();
-            int result = loadFromLines(grid, arrLines);
-            if (result == RES_OK && !isValid)
-                result = RES_WARN;
+                allLines += arrLines[i];
+            int result = loadFromSingleLine(grid, allLines);
             return result;
-        } else if (lines.size() == 1) {
+        } else
+        if (lines.size() == 1) {
             int result = loadFromSingleLine(grid, lines.get(0));
-            if (result == RES_OK && !isValid)
-                result = RES_WARN;
             return result;
         }
         return RES_ERROR;
     }
 
-    private static int loadFromLines(Grid grid, String[] lines) {
-        boolean isStandard = (lines.length == 9);
-
-        int lineSize = lines.length / 9;
-        int loffset = (lineSize - 1) / 2;
-        int borderLines = lines.length - 9 * lineSize;
-        if (borderLines < 0)
-            borderLines = 0;
-        int outerLines; // Number of lines before the grid
-        int innerLines; // Number of additional lines between blocks
-        if (borderLines % 4 == 0) {
-            outerLines = borderLines / 4;
-            innerLines = outerLines;
-        } else {
-            outerLines = 0;
-            innerLines = borderLines / 2;
-        }
-        int index = outerLines + loffset;
-        for (int y = 0; y < 9; y++) {
-            /*
-             * This is very ugly code, without real logic. Maybe a case-by-case version
-             * would be more understandable. Or I should try some real AI stuff...
-             */
-            String line = lines[index];
-
-            // Check line format
-            if (line.length() != 9)
-                isStandard = false;
-            for (int i = 0; i < line.length(); i++) {
-                char ch = line.charAt(i);
-                if (ch != '.' && (ch < '0' || ch > '9'))
-                    isStandard = false;
-            }
-
-            // Read line
-            int cellSize = (line.length() + 1) / 9;
-            int borderChars = line.length() - 9 * cellSize;
-            if (borderChars < 0)
-                borderChars = 0;
-            int outerChars, innerChars;
-            if (borderChars % 4 == 0 || (borderChars % 4 == 3 && cellSize == 2 && borderChars > 4)) {
-                innerChars = (borderChars + 1) / 4;
-                outerChars = (borderChars - innerChars * 2) / 2;
-            } else {
-                outerChars = 0;
-                // The last cell, if cell size > 1, may only have half its size
-                innerChars = (borderChars + cellSize / 2) / 2;
-            }
-            int pos = outerChars;
-            for (int x = 0; x < 9; x++) {
-                for (int offset = 0; offset < cellSize; offset++) {
-                    if (pos + offset < line.length()) {
-                        char ch = line.charAt(pos + offset);
-                        int value = 0;
-                        if (ch >= '1' && ch <= '9')
-                            value = ch - '0';
-                        if (offset == 0 || value > 0)
-                            grid.setCellValue(x, y, value);
-                    }
-                }
-
-                pos += cellSize;
-                if (x == 2 || x == 5)
-                    pos += innerChars;
-            }
-
-            index += lineSize;
-            if (y == 2 || y == 5)
-                index += innerLines;
-        }
-        return (isStandard ? RES_OK : RES_WARN);
-    }
-
     private static int loadFromSingleLine(Grid grid, String line) {
-        boolean isStandard = (line.length() == 81);
-        // Detect Sudoku Susser format (Although the SS cannot cut/past to itself)
-        if (line.endsWith("\t"))
-            line = line.substring(0, line.length() - 1);
-        boolean hasAlphaLabel = false;
-        for (int i = 0; i < line.length() - 81; i++) {
-            if (Character.isLetter(line.charAt(i)))
-                hasAlphaLabel = true;
-        }
-        for (int i = line.length() - 81; i < line.length(); i++) {
-            if (i >= 0 && Character.isLetter(line.charAt(i)))
-                hasAlphaLabel = false;
-        }
-        if (hasAlphaLabel && line.length() > 81)
-            line = line.substring(line.length() - 81);
-        else if (line.trim().length() >= 81)
-            line = line.trim();
-
-        if (line.length() >= 81) {
-            int rowGap = (line.length() - 81) / 8;
-            int srcIndex = 0;
-            for (int y = 0; y < 9; y++) {
-                for (int x = 0; x < 9; x++) {
-                    char ch = line.charAt(srcIndex++);
-                    int value = 0;
-                    if (ch >= '1' && ch <= '9')
-                        value = ch - '0';
-                    else if (ch != '.' && ch != '0')
-                        isStandard = false;
-                    grid.setCellValue(x, y, value);
-                }
-                srcIndex += rowGap;
+        line += " "; // extra char
+        int cellnum = 0;
+        int cluenum = 0;
+        int linelen = line.length();
+        char ch = 0;
+        int pformat = Settings.getInstance().getPuzzleFormat();
+        int ispad = 0;
+        int grpcnt = 0;
+        int grpmax = 0;
+        int cluecount = 0;
+        while ( cluenum < linelen ) {
+            ch = line.charAt(cluenum++);
+            switch ( pformat ) {
+            case 1:
+                if (ch >= '0' && ch <= '8') { cluecount++; ispad = 0; grpcnt++; }
+           else if (ch >= 'A' && ch <= '8') { cluecount++; ispad = 0; grpcnt++; }
+           else if (ch == '.'             ) { cluecount++; ispad = 0; grpcnt++; }
+           else if ( ispad == 0 ) { ispad = 1; if ( grpcnt > grpmax ) { grpmax = grpcnt; } grpcnt = 0; }
+                break;
+            case 2:
+                if (ch >= '1' && ch <= '9') { cluecount++; ispad = 0; grpcnt++; }
+           else if (ch >= 'A' && ch <= '9') { cluecount++; ispad = 0; grpcnt++; }
+           else if (ch == '.' || ch == '0') { cluecount++; ispad = 0; grpcnt++; }
+           else if ( ispad == 0 ) { ispad = 1; if ( grpcnt > grpmax ) { grpmax = grpcnt; } grpcnt = 0; }
+                break;
+            case 3:
+                if (ch >= '0' && ch <= '9') { cluecount++; ispad = 0; grpcnt++; }
+           else if (ch == '.'             ) { cluecount++; ispad = 0; grpcnt++; }
+           else if ( ispad == 0 ) { ispad = 1; if ( grpcnt > grpmax ) { grpmax = grpcnt; } grpcnt = 0; }
+                break;
+            case 4:
+            default:
+                if (ch >= 'A' && ch <= 'I') { cluecount++; ispad = 0; grpcnt++; }
+           else if (ch == '.' || ch == '0') { cluecount++; ispad = 0; grpcnt++; }
+           else if ( ispad == 0 ) { ispad = 1; if ( grpcnt > grpmax ) { grpmax = grpcnt; } grpcnt = 0; }
+                break;
             }
-            return (isStandard ? RES_OK : RES_WARN);
         }
+
+        cellnum = 0;
+        cluenum = 0;
+
+        if ( cluecount >= 81 ) { // sudoku
+            while ( cellnum < 81 && cluenum < linelen ) {
+                ch = line.charAt(cluenum++);
+                switch ( pformat ) {
+                case 1:
+                    if (ch >= '0' && ch <= '9') { int value = ch - '0'+1; grid.setCellValue(cellnum % 9, cellnum / 9, value); cellnum++; }
+               else if (ch >= 'A' && ch <= '9') { int value = ch -'A'+11; grid.setCellValue(cellnum % 9, cellnum / 9, value); cellnum++; }
+               else if (ch == '.'             ) { cellnum++; }
+                    break;
+                case 2:
+                    if (ch >= '1' && ch <= '9') { int value = ch - '1'+1; grid.setCellValue(cellnum % 9, cellnum / 9, value); cellnum++; }
+               else if (ch >= 'A' && ch <= 'A') { int value = ch -'A'+10; grid.setCellValue(cellnum % 9, cellnum / 9, value); cellnum++; }
+               else if (ch == '.' || ch == '0') { cellnum++; }
+                    break;
+                case 3:
+                    char ch2 = line.charAt(cluenum);
+//     if (ch == '2' && ch2>= '0' && ch2<= '9') { int value = ch2-'0'+20; grid.setCellValue(cellnum % 9, cellnum / 9, value); cellnum++; cluenum++; } else
+//     if (ch == '1' && ch2>= '0' && ch2<= '9') { int value = ch2-'0'+10; grid.setCellValue(cellnum % 9, cellnum / 9, value); cellnum++; cluenum++; } else
+                    if (ch >= '1' && ch <= '9') { int value = ch - '1'+1; grid.setCellValue(cellnum % 9, cellnum / 9, value); cellnum++; }
+               else if (ch == '.'             ) { cellnum++; }
+                    break;
+                case 4:
+                default:
+                    if (ch >= 'A' && ch <= 'I') { int value = ch - 'A'+1; grid.setCellValue(cellnum % 9, cellnum / 9, value); cellnum++; }
+               else if (ch == '.' || ch == '0') { cellnum++; }
+                    break;
+                }
+            }
+            return ( cellnum==81 ? RES_OK : RES_WARN);
+        }
+
         return RES_ERROR;
     }
 
     private static void saveToWriter(Grid grid, Writer writer) throws IOException {
+        int pformat = Settings.getInstance().getPuzzleFormat();
+        int gSize = Settings.getInstance().getGridSize();
+        String text = "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ";
+        if ( pformat == 5 ) {
+            char[] characters = text.toCharArray();
+            for (int i=0; i <81; i++) { int n1 = (int)( Math.random() * characters.length); int n2 = (int)( Math.random() * characters.length); char temp = characters[n1]; characters[n1] = characters[n2]; characters[n2] = temp; }
+            text = new String( characters);
+        }
         for (int y = 0; y < 9; y++) {
             for (int x = 0; x < 9; x++) {
                 int value = grid.getCellValue(x, y);
-                int ch = '.';
-                if (value > 0)
-                    ch = '0' + value;
+                String ch = ".";
+                switch ( pformat ) {
+                case 1:
+                    if (value > 0) ch = ".0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ".substring(value,value+1);
+                    break;
+                case 2:
+                    if (value > 0) ch = ".123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ".substring(value,value+1);
+                    break;
+                case 3:
+                    if (value > 0) ch = ""  + value;
+//                  if (ch.length() == 1 && gSize > 9) ch = " " + ch;
+                    break;
+                case 5:
+                    ch = text.substring(value,value+1);
+                    break;
+                case 4:
+                default:
+                    if (value > 0) ch = ".ABCDEFGHIJKLMNOPQRSTUVWXYZ".substring(value,value+1);
+                    break;
+                }
                 writer.write(ch);
             }
             writer.write("\r\n");
         }
+    }
+
+    private static void saveToWriter81(Grid grid, Writer writer) throws IOException {
+        int pformat = Settings.getInstance().getPuzzleFormat();
+        String text = "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ";
+        int gSize = Settings.getInstance().getGridSize();
+        if ( pformat == 5 ) {
+            char[] characters = text.toCharArray();
+            for (int i=0; i <81; i++) { int n1 = (int)( Math.random() * characters.length); int n2 = (int)( Math.random() * characters.length); char temp = characters[n1]; characters[n1] = characters[n2]; characters[n2] = temp; }
+            text = new String( characters);
+        }
+        for (int y = 0; y < 9; y++) {
+            for (int x = 0; x < 9; x++) {
+                int value = grid.getCellValue(x, y);
+                String ch = ".";
+                switch ( pformat ) {
+                case 1:
+                    if (value > 0) ch = ".0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ".substring(value,value+1);
+                    break;
+                case 2:
+                    if (value > 0) ch = ".123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ".substring(value,value+1);
+                    break;
+                case 3:
+                    if (value > 0) ch = ""  + value;
+//                  if (ch.length() == 1 && gSize > 9) ch = " " + ch;
+                    break;
+                case 5:
+                    ch = text.substring(value,value+1);
+                    break;
+                case 4:
+                default:
+                    if (value > 0) ch = ".ABCDEFGHIJKLMNOPQRSTUVWXYZ".substring(value,value+1);
+                    break;
+                }
+                writer.write(ch);
+            }
+        }
+        writer.write("\r\n");
     }
 
     /**
@@ -238,6 +260,17 @@ public class SudokuIO {
         }
     }
 
+    public static void saveToClipboard81(Grid grid) {
+        StringWriter writer = new StringWriter();
+        try {
+            saveToWriter81(grid, writer);
+            StringSelection data = new StringSelection(writer.toString());
+            Toolkit.getDefaultToolkit().getSystemClipboard().setContents(data, data);
+        } catch (IOException ex) {
+            ex.printStackTrace();
+        }
+    }
+
     public static void saveToClipboard(Grid grid) {
         StringWriter writer = new StringWriter();
         try {
@@ -269,6 +302,26 @@ public class SudokuIO {
             if (reader != null) {
                 try {
                     reader.close();
+                } catch (IOException ex) {
+                    ex.printStackTrace();
+                }
+            }
+        }
+    }
+
+    public static ErrorMessage saveToFile81(Grid grid, File file) {
+        Writer writer = null;
+        try {
+            FileWriter fwriter = new FileWriter(file);
+            writer = new BufferedWriter(fwriter);
+            saveToWriter81(grid, writer);
+            return null;
+        } catch (IOException ex) {
+            return new ErrorMessage("Error while writing file {0}:\n{1}", file, ex);
+        } finally {
+            if (writer != null) {
+                try {
+                    writer.close();
                 } catch (IOException ex) {
                     ex.printStackTrace();
                 }

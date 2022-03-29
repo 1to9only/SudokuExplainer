@@ -48,6 +48,17 @@ public class Grid {
         }
     }
 
+    public void fixGivens() {
+        for (int i = 0; i < 81; i++) {
+            if ( getCellValue(i%9,i/9) != 0 ) {
+                getCell(i%9,i/9).setGiven();
+            }
+            else {
+                getCell(i%9,i/9).resetGiven();
+            }
+        }
+    }
+
     /**
      * Get the cell at the given coordinates
      * @param x the x coordinate (0=leftmost, 8=rightmost)
@@ -123,6 +134,7 @@ public class Grid {
      */
     public void setCellValue(int x, int y, int value) {
         this.cells[y][x].setValue(value);
+        this.cells[y][x].setGiven();
     }
 
     /**
@@ -519,11 +531,13 @@ public class Grid {
     public Cell getFirstCancellerOf(Cell target, int value) {
         for (Class<? extends Region> regionType : getRegionTypes()) {
             Region region = getRegionAt(regionType, target.getX(), target.getY());
+          if ( region != null ) {
             for (int i = 0; i < 9; i++) {
                 Cell cell = region.getCell(i);
                 if (!cell.equals(target) && cell.getValue() == value)
                     return cell;
             }
+          }
         }
         return null;
     }

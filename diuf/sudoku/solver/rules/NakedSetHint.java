@@ -78,7 +78,7 @@ public class NakedSetHint extends IndirectHint implements Rule, HasParentPotenti
 
     public Collection<Potential> getRuleParents(Grid initialGrid, Grid currentGrid) {
         Collection<Potential> result = new ArrayList<Potential>();
-        BitSet myValues = new BitSet(10);
+        BitSet myValues = new BitSet(9);
         for (int i = 0; i < values.length; i++)
             myValues.set(values[i]);
         for (Cell cell : this.cells) {
@@ -123,7 +123,7 @@ public class NakedSetHint extends IndirectHint implements Rule, HasParentPotenti
 
     @Override
     public String toHtml() {
-        final String[] numberNames = new String[] {"two", "three", "four"};
+        final String[] numberNames = new String[] {"two", "three", "four", "five", "six", "seven", "eight"};
         String result = HtmlLoader.loadHtml(this, "NakedSetHint.html");
         String counter = numberNames[values.length - 2];
         String cellList = HtmlLoader.formatList(cells);

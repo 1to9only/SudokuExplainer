@@ -38,8 +38,10 @@ public class Settings {
     private boolean isRCNotation = true;
     private boolean isAntialiasing = true;
     private boolean isShowingCandidates = true;
-    private boolean isShowingCandidateMasks = false;
+    private boolean isShowingCandidateMasks = true;
     private String lookAndFeelClassName = null;
+    private int iPuzzleFormat = 2;
+    private int iGridSize = 9;
 
     private EnumSet<SolvingTechnique> techniques;
 
@@ -79,6 +81,11 @@ public class Settings {
         if (instance == null)
             instance = new Settings();
         return instance;
+    }
+
+    public void setNoSaves() {      // call from command line utils, no saves done
+        noSaves = true;
+        init();                     // enable all solving techniques
     }
 
     public void setRCNotation(boolean isRCNotation) {
@@ -134,6 +141,21 @@ public class Settings {
         this.lookAndFeelClassName = lookAndFeelClassName;
         save();
       }
+    }
+
+//  public void setPuzzleFormat(int format) {
+//    if ( this.iPuzzleFormat != format ) {
+//      this.iPuzzleFormat = format;
+//      save();
+//    }
+//  }
+
+    public int getPuzzleFormat() {
+        return iPuzzleFormat;
+    }
+
+    public int getGridSize() {
+        return iGridSize;
     }
 
     public EnumSet<SolvingTechnique> getTechniques() {
@@ -511,6 +533,11 @@ public class Settings {
                 }
                 catch (NullPointerException e) { ; }
 
+//              try {
+//                  s = (String)stgDetails.get("iPuzzleFormat");
+//                  iPuzzleFormat = s.charAt(0) - '0';
+//              }
+//              catch (NullPointerException e) { LoadError = 1; }
             });
             if ( LoadError == 1 ) {
                 save();
@@ -542,6 +569,8 @@ public class Settings {
         stgDetails.put("isShowingCandidates", isShowingCandidates?"true":"false");
         stgDetails.put("isShowingCandidateMasks", isShowingCandidateMasks?"true":"false");
         stgDetails.put("lookAndFeelClassName", lookAndFeelClassName);
+        stgDetails.put("iPuzzleFormat", ""+iPuzzleFormat);
+        stgDetails.put("iGridSize", ""+iGridSize);
 
         // generate dialog
 

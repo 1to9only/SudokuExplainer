@@ -260,12 +260,14 @@ public abstract class ChainingHint extends IndirectHint implements Rule, HasPare
                             }
                         } else { // Hidden single
                             Region r = currentGrid.getRegionAt(getCauseRegion(cause), curCell);
+                          if ( r != null ) {
                             for (int i = 0; i < 9; i++) {
                                 Cell actCell = r.getCell(i);
                                 Cell initCell = initialGrid.getCell(actCell.getX(), actCell.getY());
                                 if (initCell.hasPotentialValue(p.value) && !actCell.hasPotentialValue(p.value))
                                     result.add(new Potential(actCell, p.value, false));
                             }
+                          }
                         }
                     }
                     next.addAll(p.parents);

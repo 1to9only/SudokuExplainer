@@ -37,7 +37,7 @@ public abstract class UniqueLoopHint extends IndirectHint implements Rule {
     public Map<Cell, BitSet> getGreenPotentials(int viewNum) {
         Map<Cell, BitSet> result = new HashMap<Cell, BitSet>();
         for (Cell cell : loop) {
-            BitSet commonValues = new BitSet(10);
+            BitSet commonValues = new BitSet(9);
             commonValues.set(v1);
             commonValues.set(v2);
             result.put(cell, commonValues);

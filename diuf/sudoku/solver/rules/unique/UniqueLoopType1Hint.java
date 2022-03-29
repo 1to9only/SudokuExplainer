@@ -25,7 +25,7 @@ public class UniqueLoopType1Hint extends UniqueLoopHint {
 
     @Override
     public Map<Cell, BitSet> getRedPotentials(int viewNum) {
-        BitSet removable = new BitSet(10);
+        BitSet removable = new BitSet(9);
         removable.set(v1);
         removable.set(v2);
         return Collections.singletonMap(target, removable);

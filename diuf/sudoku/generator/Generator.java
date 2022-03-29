@@ -49,9 +49,10 @@ public class Generator {
             Solver solver = new Solver(copy);
             solver.rebuildPotentialValues();
             double difficulty = solver.analyseDifficulty(minDifficulty, maxDifficulty);
-            if (difficulty >= minDifficulty && difficulty <= maxDifficulty)
+            if (difficulty >= minDifficulty && difficulty <= maxDifficulty) {
+                grid.fixGivens();
                 return grid;
-
+            }
             if (isInterrupted)
                 return null;
 

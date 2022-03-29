@@ -9,7 +9,7 @@ import java.util.*;
 public class SingletonBitSet {
 
     public static BitSet create(int value) {
-        BitSet result = new BitSet(10);
+        BitSet result = new BitSet(9);
         result.set(value);
         return result;
     }

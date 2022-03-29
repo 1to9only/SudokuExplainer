@@ -148,7 +148,7 @@ public class DirectHiddenSetHint extends IndirectHint implements Rule {
 
     @Override
     public String toHtml() {
-        final String[] numberNames = new String[] {"two", "three", "four"};
+        final String[] numberNames = new String[] {"two", "three", "four", "five", "six", "seven", "eight"};
         String result = HtmlLoader.loadHtml(this, "DirectHiddenSetHint.html");
         String counter = numberNames[values.length - 2];
         String cellList = HtmlLoader.formatList(cells);

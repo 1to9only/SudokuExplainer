@@ -49,6 +49,7 @@ public class Locking implements IndirectHintProducer {
             for (int i2 = 0; i2 < 9; i2++) {
                 Grid.Region region1 = grid.getRegions(regionType1)[i1];
                 Grid.Region region2 = grid.getRegions(regionType2)[i2];
+              if ( region1 != null && region2 != null ) {
                 if (region1.crosses(region2)) {
                     Set<Cell> region2Cells = region2.getCellSet();
                     // Iterate on values
@@ -80,6 +81,7 @@ public class Locking implements IndirectHintProducer {
                         }
                     } // for each value
                 } // if parts are crossing
+              }
             }
         }
     }
@@ -91,6 +93,7 @@ public class Locking implements IndirectHintProducer {
         for(int i3 = 0; i3 < 9; i3++) {
             if (i3 != i1) {
                 Grid.Region region3 = grid.getRegions(regionType1)[i3];
+              if ( region3 != null ) {
                 if (region3.crosses(region2)) {
                     // Region <> region1 but crosses region2
                     Set<Cell> region2Cells = region2.getCellSet();
@@ -114,6 +117,7 @@ public class Locking implements IndirectHintProducer {
                         }
                     }
                 }
+              }
             }
         }
     }

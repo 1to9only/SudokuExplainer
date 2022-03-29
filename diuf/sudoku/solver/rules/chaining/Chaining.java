@@ -462,6 +462,7 @@ public class Chaining implements IndirectHintProducer {
             int value, LinkedSet<Potential> onToOn, LinkedSet<Potential> onToOff) {
         for (Class<? extends Grid.Region> regionType : grid.getRegionTypes()) {
             Grid.Region region = grid.getRegionAt(regionType, cell.getX(), cell.getY());
+          if ( region != null ) {
             BitSet potentialPositions = region.getPotentialPositions(value);
 
             // Is this region worth ?
@@ -516,6 +517,7 @@ public class Chaining implements IndirectHintProducer {
                     }
                 } // First meet
             } // cardinality >= 3
+          }
         } // for Region
     }
 
@@ -543,6 +545,7 @@ public class Chaining implements IndirectHintProducer {
         // Second rule: other potential position for this value get off
         for (Class<? extends Grid.Region> regionType : grid.getRegionTypes()) {
             Grid.Region region = grid.getRegionAt(regionType, p.cell.getX(), p.cell.getY());
+          if ( region != null ) {
             for (int i = 0; i < 9; i++) {
                 Cell cell = region.getCell(i);
                 if (!cell.equals(p.cell) && cell.hasPotentialValue(p.value))
@@ -550,6 +553,7 @@ public class Chaining implements IndirectHintProducer {
                             getRegionCause(region),
                             "the value can occur only once in the " + region.toString()));
             }
+          }
         }
         return result;
     }
@@ -635,6 +639,7 @@ public class Chaining implements IndirectHintProducer {
             partTypes.add(Grid.Column.class);
             for (Class<? extends Grid.Region> partType : partTypes) {
                 Grid.Region region = grid.getRegionAt(partType, p.cell.getX(), p.cell.getY());
+              if ( region != null ) {
                 BitSet potentialPositions = region.getPotentialPositions(p.value);
                 if (potentialPositions.cardinality() == 2) {
                     int otherPosition = potentialPositions.nextSetBit(0);
@@ -649,6 +654,7 @@ public class Chaining implements IndirectHintProducer {
                     addHiddenParentsOfRegion(pOn, grid, source, region, offPotentials);
                     result.add(pOn);
                 }
+              }
             }
         }
 
@@ -952,7 +958,7 @@ public class Chaining implements IndirectHintProducer {
         if (!target.isOn)
             removable.put(target.cell, SingletonBitSet.create(target.value));
         else {
-            BitSet values = new BitSet(10);
+            BitSet values = new BitSet(9);
             for (int value = 1; value <= 9; value++) {
                 if (value != target.value && target.cell.hasPotentialValue(value))
                     values.set(value);

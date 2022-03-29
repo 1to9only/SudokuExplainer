@@ -238,6 +238,10 @@ public class serate {
                             int value = (ch - '0');
                             grid.setCellValue(i % 9, i / 9, value);
                         }
+                        if (ch >= 'A' && ch <= 'I') {
+                            int value = (ch - 'A'+1);
+                            grid.setCellValue(i % 9, i / 9, value);
+                        }
                     }
                     t = System.currentTimeMillis();
                     Solver solver = new Solver(grid);
@@ -260,11 +264,29 @@ public class serate {
                             s += f;
                         else
                             switch (format.charAt(i)) {
+                            case 'g':
+                                s += puzzle;
+                                break;
+                            case 'r':
+                                w = (int)((solver.difficulty + 0.05) * 10);
+                                p = w % 10;
+                                w /= 10;
+                                s += w + "." + p;
+                                break;
+                            case 'p':
+                                w = (int)((solver.pearl + 0.05) * 10);
+                                p = w % 10;
+                                w /= 10;
+                                s += w + "." + p;
+                                break;
                             case 'd':
                                 w = (int)((solver.diamond + 0.05) * 10);
                                 p = w % 10;
                                 w /= 10;
                                 s += w + "." + p;
+                                break;
+                            case 'n':
+                                s += ordinal;
                                 break;
                             case 'e':
                                 t /= 10;
@@ -297,24 +319,6 @@ public class serate {
                                         s += "0";
                                     s += u + "h";
                                 }
-                                break;
-                            case 'g':
-                                s += puzzle;
-                                break;
-                            case 'n':
-                                s += ordinal;
-                                break;
-                            case 'p':
-                                w = (int)((solver.pearl + 0.05) * 10);
-                                p = w % 10;
-                                w /= 10;
-                                s += w + "." + p;
-                                break;
-                            case 'r':
-                                w = (int)((solver.difficulty + 0.05) * 10);
-                                p = w % 10;
-                                w /= 10;
-                                s += w + "." + p;
                                 break;
                             default:
                                 s += f;

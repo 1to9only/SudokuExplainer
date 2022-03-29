@@ -147,6 +147,14 @@ public class Fisherman implements IndirectHintProducer {
             return "Swordfishes";
         else if (degree == 4)
             return "Jellyfishes";
+        else if (degree == 5)
+            return "Starfishes";
+        else if (degree == 6)
+            return "Whales";
+        else if (degree == 7)
+            return "Leviathans";
+        else if (degree == 8)
+            return "Loch Ness Monsters";
         return null;
     }
 

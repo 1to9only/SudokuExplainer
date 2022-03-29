@@ -129,7 +129,7 @@ public class HiddenSetHint extends IndirectHint implements Rule, HasParentPotent
 
     @Override
     public String toHtml() {
-        final String[] numberNames = new String[] {"two", "three", "four"};
+        final String[] numberNames = new String[] {"two", "three", "four", "five", "six", "seven", "eight"};
         String result = HtmlLoader.loadHtml(this, "HiddenSetHint.html");
         String counter = numberNames[values.length - 2];
         String cellList = HtmlLoader.formatList(cells);

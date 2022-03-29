@@ -69,7 +69,7 @@ public class XYWingHint extends IndirectHint implements Rule, HasParentPotential
     public Map<Cell, BitSet> getRedPotentials(int viewNum) {
         Map<Cell, BitSet> result = new HashMap<Cell, BitSet>(super.getRemovablePotentials());
         // Add x and y of XY cell (orange)
-        BitSet xy = new BitSet(10);
+        BitSet xy = new BitSet(9);
         xy.set(getX());
         xy.set(getY());
         result.put(xyCell, xy);

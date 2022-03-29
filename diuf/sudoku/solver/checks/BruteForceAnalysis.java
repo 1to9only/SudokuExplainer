@@ -60,7 +60,7 @@ public class BruteForceAnalysis implements WarningHintProducer {
                     message = new WarningMessage(this, "The Sudoku has no solution",
                     "NoSolution.html");
                 else
-                    message = new WarningMessage(this, "The Sudoku has no solution",
+                    message = new WarningMessage(this, "The Sudoku is not valid",
                     "MissingCandidates.html");
             }
             accu.add(message);
@@ -227,10 +227,12 @@ public class BruteForceAnalysis implements WarningHintProducer {
             Grid.Region[] regions = grid.getRegions(regionType);
             for (int i = 0; i < 9; i++) {
                 Grid.Region region = regions[i];
+              if ( region != null ) {
                 for (int value = 1; value <= 9; value++) {
                     if (!region.contains(value) && region.getPotentialPositions(value).isEmpty())
                         return false; // No room for the value in the region
                 }
+              }
             }
         }
         return true;

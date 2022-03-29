@@ -25,7 +25,7 @@ public class Cell {
     private final int y;
     private int value = 0;
     private BitSet potentialValues = new BitSet(9);
-
+    private boolean isGiven;
 
     /**
      * Create a new cell
@@ -37,6 +37,17 @@ public class Cell {
         this.grid = grid;
         this.x = x;
         this.y = y;
+        this.isGiven = false;
+    }
+
+    public void setGiven() {
+        this.isGiven = true;
+    }
+    public void resetGiven() {
+        this.isGiven = false;
+    }
+    public boolean isGiven() {
+        return this.isGiven;
     }
 
     /**
@@ -98,10 +109,12 @@ public class Cell {
         this.potentialValues.clear();
         for (Class<? extends Grid.Region> regionType : grid.getRegionTypes()) {
             Grid.Region region = grid.getRegionAt(regionType, this.x, this.y);
+          if ( region != null ) {
             for (int i = 0; i < 9; i++) {
                 Cell other = region.getCell(i);
                 other.removePotentialValue(value);
             }
+          }
         }
     }
 
@@ -170,9 +183,12 @@ public class Cell {
         for (Class<? extends Grid.Region> regionType : grid.getRegionTypes()) {
             // Get region on which this cell is
             Grid.Region region = grid.getRegionAt(regionType, x, y);
+          if ( region != null ) {
             // Add all cell of that region
-            for (int i = 0; i < 9; i++)
+            for (int i = 0; i < 9; i++) {
                 result.add(region.getCell(i));
+            }
+          }
         }
         // Remove this cell
         result.remove(this);
@@ -268,6 +284,7 @@ public class Cell {
 //a     assert this.x == other.x && this.y == other.y;
         other.value = this.value;
         other.potentialValues = (BitSet)this.potentialValues.clone();
+        other.isGiven = this.isGiven;
     }
 
 }

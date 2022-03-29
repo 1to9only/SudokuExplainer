@@ -81,7 +81,7 @@ public class HiddenSet implements IndirectHintProducer {
     private IndirectHint createHiddenSetHint(Grid.Region region, int[] values,
             BitSet commonPotentialPositions) {
         // Create set of fixed values, and set of other values
-        BitSet valueSet = new BitSet(10);
+        BitSet valueSet = new BitSet(9);
         for (int i = 0; i < values.length; i++)
             valueSet.set(values[i], true);
 
@@ -95,7 +95,7 @@ public class HiddenSet implements IndirectHintProducer {
             if (commonPotentialPositions.get(index)) {
                 cellPValues.put(cell, valueSet);
                 // Look for the potential values we can remove
-                BitSet removablePotentials = new BitSet(10);
+                BitSet removablePotentials = new BitSet(9);
                 for (int value = 1; value <= 9; value++) {
                     if (!valueSet.get(value) && cell.hasPotentialValue(value))
                         removablePotentials.set(value);
