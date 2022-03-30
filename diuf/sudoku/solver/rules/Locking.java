@@ -23,10 +23,42 @@ public class Locking implements IndirectHintProducer {
     }
 
     public void getHints(Grid grid, HintsAccumulator accu) throws InterruptedException {
+       if ( !grid.isLatinSquare() ) {
         getHints(grid, Grid.Block.class, Grid.Column.class, accu);
         getHints(grid, Grid.Block.class, Grid.Row.class, accu);
         getHints(grid, Grid.Column.class, Grid.Block.class, accu);
         getHints(grid, Grid.Row.class, Grid.Block.class, accu);
+       }
+
+      if ( grid.isDiagonals() ) {
+       if ( !grid.isLatinSquare() ) {
+        getHints(grid, Grid.Block.class, Grid.Diagonal.class, accu);
+        getHints(grid, Grid.Block.class, Grid.AntiDiagonal.class, accu); }
+        getHints(grid, Grid.Column.class, Grid.Diagonal.class, accu);
+        getHints(grid, Grid.Column.class, Grid.AntiDiagonal.class, accu);
+        getHints(grid, Grid.Row.class, Grid.Diagonal.class, accu);
+        getHints(grid, Grid.Row.class, Grid.AntiDiagonal.class, accu);
+       if ( !grid.isLatinSquare() ) {
+        getHints(grid, Grid.Diagonal.class, Grid.Block.class, accu);
+        getHints(grid, Grid.AntiDiagonal.class, Grid.Block.class, accu); }
+        getHints(grid, Grid.Diagonal.class, Grid.Column.class, accu);
+        getHints(grid, Grid.AntiDiagonal.class, Grid.Column.class, accu);
+        getHints(grid, Grid.Diagonal.class, Grid.Row.class, accu);
+        getHints(grid, Grid.AntiDiagonal.class, Grid.Row.class, accu);
+      }
+
+        // generalized intersection
+
+      if ( !isDirectMode ) {
+       if ( !grid.isLatinSquare() ) {
+        getHintsG(grid, Grid.Block.class, accu); }
+        getHintsG(grid, Grid.Column.class, accu);
+        getHintsG(grid, Grid.Row.class, accu);
+       if ( grid.isDiagonals() ) {
+        getHintsG(grid, Grid.Diagonal.class, accu);
+        getHintsG(grid, Grid.AntiDiagonal.class, accu);
+       }
+      }
     }
 
     /**
@@ -43,10 +75,11 @@ public class Locking implements IndirectHintProducer {
             Grid grid, Class<S> regionType1, Class<T> regionType2,
             HintsAccumulator accu) throws InterruptedException {
 //a     assert (regionType1 == Grid.Block.class) != (regionType2 == Grid.Block.class);
-
+        int i1max = grid.getRegionMax(regionType1);
+        int i2max = grid.getRegionMax(regionType2);
         // Iterate on pairs of parts
-        for (int i1 = 0; i1 < 9; i1++) {
-            for (int i2 = 0; i2 < 9; i2++) {
+        for (int i1 = 0; i1 < i1max; i1++) {
+            for (int i2 = 0; i2 < i2max; i2++) {
                 Grid.Region region1 = grid.getRegions(regionType1)[i1];
                 Grid.Region region2 = grid.getRegions(regionType2)[i2];
               if ( region1 != null && region2 != null ) {
@@ -86,11 +119,86 @@ public class Locking implements IndirectHintProducer {
         }
     }
 
+    /** Generalized Intersection
+     * Given one part type, iterate on values that number 2-4,
+     * check for possible eliminations in the other regions.
+     * <p>
+     * Note: at least one variant must be enabled.
+     * @param regionType1 the first part type
+     */
+    private <S extends Grid.Region> void getHintsG(
+            Grid grid, Class<S> regionType1,
+            HintsAccumulator accu) throws InterruptedException {
+        int i1max = grid.getRegionMax(regionType1);
+        // Iterate on pairs of parts
+        for (int i1 = 0; i1 < i1max; i1++) {
+            Grid.Region region1 = grid.getRegions(regionType1)[i1];
+            if ( region1 != null ) {
+                Set<Cell> region1Cells = region1.getCellSet();
+                for (int value = 1; value <= 9; value++) {
+                    // Get the potential positions of the value in part1
+                    BitSet potentialPositions = region1.getPotentialPositions(value);
+                    int potentialCardinality = potentialPositions.cardinality();
+                    if (potentialCardinality > 1 && potentialCardinality < 8) {
+
+                        Cell[] regionCells = new Cell[potentialCardinality]; // highlighted potentials
+                        List<Cell> result = new ArrayList<Cell>();           // generalized intersection cells
+                        for (int i = 0, pos = 0; i < 9; i++) {
+                            if (potentialPositions.get(i)) {
+                                Cell cell = region1.getCell(i);
+                                regionCells[pos++] = cell;
+                                if ( result.isEmpty() ) {
+                                    result.addAll(cell.getHouseCells());
+                                }
+                                else{
+                                    result.retainAll(cell.getHouseCells());
+                                }
+                            }
+                        }
+                        result.removeAll(region1Cells);
+                        if ( !result.isEmpty() ) {
+                            int havePossibleSolution = 0;
+                            for ( Cell cell : result ) {
+                                if ( cell.hasPotentialValue(value) ) {
+                                    // Possible solution found
+                                    havePossibleSolution = 1;
+                                }
+                            }
+                          if ( havePossibleSolution == 1 ) {
+                            // Build highlighted potentials
+                            Map<Cell,BitSet> cellPotentials = new HashMap<Cell,BitSet>();
+                            for (int i = 0; i< potentialCardinality; i++) {
+                                cellPotentials.put(regionCells[i], SingletonBitSet.create(value));
+                            }
+                            // Build removable potentials
+                            Map<Cell,BitSet> cellRemovablePotentials = new HashMap<Cell,BitSet>();
+                            for ( Cell cell : result ) {
+                                if ( cell.hasPotentialValue(value) ) {
+                                    // Possible solution found
+                                    cellRemovablePotentials.put(cell, SingletonBitSet.create(value));
+                                }
+                            }
+
+                            // Build hint
+                            IndirectHint hint = new LockingGHint(this, regionCells, value,
+                                cellPotentials, cellRemovablePotentials, region1, null);
+                            if (hint.isWorth()) {
+                                accu.add(hint);
+                            }
+                          }
+                        } // !Empty
+                    } // cardinality
+                } // for each value
+            } // region1
+        }
+    }
+
     private <S extends Grid.Region> void lookForFollowingHiddenSingles(Grid grid,
             Class<S> regionType1, HintsAccumulator accu, int i1,
             Grid.Region region1, Grid.Region region2, int value) throws InterruptedException {
+        int i3max = grid.getRegionMax(regionType1);
         // Look if the pointing / claiming induce a hidden single
-        for(int i3 = 0; i3 < 9; i3++) {
+        for(int i3 = 0; i3 < i3max; i3++) {
             if (i3 != i1) {
                 Grid.Region region3 = grid.getRegions(regionType1)[i3];
               if ( region3 != null ) {

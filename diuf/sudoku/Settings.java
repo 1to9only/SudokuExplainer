@@ -64,6 +64,10 @@ public class Settings {
 
     private boolean isExact = false;
 
+    private boolean isRC33 = true;                  // 3Rx3C or 3Rx3C
+    private boolean isLatinSquare = false;          // latin square
+    private boolean isDiagonals = false;            // diagonals
+
     private int isChanged = 0;          // =1 if a setting changed
 
     private int LoadError = 0;          // =1 if settings load error, a save is done
@@ -86,6 +90,9 @@ public class Settings {
     public void setNoSaves() {      // call from command line utils, no saves done
         noSaves = true;
         init();                     // enable all solving techniques
+        isRC33 = true;              // 3Rx3C or 3Rx3C
+        isLatinSquare = false;      // set to vanilla sudoku
+        isDiagonals = false;
     }
 
     public void setRCNotation(boolean isRCNotation) {
@@ -388,6 +395,38 @@ public class Settings {
         return isExact;
     }
 
+    // variants
+
+    public void setRC33(boolean isRC33) {
+      if ( this.isRC33 != isRC33 ) {
+        this.isRC33 = isRC33;
+        isChanged = 1;
+      }
+    }
+    public boolean isRC33() {
+        return isRC33;
+    }
+
+    public void setLatinSquare(boolean isLatinSquare) {
+      if ( this.isLatinSquare != isLatinSquare ) {
+        this.isLatinSquare = isLatinSquare;
+        isChanged = 1;
+      }
+    }
+    public boolean isLatinSquare() {
+        return isLatinSquare;
+    }
+
+    public void setDiagonals(boolean isDiagonals) {
+      if ( this.isDiagonals != isDiagonals ) {
+        this.isDiagonals = isDiagonals;
+        isChanged = 1;
+      }
+    }
+    public boolean isDiagonals() {
+        return isDiagonals;
+    }
+
 //  Load / Save
 
     private void init() {
@@ -522,6 +561,23 @@ public class Settings {
                 }
                 catch (NullPointerException e) { LoadError = 1; }
 
+                // variants
+
+                try {
+                    s = (String)stgDetails.get("isRC33");
+                    isRC33 = s.equals("true")?true:false;
+                }
+                catch (NullPointerException e) { LoadError = 1; }
+                try {
+                    s = (String)stgDetails.get("isLatinSquare");
+                    isLatinSquare = s.equals("true")?true:false;
+                }
+                catch (NullPointerException e) { LoadError = 1; }
+                try {
+                    s = (String)stgDetails.get("isDiagonals");
+                    isDiagonals = s.equals("true")?true:false;
+                }
+                catch (NullPointerException e) { LoadError = 1; }
                 try {
                     methods = (String)stgDetails.get("techniques");
                     if ( methods.length() == techniques.size() ) {
@@ -590,6 +646,12 @@ public class Settings {
         stgDetails.put("isFiendish", isFiendish?"true":"false");
         stgDetails.put("isDiabolical", isDiabolical?"true":"false");
         stgDetails.put("isExact", isExact?"true":"false");
+
+        // variants
+
+        stgDetails.put("isRC33", isRC33?"true":"false");
+        stgDetails.put("isLatinSquare", isLatinSquare?"true":"false");
+        stgDetails.put("isDiagonals", isDiagonals?"true":"false");
 
         if ( methods != null ) {
             stgDetails.put("techniques", methods);

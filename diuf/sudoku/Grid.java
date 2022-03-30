@@ -30,6 +30,22 @@ public class Grid {
     private Column[] columns = new Column[9];
     private Block[] blocks = new Block[9];
 
+    private Diagonal[] diagonal = new Diagonal[1];
+    private AntiDiagonal[] antidiagonal = new AntiDiagonal[1];
+
+    private boolean isRC33 = true;
+    private boolean isLatinSquare = false;
+    private boolean isDiagonals = false;
+
+    // Diagonal
+    private int[][] DiagonalCells = { { 8, 16, 24, 32, 40, 48, 56, 64, 72}, {-1, -1, -1, -1, -1, -1, -1, -1, -1}, {-1, -1, -1, -1, -1, -1, -1, -1, -1}, {-1, -1, -1, -1, -1, -1, -1, -1, -1}, {-1, -1, -1, -1, -1, -1, -1, -1, -1}, {-1, -1, -1, -1, -1, -1, -1, -1, -1}, {-1, -1, -1, -1, -1, -1, -1, -1, -1}, {-1, -1, -1, -1, -1, -1, -1, -1, -1}, {-1, -1, -1, -1, -1, -1, -1, -1, -1}};
+    private int[][] DiagonalAt = { {-1, -1, -1, -1, -1, -1, -1, -1,  0}, {-1, -1, -1, -1, -1, -1, -1,  0, -1}, {-1, -1, -1, -1, -1, -1,  0, -1, -1}, {-1, -1, -1, -1, -1,  0, -1, -1, -1}, {-1, -1, -1, -1,  0, -1, -1, -1, -1}, {-1, -1, -1,  0, -1, -1, -1, -1, -1}, {-1, -1,  0, -1, -1, -1, -1, -1, -1}, {-1,  0, -1, -1, -1, -1, -1, -1, -1}, { 0, -1, -1, -1, -1, -1, -1, -1, -1}};
+    private int[][] DiagonalIndexOf = { {-1, -1, -1, -1, -1, -1, -1, -1,  0}, {-1, -1, -1, -1, -1, -1, -1,  1, -1}, {-1, -1, -1, -1, -1, -1,  2, -1, -1}, {-1, -1, -1, -1, -1,  3, -1, -1, -1}, {-1, -1, -1, -1,  4, -1, -1, -1, -1}, {-1, -1, -1,  5, -1, -1, -1, -1, -1}, {-1, -1,  6, -1, -1, -1, -1, -1, -1}, {-1,  7, -1, -1, -1, -1, -1, -1, -1}, { 8, -1, -1, -1, -1, -1, -1, -1, -1}};
+
+    // AntiDiagonal
+    private int[][] AntiDiagonalCells = { { 0, 10, 20, 30, 40, 50, 60, 70, 80}, {-1, -1, -1, -1, -1, -1, -1, -1, -1}, {-1, -1, -1, -1, -1, -1, -1, -1, -1}, {-1, -1, -1, -1, -1, -1, -1, -1, -1}, {-1, -1, -1, -1, -1, -1, -1, -1, -1}, {-1, -1, -1, -1, -1, -1, -1, -1, -1}, {-1, -1, -1, -1, -1, -1, -1, -1, -1}, {-1, -1, -1, -1, -1, -1, -1, -1, -1}, {-1, -1, -1, -1, -1, -1, -1, -1, -1}};
+    private int[][] AntiDiagonalAt = { { 0, -1, -1, -1, -1, -1, -1, -1, -1}, {-1,  0, -1, -1, -1, -1, -1, -1, -1}, {-1, -1,  0, -1, -1, -1, -1, -1, -1}, {-1, -1, -1,  0, -1, -1, -1, -1, -1}, {-1, -1, -1, -1,  0, -1, -1, -1, -1}, {-1, -1, -1, -1, -1,  0, -1, -1, -1}, {-1, -1, -1, -1, -1, -1,  0, -1, -1}, {-1, -1, -1, -1, -1, -1, -1,  0, -1}, {-1, -1, -1, -1, -1, -1, -1, -1,  0}};
+    private int[][] AntiDiagonalIndexOf = { { 0, -1, -1, -1, -1, -1, -1, -1, -1}, {-1,  1, -1, -1, -1, -1, -1, -1, -1}, {-1, -1,  2, -1, -1, -1, -1, -1, -1}, {-1, -1, -1,  3, -1, -1, -1, -1, -1}, {-1, -1, -1, -1,  4, -1, -1, -1, -1}, {-1, -1, -1, -1, -1,  5, -1, -1, -1}, {-1, -1, -1, -1, -1, -1,  6, -1, -1}, {-1, -1, -1, -1, -1, -1, -1,  7, -1}, {-1, -1, -1, -1, -1, -1, -1, -1,  8}};
 
     /**
      * Create a new 9x9 Sudoku grid. All cells are set to empty
@@ -40,13 +56,48 @@ public class Grid {
                 cells[y][x] = new Cell(this, x, y);
             }
         }
+        isRC33 = Settings.getInstance().isRC33();
         // Build subparts views
         for (int i = 0; i < 9; i++) {
             rows[i] = new Row(i);
             columns[i] = new Column(i);
-            blocks[i] = new Block(i / 3, i % 3);
+          if ( isRC33 ) {
+            blocks[i] = new Block(i / 3, i % 3); // 3Rx3C
+          } else {
+            blocks[i] = new Block(i / 3, i % 3); // 3Rx3C
+          }
+        }
+        diagonal[0] = new Diagonal(0);
+        antidiagonal[0] = new AntiDiagonal(0);
+
+        isLatinSquare = Settings.getInstance().isLatinSquare();
+        isDiagonals = Settings.getInstance().isDiagonals();
+    }
+
+    public boolean isRC33() { return this.isRC33; }
+    public void setRC33() { this.isRC33 = true; }
+    public void setRC33(boolean b) { this.isRC33 = b; }
+    public void updateRC33() { this.isRC33 = Settings.getInstance().isRC33(); reset_blocks(); }
+
+    private void reset_blocks() {
+        for (int i = 0; i < 9; i++) {
+          if ( isRC33 ) {
+            blocks[i] = new Block(i / 3, i % 3); // 3Rx3C
+          } else {
+            blocks[i] = new Block(i / 3, i % 3); // 3Rx3C
+          }
         }
     }
+
+    public boolean isLatinSquare() { return this.isLatinSquare; }
+    public void setLatinSquare() { this.isLatinSquare = true; }
+    public void setLatinSquare(boolean b) { this.isLatinSquare = b; }
+    public void updateLatinSquare() { this.isLatinSquare = Settings.getInstance().isLatinSquare(); reset_regionTypes(); }
+
+    public boolean isDiagonals() { return this.isDiagonals; }
+    public void setDiagonals() { this.isDiagonals = true; }
+    public void setDiagonals(boolean b) { this.isDiagonals = b; }
+    public void updateDiagonals() { this.isDiagonals = Settings.getInstance().isDiagonals(); reset_regionTypes(); }
 
     public void fixGivens() {
         for (int i = 0; i < 81; i++) {
@@ -80,8 +131,35 @@ public class Grid {
             return this.rows;
         else if (regionType == Column.class)
             return this.columns;
-        else
+        else if (regionType == Block.class)
             return this.blocks;
+        else if (regionType == Diagonal.class)
+            return this.diagonal;
+        else if (regionType == AntiDiagonal.class)
+            return this.antidiagonal;
+        else
+            return null;
+    }
+
+    /**
+     * Get the 9 regions of the given type
+     * @param regionType the type of the regions to return. Must be one of
+     * {@link Grid.Block}, {@link Grid.Row} or {@link Grid.Column}.
+     * @return the 9 regions of the given type
+     */
+    public int getRegionMax(Class<? extends Region> regionType) {
+        if (regionType == Row.class)
+            return 9;
+        else if (regionType == Column.class)
+            return 9;
+        else if (regionType == Block.class)
+            return 9;
+        else if (regionType == Diagonal.class)
+            return 1;
+        else if (regionType == AntiDiagonal.class)
+            return 1;
+        else
+            return 0;
     }
 
     /**
@@ -121,7 +199,41 @@ public class Grid {
      * @return the block at the given location
      */
     public Block getBlock(int vPos, int hPos) {
-        return this.blocks[vPos * 3 + hPos];
+      if ( isRC33 ) {
+        return this.blocks[vPos * 3 + hPos]; // 3Rx3C
+      } else {
+        return this.blocks[vPos * 3 + hPos]; // 3Rx3C
+      }
+    }
+
+    /**
+     * Get the diagonal at the given index.
+     * Diagonals are numbered from left to right, top to bottom.
+     * @param num the index of the diagonal to get, between 0 and 8, inclusive
+     * @return the diagonal at the given index
+     */
+    public Diagonal getDiagonal(int num) {
+        if ( num == 0 ) {
+            return this.diagonal[num];
+        }
+        else {
+            return null;
+        }
+    }
+
+    /**
+     * Get the antidiagonal at the given index.
+     * AntiDiagonals are numbered from left to right, top to bottom.
+     * @param num the index of the antidiagonal to get, between 0 and 8, inclusive
+     * @return the antidiagonal at the given index
+     */
+    public AntiDiagonal getAntiDiagonal(int num) {
+        if ( num == 0 ) {
+            return this.antidiagonal[num];
+        }
+        else {
+            return null;
+        }
     }
 
     // Cell values
@@ -175,20 +287,83 @@ public class Grid {
      * are coordinates of a cell)
      */
     public Block getBlockAt(int x, int y) {
-        return this.blocks[(y / 3) * 3 + (x / 3)];
+      if ( isRC33 ) {
+        return this.blocks[(y / 3) * 3 + (x / 3)]; // 3Rx3C
+      } else {
+        return this.blocks[(y / 3) * 3 + (x / 3)]; // 3Rx3C
+      }
+    }
+
+    /**
+     * Get the diagonal at the given location
+     * @param x the horizontal coordinate
+     * @param y the vertical coordinate
+     * @return the diagonal at the given coordinates (the coordinates
+     * are coordinates of a cell)
+     */
+    public Diagonal getDiagonalAt(int x, int y) {
+        int index = DiagonalAt[y][x];
+        if ( index != -1 ) {
+            return this.diagonal[ index];
+        }
+        else {
+            return null;
+        }
+    }
+
+    /**
+     * Get the antidiagonal at the given location
+     * @param x the horizontal coordinate
+     * @param y the vertical coordinate
+     * @return the antidiagonal at the given coordinates (the coordinates
+     * are coordinates of a cell)
+     */
+    public AntiDiagonal getAntiDiagonalAt(int x, int y) {
+        int index = AntiDiagonalAt[y][x];
+        if ( index != -1 ) {
+            return this.antidiagonal[ index];
+        }
+        else {
+            return null;
+        }
     }
 
     public Grid.Region getRegionAt(Class<? extends Grid.Region> regionType, int x, int y) {
-        if (regionType.equals(Grid.Row.class))
+        if (Grid.Row.class.equals(regionType))
             return getRowAt(x, y);
-        else if (regionType.equals(Grid.Column.class))
+        else if (Grid.Column.class.equals(regionType))
             return getColumnAt(x, y);
-        else
+        else if (Grid.Block.class.equals(regionType))
             return getBlockAt(x, y);
+        else if (Grid.Diagonal.class.equals(regionType))
+            return getDiagonalAt(x, y);
+        else if (Grid.AntiDiagonal.class.equals(regionType))
+            return getAntiDiagonalAt(x, y);
+        else
+            return null;
     }
 
     public Grid.Region getRegionAt(Class<? extends Grid.Region> regionType, Cell cell) {
         return getRegionAt(regionType, cell.getX(), cell.getY());
+    }
+
+    public int getRegionNum(Class<? extends Grid.Region> regionType, int x, int y) {
+        if (Grid.Row.class.equals(regionType))
+            return getRowAt(x, y).getRowNum();
+        else if (Grid.Column.class.equals(regionType))
+            return getColumnAt(x, y).getColumnNum();
+        else if (Grid.Block.class.equals(regionType))
+            return getBlockAt(x, y).getBlockNum();
+        else if (Grid.Diagonal.class.equals(regionType))
+            return getDiagonalAt(x, y).getDiagonalNum();
+        else if (Grid.AntiDiagonal.class.equals(regionType))
+            return getAntiDiagonalAt(x, y).getAntiDiagonalNum();
+        else
+            return -1;
+    }
+
+    public int getRegionNum(Class<? extends Grid.Region> regionType, Cell cell) {
+        return getRegionNum(regionType, cell.getX(), cell.getY());
     }
 
     private List<Class<? extends Grid.Region>> _regionTypes = null;
@@ -201,13 +376,26 @@ public class Grid {
      */
     public List<Class<? extends Grid.Region>> getRegionTypes() {
         if (_regionTypes == null) {
-            _regionTypes = new ArrayList<Class<? extends Grid.Region>>(3);
+            int count = 3;
+            if ( isLatinSquare ) { count -= 1; }
+            if ( isDiagonals ) { count += 2; }
+            _regionTypes = new ArrayList<Class<? extends Grid.Region>>(count);
+          if ( !isLatinSquare ) {
             _regionTypes.add(Grid.Block.class);
+          }
             _regionTypes.add(Grid.Row.class);
             _regionTypes.add(Grid.Column.class);
+          if ( isDiagonals ) {
+            _regionTypes.add(Grid.Diagonal.class);
+            _regionTypes.add(Grid.AntiDiagonal.class);
+          }
             _regionTypes = Collections.unmodifiableList(_regionTypes);
         }
         return _regionTypes;
+    }
+
+    private void reset_regionTypes() {
+        _regionTypes = null;
     }
 
     // Grid regions implementation (rows, columns, 3x3 squares)
@@ -241,7 +429,7 @@ public class Grid {
              * This code is not really used. The method is always overriden
              */
             for (int i = 0; i < 9; i++) {
-                if (getCell(i).equals(cell))
+                if (cell.equals(getCell(i)))
                     return i;
             }
             return -1;
@@ -274,7 +462,10 @@ public class Grid {
         public BitSet getPotentialPositions(int value) {
             BitSet result = new BitSet(9);
             for (int index = 0; index < 9; index++) {
-                result.set(index, getCell(index).hasPotentialValue(value));
+            //  result.set(index, getCell(index).hasPotentialValue(value));
+                if ( getCell(index).hasPotentialValue(value) ) {
+                    result.set(index);
+                }
             }
             return result;
         }
@@ -373,8 +564,13 @@ public class Grid {
         @Override
         public boolean crosses(Region other) {
             if (other instanceof Block) {
+              if ( isRC33 ) {
                 Block square = (Block)other;
                 return rowNum / 3 == square.vNum;
+              } else {
+                Block square = (Block)other;
+                return rowNum / 3 == square.vNum;
+              }
             } else if (other instanceof Column) {
                 return true;
             } else if (other instanceof Row) {
@@ -429,8 +625,13 @@ public class Grid {
         @Override
         public boolean crosses(Region other) {
             if (other instanceof Block) {
+             if ( isRC33 ) {
                 Block square = (Block)other;
                 return columnNum / 3 == square.hNum;
+             } else {
+                Block square = (Block)other;
+                return columnNum / 3 == square.hNum;
+             }
             } else if (other instanceof Row) {
                 return true;
             } else if (other instanceof Column) {
@@ -477,14 +678,30 @@ public class Grid {
             return this.hNum;
         }
 
+        public int getBlockNum() {
+          if ( isRC33 ) {
+            return this.vNum * 3 + this.hNum;
+          } else {
+            return this.vNum * 3 + this.hNum;
+          }
+        }
+
         @Override
         public Cell getCell(int index) {
-            return cells[vNum * 3 + index / 3][hNum * 3 + index % 3];
+          if ( isRC33 ) {
+            return cells[vNum * 3 + index / 3][hNum * 3 + index % 3]; // 3Rx3C
+          } else {
+            return cells[vNum * 3 + index / 3][hNum * 3 + index % 3]; // 3Rx3C
+          }
         }
 
         @Override
         public int indexOf(Cell cell) {
-            return (cell.getY() % 3) * 3 + (cell.getX() % 3);
+          if ( isRC33 ) {
+            return (cell.getY() % 3) * 3 + (cell.getX() % 3); // 3Rx3C
+          } else {
+            return (cell.getY() % 3) * 3 + (cell.getX() % 3); // 3Rx3C
+          }
         }
 
         @Override
@@ -508,7 +725,109 @@ public class Grid {
 
         @Override
         public String toFullString() {
-            return toString() + " " + (vNum * 3 + hNum + 1);
+          if ( isRC33 ) {
+            return toString() + " " + (vNum * 3 + hNum + 1); // 3Rx3C
+          } else {
+            return toString() + " " + (vNum * 3 + hNum + 1); // 3Rx3C
+          }
+        }
+
+    }
+
+    /**
+     * A Diagonal (/) constraint of a sudoku grid.
+     */
+    public class Diagonal extends Region {
+
+        private int diagonalNum;
+
+        public Diagonal(int diagonalNum) {
+            this.diagonalNum = diagonalNum;
+        }
+
+        public int getDiagonalNum() {
+            return this.diagonalNum;
+        }
+
+        @Override
+        public Cell getCell(int index) {
+            int cellIndex = DiagonalCells[this.diagonalNum][index];
+            return cells[cellIndex / 9][cellIndex % 9];
+        }
+
+        @Override
+        public int indexOf(Cell cell) {
+            return DiagonalIndexOf[cell.getY()][cell.getX()];
+        }
+
+        @Override
+        public boolean crosses(Region other) {
+            if (other instanceof Row) {
+                return true;
+            } else if (other instanceof Column) {
+                return true;
+            } else {
+                return super.crosses(other);
+            }
+        }
+
+        @Override
+        public String toString() {
+            return "diagonal(/)";
+        }
+
+        @Override
+        public String toFullString() {
+            return toString() + " " + (diagonalNum + 1);
+        }
+
+    }
+
+    /**
+     * An AntiDiagonal (\) constraint of a sudoku grid.
+     */
+    public class AntiDiagonal extends Region {
+
+        private int antidiagonalNum;
+
+        public AntiDiagonal(int antidiagonalNum) {
+            this.antidiagonalNum = antidiagonalNum;
+        }
+
+        public int getAntiDiagonalNum() {
+            return this.antidiagonalNum;
+        }
+
+        @Override
+        public Cell getCell(int index) {
+            int cellIndex = AntiDiagonalCells[this.antidiagonalNum][index];
+            return cells[cellIndex / 9][cellIndex % 9];
+        }
+
+        @Override
+        public int indexOf(Cell cell) {
+            return AntiDiagonalIndexOf[cell.getY()][cell.getX()];
+        }
+
+        @Override
+        public boolean crosses(Region other) {
+            if (other instanceof Row) {
+                return true;
+            } else if (other instanceof Column) {
+                return true;
+            } else {
+                return super.crosses(other);
+            }
+        }
+
+        @Override
+        public String toString() {
+            return "antidiagonal(\\)";
+        }
+
+        @Override
+        public String toFullString() {
+            return toString() + " " + (antidiagonalNum + 1);
         }
 
     }

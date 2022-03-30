@@ -31,9 +31,16 @@ public class HiddenSet implements IndirectHintProducer {
     }
 
     public void getHints(Grid grid, HintsAccumulator accu) throws InterruptedException {
+      if ( !grid.isLatinSquare() ) {
         getHints(grid, Grid.Block.class, accu);
+      }
         getHints(grid, Grid.Column.class, accu);
         getHints(grid, Grid.Row.class, accu);
+
+      if ( grid.isDiagonals() ) {
+        getHints(grid, Grid.Diagonal.class, accu);
+        getHints(grid, Grid.AntiDiagonal.class, accu);
+      }
     }
 
     /**

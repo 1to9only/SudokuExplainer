@@ -28,7 +28,7 @@ public class DirectHiddenSetHint extends IndirectHint implements Rule {
             int[] values, Map<Cell, BitSet> orangePotentials,
             Map<Cell, BitSet> removePotentials, Grid.Region region,
             Cell cell, int value) {
-        super(rule, getEmptyMap());
+        super(rule, removePotentials);
         this.cells = cells;
         this.values = values;
         this.cell = cell;

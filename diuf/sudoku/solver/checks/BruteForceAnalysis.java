@@ -225,7 +225,8 @@ public class BruteForceAnalysis implements WarningHintProducer {
     private boolean isFillable(Grid grid) {
         for (Class<? extends Grid.Region> regionType : grid.getRegionTypes()) {
             Grid.Region[] regions = grid.getRegions(regionType);
-            for (int i = 0; i < 9; i++) {
+            int regionmax = grid.getRegionMax(regionType);
+            for (int i = 0; i < regionmax; i++) {
                 Grid.Region region = regions[i];
               if ( region != null ) {
                 for (int value = 1; value <= 9; value++) {

@@ -25,7 +25,9 @@ public class Potential {
         HiddenBlock,
         HiddenRow,
         HiddenColumn,
-        Advanced
+        Advanced,
+        Diagonal,
+        AntiDiagonal
     }
 
     public final Cell cell;

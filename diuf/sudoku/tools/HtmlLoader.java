@@ -56,13 +56,13 @@ public class HtmlLoader {
         String result = html;
         result = result.replace("<r>", "<font color=\"red\">"); // red
         result = result.replace("</r>", "</font>");
-        result = result.replace("<g>", "<font color=\"#009000\">"); // green (candidate)
+        result = result.replace("<g>", "<font color=\"#00E000\">"); // green (candidate)
         result = result.replace("</g>", "</font>");
         result = result.replace("<o>", "<font color=\"#E08000\">"); // orange
         result = result.replace("</o>", "</font>");
         result = result.replace("<b1>", "<font color=\"#0000A0\">"); // blue (region)
         result = result.replace("</b1>", "</font>");
-        result = result.replace("<b2>", "<font color=\"#005000\">"); // green (region)
+        result = result.replace("<b2>", "<font color=\"#00C000\">"); // green (region)
         result = result.replace("</b2>", "</font>");
         result = result.replace("<c>", "<font color=\"#00AAAA\">"); // cyan (cell)
         result = result.replace("</c>", "</font>");

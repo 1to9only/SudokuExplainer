@@ -190,9 +190,16 @@ public class Solver {
                     cell.clearPotentialValues();
             }
         }
+      if ( !grid.isLatinSquare() ) {
         cancelBy(Grid.Block.class);
+      }
         cancelBy(Grid.Row.class);
         cancelBy(Grid.Column.class);
+
+      if ( grid.isDiagonals() ) {
+        cancelBy(Grid.Diagonal.class);
+        cancelBy(Grid.AntiDiagonal.class);
+      }
     }
 
     /**

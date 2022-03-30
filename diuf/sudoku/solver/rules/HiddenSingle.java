@@ -18,13 +18,25 @@ public class HiddenSingle implements DirectHintProducer {
 
     public void getHints(Grid grid, HintsAccumulator accu) throws InterruptedException {
         // First alone cells (last empty cell in a region)
+      if ( !grid.isLatinSquare() ) {
         getHints(grid, Grid.Block.class, accu, true);
+      }
         getHints(grid, Grid.Column.class, accu, true);
         getHints(grid, Grid.Row.class, accu, true);
+      if ( grid.isDiagonals() ) {
+        getHints(grid, Grid.Diagonal.class, accu, true);
+        getHints(grid, Grid.AntiDiagonal.class, accu, true);
+      }
         // Then hidden cells
+      if ( !grid.isLatinSquare() ) {
         getHints(grid, Grid.Block.class, accu, false);
+      }
         getHints(grid, Grid.Column.class, accu, false);
         getHints(grid, Grid.Row.class, accu, false);
+      if ( grid.isDiagonals() ) {
+        getHints(grid, Grid.Diagonal.class, accu, false);
+        getHints(grid, Grid.AntiDiagonal.class, accu, false);
+      }
     }
 
     /**

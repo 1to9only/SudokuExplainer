@@ -9,33 +9,27 @@ import java.util.*;
 
 import diuf.sudoku.*;
 import diuf.sudoku.solver.*;
+import diuf.sudoku.solver.rules.chaining.*;
 import diuf.sudoku.tools.*;
 
-
-public class DirectLockingHint extends IndirectHint implements Rule {
+/**
+ * Generalized Intersection for Variants
+ */
+public class LockingGHint extends IndirectHint implements Rule, HasParentPotentialHint {
 
     private final Cell[] cells;
-    private final Cell cell;
     private final int value;
-    private final Map<Cell, BitSet> redPotentials;
-    private final Map<Cell, BitSet> orangePotentials;
+    private final Map<Cell, BitSet> highlightPotentials;
     private final Grid.Region[] regions;
 
-
-    public DirectLockingHint(IndirectHintProducer rule, Cell[] cells, Cell cell,
+    public LockingGHint(IndirectHintProducer rule, Cell[] cells,
             int value, Map<Cell, BitSet> highlightPotentials,
             Map<Cell, BitSet> removePotentials, Grid.Region... regions) {
         super(rule, removePotentials);
         this.cells = cells;
-        this.cell = cell;
         this.value = value;
-        this.redPotentials = removePotentials;
-        this.orangePotentials = highlightPotentials;
+        this.highlightPotentials = highlightPotentials;
         this.regions = regions;
-    }
-
-    private static Map<Cell, BitSet> getEmptyMap() {
-        return Collections.emptyMap();
     }
 
     @Override
@@ -45,38 +39,17 @@ public class DirectLockingHint extends IndirectHint implements Rule {
 
     @Override
     public Cell[] getSelectedCells() {
-        return new Cell[] {cell};
-    }
-
-    @Override
-    public Cell getCell() {
-        return cell;
-    }
-
-    @Override
-    public int getValue() {
-        return value;
-    }
-
-    @Override
-    public boolean isWorth() {
-        return true;
+        return cells;
     }
 
     @Override
     public Map<Cell, BitSet> getGreenPotentials(int viewNum) {
-        Map<Cell, BitSet> result = new HashMap<Cell, BitSet>();
-        result.putAll(orangePotentials);
-        result.put(cell, SingletonBitSet.create(value));
-        return result;
+        return highlightPotentials;
     }
 
     @Override
     public Map<Cell, BitSet> getRedPotentials(int viewNum) {
-        Map<Cell, BitSet> result = new HashMap<Cell, BitSet>();
-        result.putAll(redPotentials);
-        result.putAll(orangePotentials);
-        return result;
+        return super.getRemovablePotentials();
     }
 
     @Override
@@ -90,23 +63,32 @@ public class DirectLockingHint extends IndirectHint implements Rule {
     }
 
     public double getDifficulty() {
-        if (regions[0] instanceof Grid.Block)
-            return 1.7; // Pointing
-        else
-            return 1.9; // Claiming
+        return 2.9; // Generalized Intersection
     }
 
     public String getName() {
-        if (regions[0] instanceof Grid.Block)
-            return "Direct Pointing";
-        else
-            return "Direct Claiming";
+        return "Generalized Intersection";
+    }
+
+    public Collection<Potential> getRuleParents(Grid initialGrid, Grid currentGrid) {
+        Collection<Potential> result = new ArrayList<Potential>();
+        // Add any potential of first region that are not in second region
+        for (int i = 0; i < 1; i+= 2) {
+            for (int pos1 = 0; pos1 < 9; pos1++) {
+                Cell cell = regions[i].getCell(pos1);
+                Cell initCell = initialGrid.getCell(cell.getX(), cell.getY());
+                if (initCell.hasPotentialValue(value) && !cell.hasPotentialValue(value)) {
+                    result.add(new Potential(cell, value, false));
+                }
+            }
+        }
+        return result;
     }
 
     public String getClueHtml(boolean isBig) {
         if (isBig) {
             return "Look for a " + getName() +
-                    " on the value <b>" + value + "<b>";
+            " on the value <b>" + value + "<b>";
         } else {
             return "Look for a " + getName();
         }
@@ -120,30 +102,37 @@ public class DirectLockingHint extends IndirectHint implements Rule {
         builder.append(Cell.toFullString(this.cells));
         builder.append(": ");
         builder.append(value);
-        builder.append(" of ");
-        builder.append(regions[0].toString());
         builder.append(" in ");
-        builder.append(regions[1].toString());
+        builder.append(regions[0].toString());
+        return builder.toString();
+    }
+
+    public String toString2() {
+        StringBuilder builder = new StringBuilder();
+        builder.append(getName());
+        builder.append(": ");
+        builder.append(Cell.toFullString(this.cells));
+        builder.append(": ");
+        builder.append(value);
+        builder.append(" in ");
+        builder.append(regions[0].toString());
         return builder.toString();
     }
 
     @Override
     public String toHtml() {
-        String result = HtmlLoader.loadHtml(this, "DirectLockingHint.html");
+        String result = HtmlLoader.loadHtml(this, "LockingGHint.html");
+        String ruleName = getName();
         String valueName = Integer.toString(value);
         String firstRegion = regions[0].toString();
-        String secondRegion = regions[1].toString();
-        String ruleName = getName();
-        String cellName = cell.toString();
-        return HtmlLoader.format(result, valueName, firstRegion, secondRegion, ruleName,
-                cellName);
+        return HtmlLoader.format(result, ruleName, valueName, firstRegion);
     }
 
     @Override
     public boolean equals(Object o) {
-        if (!(o instanceof DirectLockingHint))
+        if (!(o instanceof LockingGHint))
             return false;
-        DirectLockingHint other = (DirectLockingHint)o;
+        LockingGHint other = (LockingGHint)o;
         if (this.value != other.value)
             return false;
         if (this.cells.length != other.cells.length)

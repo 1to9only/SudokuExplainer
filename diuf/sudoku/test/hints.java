@@ -10,7 +10,6 @@ import java.io.*;
 import java.util.*;
 
 import diuf.sudoku.*;
-import static diuf.sudoku.Settings.*;
 import diuf.sudoku.solver.*;
 
 public class hints {
@@ -31,6 +30,7 @@ public class hints {
     //  PrintWriter     writer = null;
         int             arg;
         char            c;
+        Settings.getInstance().setNoSaves();
         try {
             for (arg = 0; arg < args.length; arg++) {
                 a = s = args[arg];
@@ -69,6 +69,25 @@ public class hints {
                 case 'o':
                     output = v;
                     break;
+
+//              case '3':   // 3Rx3C
+//                  Settings.getInstance().setRC33(true);
+//                  break;
+//              case '3':   // 3Rx3C
+//                  Settings.getInstance().setRC33(false);
+//                  break;
+
+                case 'L':   // LatinSquare
+                    Settings.getInstance().setLatinSquare(true);
+                    break;
+                case 'X':   // Diagonals
+                    Settings.getInstance().setDiagonals(true);
+                    break;
+
+                case 'T':   // used saved techniques
+                    Settings.getInstance().unpackmethods();
+                    break;
+
                 default:
                     break;
                 }

@@ -120,6 +120,7 @@ public class serate {
         int             arg;
         long            t;
         char            c;
+        Settings.getInstance().setNoSaves();
         try {
             for (arg = 0; arg < args.length; arg++) {
                 a = s = args[arg];
@@ -195,6 +196,25 @@ public class serate {
                     System.out.println(THISVERSION);
                     System.exit(0);
                     break;
+
+//              case '3':   // 3Rx3C
+//                  Settings.getInstance().setRC33(true);
+//                  break;
+//              case '3':   // 3Rx3C
+//                  Settings.getInstance().setRC33(false);
+//                  break;
+
+                case 'L':   // LatinSquare
+                    Settings.getInstance().setLatinSquare(true);
+                    break;
+                case 'X':   // Diagonals
+                    Settings.getInstance().setDiagonals(true);
+                    break;
+
+                case 'T':   // used saved techniques
+                    Settings.getInstance().unpackmethods();
+                    break;
+
                 default:
                     usage(a, 0);
                     break;
