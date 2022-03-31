@@ -36,6 +36,10 @@ public class WarningMessage extends WarningHint {
         return message;
     }
 
+    public String toString2() {
+        return message;
+    }
+
     @Override
     public String toHtml() {
         String result = HtmlLoader.loadHtml(this, htmlFile);

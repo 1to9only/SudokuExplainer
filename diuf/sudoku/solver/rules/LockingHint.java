@@ -155,6 +155,30 @@ public class LockingHint extends IndirectHint implements Rule, HasParentPotentia
         return builder.toString();
     }
 
+    public String toString2() {
+        StringBuilder builder = new StringBuilder();
+        builder.append(getName());
+        builder.append(": ");
+        builder.append(Cell.toFullString(this.cells));
+        builder.append(": ");
+        builder.append(value);
+        if (regions != null) {
+            if (regions.length == 2) {
+                builder.append(" in ");
+                builder.append(regions[0].toString());
+                builder.append(" and ");
+                builder.append(regions[1].toString());
+            } else if (regions.length >= 4 && regions.length % 2 == 0) {
+                builder.append(" in " + (regions.length / 2) + " ");
+                builder.append(regions[0].toString());
+                builder.append("s and " + (regions.length / 2) + " ");
+                builder.append(regions[1].toString());
+                builder.append("s");
+            }
+        }
+        return builder.toString();
+    }
+
     private String toHtml1() {
         String result = HtmlLoader.loadHtml(this, "SimpleLockingHint.html");
         String valueName = Integer.toString(value);

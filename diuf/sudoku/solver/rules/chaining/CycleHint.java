@@ -168,6 +168,11 @@ public class CycleHint extends ChainingHint {
         return getName() + ": " + Cell.toString(getSelectedCells());
     }
 
+    public String toString2() {
+        return getName() + " " + "(w/" + (getComplexity()-2) + " nodes): "
+            + Cell.toString(getSelectedCells());
+    }
+
     @Override
     public String toHtml() {
         String fileName;

@@ -23,7 +23,7 @@ public class HintNode extends DefaultMutableTreeNode {
     public HintNode(Hint hint) {
         super();
         this.hint = hint;
-        this.name = hint.toString();
+        this.name = hint.toString2();
     }
 
     HintNode(String name) {

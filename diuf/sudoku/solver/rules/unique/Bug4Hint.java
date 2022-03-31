@@ -92,6 +92,10 @@ public class Bug4Hint extends BugHint implements Rule {
         return "BUG type 4: " + bugCell1.toString() + "," + bugCell2.toString() + " on " + value;
     }
 
+    public String toString2() {
+        return "BUG type 4: " + bugCell1.toString() + "," + bugCell2.toString() + " on " + value;
+    }
+
     @Override
     public String toHtml() {
         String result = HtmlLoader.loadHtml(this, "BivalueUniversalGrave4.html");

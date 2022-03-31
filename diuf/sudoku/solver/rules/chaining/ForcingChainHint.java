@@ -158,6 +158,11 @@ public class ForcingChainHint extends ChainingHint {
         + (target.isOn ? " on" : " off");
     }
 
+    public String toString2() {
+        return getName() + " " + "(w/" + (getComplexity()-2) + " nodes): "
+            + target.toString() + (target.isOn ? " on" : " off");
+    }
+
     @Override
     public String toHtml() {
         String fileName = (isYChain ? "ForcingChain.html" : "ForcingXChain.html");

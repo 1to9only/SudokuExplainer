@@ -98,4 +98,8 @@ public class AnalysisInfo extends WarningHint {
         return "Sudoku Rating";
     }
 
+    public String toString2() {
+        return "Sudoku Rating";
+    }
+
 }

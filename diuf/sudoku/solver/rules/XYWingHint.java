@@ -184,6 +184,16 @@ public class XYWingHint extends IndirectHint implements Rule, HasParentPotential
         return builder.toString();
     }
 
+    public String toString2() {
+        StringBuilder builder = new StringBuilder();
+        builder.append(getName());
+        builder.append(": ");
+        builder.append(Cell.toFullString(xyCell, xzCell, yzCell));
+        builder.append(" on value ");
+        builder.append(value);
+        return builder.toString();
+    }
+
     @Override
     public String toHtml() {
         String result;

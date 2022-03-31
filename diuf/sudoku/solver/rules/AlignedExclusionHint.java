@@ -137,6 +137,10 @@ public class AlignedExclusionHint extends IndirectHint implements Rule {
         return getName() + ": " + Cell.toString(cells);
     }
 
+    public String toString2() {
+        return getName() + ": " + Cell.toString(cells);
+    }
+
     /**
      * Test if the given combination of values for the cells
      * are relevent for this rule.

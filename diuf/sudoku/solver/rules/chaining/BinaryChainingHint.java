@@ -160,6 +160,21 @@ public class BinaryChainingHint extends ChainingHint {
                     + this.dstOnPotential.toString() + (dstOnPotential.isOn ? " on" : " off");
     }
 
+    public String toString2() {
+        if (isNishio)
+            return "Nishio Forcing Chain " + "(w/" + (getComplexity()-2) + " nodes): "
+                + srcPotential.toString() + (srcPotential.isOn ? " on" : " off") + " ==> "
+                + this.dstOffPotential.toString() + " both on & off";
+        else if (isAbsurd)
+            return "Contradiction Forcing Chain " + "(w/" + (getComplexity()-2) + " nodes): "
+                + srcPotential.toString() + (srcPotential.isOn ? " on" : " off") + " ==> "
+                + this.dstOffPotential.toString() + " both on & off";
+        else
+            return "Double Forcing Chain " + "(w/" + (getComplexity()-2) + " nodes): "
+                + srcPotential.toString() + " on & off ==> "
+                + this.dstOnPotential.toString() + (dstOnPotential.isOn ? " on" : " off");
+    }
+
     @Override
     public String toHtml() {
         String result;

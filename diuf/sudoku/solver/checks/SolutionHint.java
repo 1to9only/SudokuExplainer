@@ -49,6 +49,10 @@ public class SolutionHint extends WarningHint {
         return "Solution";
     }
 
+    public String toString2() {
+        return "Solution";
+    }
+
     @Override
     public Region[] getRegions() {
         return null;

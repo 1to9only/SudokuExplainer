@@ -39,6 +39,10 @@ public class NakedSingleHint extends DirectHint implements Rule {
         return getName() + ": " + super.toString();
     }
 
+    public String toString2() {
+        return getName() + ": " + super.toString();
+    }
+
     @Override
     public String toHtml() {
         String result = HtmlLoader.loadHtml(this, "NakedSingleHint.html");

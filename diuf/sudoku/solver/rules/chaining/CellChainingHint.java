@@ -142,6 +142,16 @@ public class CellChainingHint extends ChainingHint {
                 + dstPotential.toString() + (dstPotential.isOn ? " on" : " off");
     }
 
+    public String toString2() {
+        String prefix = getChainingRule().getCommonName(this);
+        if (prefix == null)
+            prefix = "Cell Forcing Chains";
+        Potential dstPotential = chains.values().iterator().next();
+        return prefix + " " + "(w/" + (getComplexity()-2) + " nodes): "
+            + srcCell.toString() + " ==> "
+            + dstPotential.toString() + (dstPotential.isOn ? " on" : " off");
+    }
+
     @Override
     public String toHtml() {
         String result;

@@ -92,6 +92,14 @@ public class Bug3Hint extends BugHint implements Rule {
         + ValuesFormatter.formatValues(nakedSet, ", ");
     }
 
+    public String toString2() {
+        final String[] setNames = new String[] {"Pair", "Triplet", "Quad", "Quintuplet", "Sextuplet", "Septuplet", "Octuplet"};
+        String setName = setNames[nakedSet.cardinality() - 2];
+        return "BUG type 3 " + "(w/Naked " + setName + "): "
+            + Cell.toString(bugCells) + " on "
+            + ValuesFormatter.formatValues(nakedSet, ", ");
+    }
+
     @Override
     public String toHtml() {
         String result = HtmlLoader.loadHtml(this, "BivalueUniversalGrave3.html");

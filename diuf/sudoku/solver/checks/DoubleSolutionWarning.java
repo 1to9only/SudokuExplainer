@@ -85,6 +85,10 @@ public class DoubleSolutionWarning extends WarningHint {
         return "Sudoku has multiple solutions";
     }
 
+    public String toString2() {
+        return "Sudoku has multiple solutions";
+    }
+
     @Override
     public String toHtml() {
         return HtmlLoader.loadHtml(this, "DoubleSolution.html");

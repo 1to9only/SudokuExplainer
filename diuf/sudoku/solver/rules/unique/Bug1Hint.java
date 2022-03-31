@@ -69,6 +69,10 @@ public class Bug1Hint extends BugHint implements Rule {
         return "BUG type 1: " + bugCell.toString();
     }
 
+    public String toString2() {
+        return "BUG type 1: " + bugCell.toString();
+    }
+
     @Override
     public String toHtml() {
         String result = HtmlLoader.loadHtml(this, "BivalueUniversalGrave1.html");

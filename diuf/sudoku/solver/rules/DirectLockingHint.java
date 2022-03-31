@@ -127,6 +127,20 @@ public class DirectLockingHint extends IndirectHint implements Rule {
         return builder.toString();
     }
 
+    public String toString2() {
+        StringBuilder builder = new StringBuilder();
+        builder.append(getName());
+        builder.append(": ");
+        builder.append(Cell.toFullString(this.cells));
+        builder.append(": ");
+        builder.append(value);
+        builder.append(" of ");
+        builder.append(regions[0].toString());
+        builder.append(" in ");
+        builder.append(regions[1].toString());
+        return builder.toString();
+    }
+
     @Override
     public String toHtml() {
         String result = HtmlLoader.loadHtml(this, "DirectLockingHint.html");

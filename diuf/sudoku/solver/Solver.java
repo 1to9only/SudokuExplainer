@@ -579,14 +579,14 @@ public class Solver {
 //                  s += (n==0)?".":"@ABCDEFGHIJKLMNOPQRSTUVWXYZ".substring(n,n+1);
                 }
                 s += " ";
-                ms= tt % 1000; tt = tt / 1000;
-                ss= tt % 60;   tt = tt / 60;
-                mm= tt % 60;   hh = tt / 60;
-            //  if ( hh < 10 ) { s += "0"; } s += "" + hh + ":";
-                if ( mm < 10 ) { s += "0"; } s += "" + mm + ":";
-                if ( ss < 10 ) { s += "0"; } s += "" + ss + ".";
-                if ( ms < 100) { s += "0"; }
-                if ( ms < 10 ) { s += "0"; } s += "" + ms + " ";
+//t             ms= tt % 1000; tt = tt / 1000;
+//t             ss= tt % 60;   tt = tt / 60;
+//t             mm= tt % 60;   hh = tt / 60;
+//t         //  if ( hh < 10 ) { s += "0"; } s += "" + hh + ":";
+//t             if ( mm < 10 ) { s += "0"; } s += "" + mm + ":";
+//t             if ( ss < 10 ) { s += "0"; } s += "" + ss + ".";
+//t             if ( ms < 100) { s += "0"; }
+//t             if ( ms < 10 ) { s += "0"; } s += "" + ms + " ";
                 int w = (int)((ruleDiff + 0.05) * 10);
                 int p = w % 10;
                 w /= 10;
@@ -594,7 +594,7 @@ public class Solver {
                 System.err.println(t);
                 System.err.flush();
                 s += w + "." + p;
-                s += ", " + hint.toString();
+                s += ", " + hint.toString2();
                 if (hint instanceof IndirectHint) {
                     IndirectHint iHint = (IndirectHint)hint;
                     if ( iHint.isWorth() ) {

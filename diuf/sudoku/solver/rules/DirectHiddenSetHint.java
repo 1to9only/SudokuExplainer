@@ -146,6 +146,25 @@ public class DirectHiddenSetHint extends IndirectHint implements Rule {
         return builder.toString();
     }
 
+    public String toString2() {
+        StringBuilder builder = new StringBuilder();
+        builder.append(getName());
+        builder.append(": ");
+        if (cells.length <= 4)
+            builder.append(Cell.toFullString(this.cells));
+        else
+            builder.append("Cells [...]");
+        builder.append(": ");
+        for (int i = 0; i < values.length; i++) {
+            if (i > 0)
+                builder.append(",");
+            builder.append(Integer.toString(values[i]));
+        }
+        builder.append(" in ");
+        builder.append(region.toString());
+        return builder.toString();
+    }
+
     @Override
     public String toHtml() {
         final String[] numberNames = new String[] {"two", "three", "four", "five", "six", "seven", "eight"};

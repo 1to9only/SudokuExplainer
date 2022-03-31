@@ -114,6 +114,12 @@ public abstract class UniqueLoopHint extends IndirectHint implements Rule {
         return getName() + ": " + Cell.toFullString(cells) + " on " + v1 + ", " + v2;
     }
 
+    public String toString2() {
+        Cell[] cells = new Cell[loop.size()];
+        loop.toArray(cells);
+        return getName() + ": " + Cell.toFullString(cells) + " on " + v1 + ", " + v2;
+    }
+
     @Override
     public boolean equals(Object o) {
         if (o == null)

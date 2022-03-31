@@ -65,6 +65,8 @@ public abstract class Hint {
     @Override
     public abstract String toString();
 
+    public abstract String toString2();
+
     /**
      * Get an HTML explanation of this hint, understandable by human beings.
      * @return an HTML explanation of this hint
