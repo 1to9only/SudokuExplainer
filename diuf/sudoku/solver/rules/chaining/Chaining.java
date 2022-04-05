@@ -882,7 +882,20 @@ public class Chaining implements IndirectHintProducer {
                                 nested = (ChainingHint)hint;
                             Map<Cell,BitSet> removable = hint.getRemovablePotentials();
 //a                         assert !removable.isEmpty();
-                            for (Cell cell : removable.keySet()) {
+                            List<Cell> sortedRemKeys=new ArrayList<Cell>(removable.keySet());
+                            Collections.sort(sortedRemKeys, new Comparator<Cell>() {
+                                public int compare(Cell c1, Cell c2) {
+                                    int y1 = c1.getY();
+                                    int y2 = c2.getY();
+                                    if (y1 != y2) return y1 - y2;
+                                    int x1 = c1.getX();
+                                    int x2 = c2.getX();
+                                    if (x1 != x2) return x1 - x2;
+                                    return removable.get(c1).nextSetBit(0) - removable.get(c2).nextSetBit(0);
+                                }
+                            });
+                            for (Cell cell : sortedRemKeys) {
+//                          for (Cell cell : removable.keySet()) {
                                 BitSet values = removable.get(cell);
                                 for (int value = values.nextSetBit(0); value >= 0; value = values.nextSetBit(value + 1)) {
                                 //  Potential.Cause cause = Potential.Cause.Advanced;
