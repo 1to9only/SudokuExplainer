@@ -33,15 +33,9 @@ public class UniqueLoops implements IndirectHintProducer {
             public int compare(UniqueLoopHint h1, UniqueLoopHint h2) {
                 double d1 = h1.getDifficulty();
                 double d2 = h2.getDifficulty();
-                if (d1 < d2)
-                    return -1;
-                else if (d1 > d2)
-                    return 1;
-                else {
-                    int t1 = h1.getType();
-                    int t2 = h2.getType();
-                    return t1 - t2;
-                }
+                if (d1 < d2) return -1;
+                if (d1 > d2) return 1;
+                return h1.getType() - h2.getType();
             }
         });
         grid.copyTo(lastGrid);

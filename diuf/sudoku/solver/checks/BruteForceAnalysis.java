@@ -10,6 +10,7 @@ import java.util.*;
 import diuf.sudoku.*;
 import diuf.sudoku.solver.*;
 import diuf.sudoku.solver.rules.*;
+import diuf.sudoku.generator.*;
 
 /**
  * Check if a sudoku has an unique solution using brute-force.
@@ -212,6 +213,83 @@ public class BruteForceAnalysis implements WarningHintProducer {
         return false;
     }
 
+    // 1to9only: code improvement! to respond to Stop button
+
+    private boolean analyse(Generator generator, Grid grid, boolean isReverse, Random rnd,
+            DirectHintProducer hiddenSingle, DirectHintProducer nakedSingle) {
+        /*
+         * Quick check if every number can be placed in every row, column and block.
+         * This is not necessary in theory, but in practice, some invalid sudoku
+         * may require a too huge number of iterations without this check
+         */
+        if (!isFillable(grid))
+            return false;
+
+        /*
+         * (1) Fill all naked single and hidden single.
+         * Again, not necessary in theory (pure brute-force would be enough),
+         * but some 17-clued sudoku would require too many iterations without it.
+         */
+        Hint hint = null;
+        do {
+            if (hint != null)
+                hint.apply(grid);
+            SingleHintAccumulator accu = new SingleHintAccumulator();
+            try {
+                nakedSingle.getHints(grid, accu);
+                hiddenSingle.getHints(grid, accu);
+            } catch (InterruptedException ex) {}
+            hint = accu.getHint();
+        } while (hint != null);
+        if (isSolved(grid))
+            return true;
+        /*
+         * (2) Look for the cell with the least number of potentials.
+         * Seems to give the best results (in term of speed) empirically
+         */
+        Cell leastCell = null;
+        int leastCardinality = 10;
+        for (int y = 0; y < 9; y++) {
+            for (int x = 0; x < 9; x++) {
+                Cell cell = grid.getCell(x, y);
+                if (cell.getValue() == 0) {
+                    int cardinality = cell.getPotentialValues().cardinality();
+                    if (cardinality < leastCardinality) {
+                        leastCardinality = cardinality;
+                        leastCell = cell;
+                    }
+                }
+            }
+        }
+        // (3) Try each possible value for that cell
+        Grid savePoint = new Grid();
+        int startValue = (isReverse ? 8 : 0);
+        int stopValue = (isReverse ? -1 : 9);
+        int delta = (isReverse ? -1 : 1);
+        int firstValue = 0;
+        if (rnd != null)
+            firstValue = rnd.nextInt(9);
+        for (int value0 = startValue; value0 != stopValue; value0 += delta) {
+            int value = value0 + 1;
+            if (rnd != null) // Combine with random choice if random generator given
+                value = ((value0 + firstValue) % 9) + 1;
+            if (leastCell.hasPotentialValue(value)) {
+                grid.copyTo(savePoint);
+                leastCell.setValueAndCancel(value);
+                if ( generator.isButtonStopped() ) {
+                    return false;
+                }
+                boolean result = analyse(generator, grid, isReverse, rnd, hiddenSingle, nakedSingle);
+                if (result)
+                    return true;
+                // Restore savepoint and continue with next value, if any
+                savePoint.copyTo(grid);
+            }
+        }
+        // Failed
+        return false;
+    }
+
     /**
      * Check that every missing values can be placed in every column,
      * row and block. The test use the current state of the grid and
@@ -250,11 +328,15 @@ public class BruteForceAnalysis implements WarningHintProducer {
      * @return <tt>true</tt> if a solution has been found; <tt>false</tt> if
      * the grid has no solution.
      */
-    public boolean solveRandom(Grid grid, Random rnd) {
+    public boolean solveRandom(Generator generator, Grid grid, Random rnd) {
         DirectHintProducer hiddenSingle = new HiddenSingle();
         DirectHintProducer nakedSingle = new NakedSingle();
         new Solver(grid).rebuildPotentialValues();
-        return analyse(grid, false, rnd, hiddenSingle, nakedSingle);
+        boolean result = analyse(generator, grid, false, rnd, hiddenSingle, nakedSingle);
+        if ( generator.isButtonStopped() ) {
+            return false;
+        }
+        return result;
     }
 
     @Override

@@ -7,8 +7,10 @@ package diuf.sudoku.gui;
 
 import java.io.*;
 import java.util.*;
+import java.awt.Font;
 
 import javax.swing.*;
+import javax.swing.text.StyleContext;
 import javax.swing.UIManager.*;
 import com.formdev.flatlaf.*;
 
@@ -360,7 +362,7 @@ public class SudokuExplainer {
         panel.setSudokuGrid(grid);
         panel.clearSelection();
         clearHints();
-        frame.setExplanations("");
+        frame.setExplanations("<html><body><h2>&nbsp;</h2></body></html>");
     }
 
     public Grid getGrid() {
@@ -405,9 +407,7 @@ public class SudokuExplainer {
         } catch (Throwable t) {
             t.printStackTrace();
         }
-        frame.setExplanations("<html><body><font color=\"red\">" +
-                ex.toString().replace("\n", "<br>") +
-        "</font></body></html>");
+        frame.setExplanations("<html><body><font color=\"red\">" + ex.toString().replace("\n", "<br>") + "</font></body></html>");
     }
 
     /**
@@ -487,6 +487,101 @@ public class SudokuExplainer {
       else {
         frame.setExplanations("<html><body><h2>The Sudoku has been solved !</h2></body></html>");
       }
+    }
+
+    public void ApplySingles() {
+     if ( isGridEmpty() ) {
+        JOptionPane.showMessageDialog(frame, "Cannot apply singles, no puzzle!", "Apply Singles", JOptionPane.WARNING_MESSAGE);
+        return;
+     }
+     boolean solved = solver.isSolved();
+     if ( solved ) {
+        frame.setExplanations("<html><body><h2>The Sudoku has been solved !</h2></body></html>");
+        return;
+     }
+     int basics = 1;
+     while ( basics == 1 ) {
+      clearHintsOnly();
+      if ( !solved ) {
+       getNextHint();
+       if ( selectedHints.size() >= 1 ) {
+        for (Hint hint : selectedHints) {
+          try {
+            Rule rule = (Rule)hint;
+            String rulename = rule.getName();
+            if ( rulename.equals("Hidden Single") || rulename.equals("Naked Single") ) {
+                pushGrid(); hint.apply(grid);
+            }
+            else { basics = 0; }
+          } catch (Exception e) {
+            JOptionPane.showMessageDialog(frame, hint.toString(), "Apply Singles", JOptionPane.WARNING_MESSAGE);
+            basics = 2;
+          }
+        }
+       if ( basics != 2 ) {
+        clearHints();
+        repaintAll();
+       }
+        solved = solver.isSolved();
+        if ( basics == 1 && solved ) { basics = 0; }
+       }
+       if ( basics == 1 && !solved ) { Thread.yield(); }
+      }
+     }
+     if ( solved ) {
+        frame.setExplanations("<html><body><h2>The Sudoku has been solved !</h2></body></html>");
+     }
+    }
+
+    public void ApplyBasics() {
+     if ( isGridEmpty() ) {
+        JOptionPane.showMessageDialog(frame, "Cannot apply basics, no puzzle!", "Apply Basics", JOptionPane.WARNING_MESSAGE);
+        return;
+     }
+     boolean solved = solver.isSolved();
+     if ( solved ) {
+        frame.setExplanations("<html><body><h2>The Sudoku has been solved !</h2></body></html>");
+        return;
+     }
+     int basics = 1;
+     while ( basics == 1 ) {
+      clearHintsOnly();
+      if ( !solved ) {
+       getNextHint();
+       if ( selectedHints.size() >= 1 ) {
+        for (Hint hint : selectedHints) {
+          try {
+            Rule rule = (Rule)hint;
+            String rulename = rule.getName();
+            if ( rulename.equals("Hidden Single")           // 1.0-1.5
+              || rulename.equals("Direct Pointing")         // 1.7
+              || rulename.equals("Direct Claiming")         // 1.9
+              || rulename.equals("Direct Hidden Pair")      // 2.0
+              || rulename.equals("Naked Single")            // 2.3
+              || rulename.equals("Direct Hidden Triplet")   // 2.5
+              || rulename.equals("Pointing")                // 2.6
+              || rulename.equals("Claiming") ) {            // 2.8
+                pushGrid(); hint.apply(grid);
+            }
+            else { basics = 0; }
+          } catch (Exception e) {
+            JOptionPane.showMessageDialog(frame, hint.toString(), "Apply Basics", JOptionPane.WARNING_MESSAGE);
+            basics = 2;
+          }
+        }
+       if ( basics != 2 ) {
+        clearHints();
+        repaintAll();
+       }
+        solved = solver.isSolved();
+        if ( basics == 1 && solved ) { basics = 0; }
+       }
+       if ( basics == 1 && !solved ) { Thread.yield(); }
+      }
+     }
+     if ( solved ) {
+        frame.setExplanations("<html><body><h2>The Sudoku has been solved !</h2></body></html>");
+     }
     }
 
     public void getAllHints() {
@@ -581,6 +676,10 @@ public class SudokuExplainer {
         SudokuIO.saveToClipboard(grid);
     }
 
+    public void copyPencilMarks() {
+        SudokuIO.savePencilMarksToClipboard(grid);
+    }
+
     public void loadGrid(File file) {
         Grid copy = new Grid();
         this.grid.copyTo(copy);
@@ -609,6 +708,13 @@ public class SudokuExplainer {
         ErrorMessage message = SudokuIO.saveToFile(grid, file);
         if (message != null)
             JOptionPane.showMessageDialog(frame, message.toString(), "Save",
+                    JOptionPane.ERROR_MESSAGE);
+    }
+
+    public void savePencilMarks(File file) {
+        ErrorMessage message = SudokuIO.savePencilMarksToFile(grid, file);
+        if (message != null)
+            JOptionPane.showMessageDialog(frame, message.toString(), "Save PencilMarks",
                     JOptionPane.ERROR_MESSAGE);
     }
 
@@ -712,6 +818,10 @@ public class SudokuExplainer {
 //              lookAndFeelClassName = UIManager.getSystemLookAndFeelClassName();
 //          UIManager.setLookAndFeel(lookAndFeelClassName);
             UIManager.setLookAndFeel( new FlatDarkLaf());
+            Font font = UIManager.getFont( "defaultFont" );
+            Font newFont = StyleContext.getDefaultStyleContext().getFont( Settings.getInstance().getFontName(), font.getStyle(), font.getSize() );
+            UIManager.put( "defaultFont", newFont );
+            FlatLaf.updateUI();
         } catch(Exception e) {
 //          e.printStackTrace();
             System.err.println( "Failed to initialize new LookAndFeel");

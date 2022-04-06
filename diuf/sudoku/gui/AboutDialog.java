@@ -7,6 +7,7 @@ import javax.swing.ImageIcon;
 import javax.swing.JButton;
 
 import static diuf.sudoku.Settings.*;
+import diuf.sudoku.Settings;
 
 import java.awt.FlowLayout;
 import java.awt.GridBagLayout;
@@ -20,7 +21,8 @@ public class AboutDialog extends JDialog {
     private JPanel jContentPane = null;
     private JPanel pnlTop = null;
     private JLabel lblTitle = null;
-    private JLabel lblCopyright = null;
+    private JLabel lblCopyright1 = null;
+    private JLabel lblCopyright2 = null;
     private JPanel pnlCenter = null;
     private JPanel pnlBottom = null;
     private JButton btnOk = null;
@@ -38,10 +40,10 @@ public class AboutDialog extends JDialog {
     }
 
     private void initialize() {
-        this.setSize(new java.awt.Dimension(315,203));
+        this.setSize(new java.awt.Dimension(315,260));
         this.setResizable(false);
         this.setContentPane(getJContentPane());
-        this.setTitle("Sudoku Explainer - About");
+        this.setTitle("Sudoku 9 Explainer - About");
         this.addWindowListener(new java.awt.event.WindowAdapter() {
             @Override
             public void windowDeactivated(java.awt.event.WindowEvent e) {
@@ -65,12 +67,15 @@ public class AboutDialog extends JDialog {
 
     private JPanel getPnlTop() {
         if (pnlTop == null) {
-            lblCopyright = new JLabel();
-            lblCopyright.setText("(C) 2005-2007 Nicolas Juillerat, (C) 2019-2022 1to9only");
-            lblCopyright.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
+            lblCopyright1 = new JLabel();
+            lblCopyright1.setText("(C) 2005-2007 Nicolas Juillerat");
+            lblCopyright1.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
+            lblCopyright2 = new JLabel();
+            lblCopyright2.setText("(C) 2019-2022 1to9only");
+            lblCopyright2.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
             lblTitle = new JLabel();
-            lblTitle.setText("Sudoku Explainer");
-            lblTitle.setFont(new java.awt.Font("Comic Sans MS", java.awt.Font.BOLD, 16));
+            lblTitle.setText("Sudoku 9 Explainer");
+            lblTitle.setFont(new java.awt.Font(Settings.getInstance().getFontName(), java.awt.Font.BOLD, 16));
             lblTitle.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
             lblTitle.setHorizontalTextPosition(javax.swing.SwingConstants.TRAILING);
             lblTitle.setPreferredSize(new java.awt.Dimension(284,48));
@@ -78,7 +83,8 @@ public class AboutDialog extends JDialog {
             pnlTop = new JPanel();
             pnlTop.setLayout(new BorderLayout());
             pnlTop.add(lblTitle, java.awt.BorderLayout.NORTH);
-            pnlTop.add(lblCopyright, java.awt.BorderLayout.SOUTH);
+            pnlTop.add(lblCopyright1, java.awt.BorderLayout.CENTER);
+            pnlTop.add(lblCopyright2, java.awt.BorderLayout.SOUTH);
         }
         return pnlTop;
     }
@@ -92,7 +98,7 @@ public class AboutDialog extends JDialog {
             gridBagConstraints6.gridy = 4;
             txtLicense = new JLabel();
             txtLicense.setText("Lesser General Public License");
-            txtLicense.setFont(new java.awt.Font("Dialog", java.awt.Font.PLAIN, 12));
+            txtLicense.setFont(new java.awt.Font(Settings.getInstance().getFontName(), java.awt.Font.PLAIN, 12));
             GridBagConstraints gridBagConstraints5 = new GridBagConstraints();
             gridBagConstraints5.gridx = 0;
             gridBagConstraints5.weightx = 1.0D;
@@ -101,7 +107,7 @@ public class AboutDialog extends JDialog {
             gridBagConstraints5.gridy = 4;
             lblLicense = new JLabel();
             lblLicense.setText("License:");
-            lblLicense.setFont(new java.awt.Font("Dialog", java.awt.Font.BOLD, 12));
+            lblLicense.setFont(new java.awt.Font(Settings.getInstance().getFontName(), java.awt.Font.BOLD, 12));
             GridBagConstraints gridBagConstraints4 = new GridBagConstraints();
             gridBagConstraints4.gridx = 1;
             gridBagConstraints4.weightx = 1.0D;
@@ -109,7 +115,7 @@ public class AboutDialog extends JDialog {
             gridBagConstraints4.gridy = 3;
             txtCompany = new JLabel();
             txtCompany.setText("University of Fribourg (CH)");
-            txtCompany.setFont(new java.awt.Font("Dialog", java.awt.Font.PLAIN, 12));
+            txtCompany.setFont(new java.awt.Font(Settings.getInstance().getFontName(), java.awt.Font.PLAIN, 12));
             GridBagConstraints gridBagConstraints3 = new GridBagConstraints();
             gridBagConstraints3.gridx = 0;
             gridBagConstraints3.weightx = 1.0D;
@@ -118,7 +124,7 @@ public class AboutDialog extends JDialog {
             gridBagConstraints3.gridy = 3;
             lblCompany = new JLabel();
             lblCompany.setText("Company:");
-            lblCompany.setFont(new java.awt.Font("Dialog", java.awt.Font.BOLD, 12));
+            lblCompany.setFont(new java.awt.Font(Settings.getInstance().getFontName(), java.awt.Font.BOLD, 12));
             GridBagConstraints gridBagConstraints2 = new GridBagConstraints();
             gridBagConstraints2.gridx = 1;
             gridBagConstraints2.weightx = 1.0D;
@@ -126,7 +132,7 @@ public class AboutDialog extends JDialog {
             gridBagConstraints2.gridy = 1;
             txtVersion = new JLabel();
             txtVersion.setText("");
-            txtVersion.setFont(new java.awt.Font("Dialog", java.awt.Font.PLAIN, 12));
+            txtVersion.setFont(new java.awt.Font(Settings.getInstance().getFontName(), java.awt.Font.PLAIN, 12));
             GridBagConstraints gridBagConstraints1 = new GridBagConstraints();
             gridBagConstraints1.gridx = 0;
             gridBagConstraints1.weightx = 1.0D;
@@ -135,7 +141,7 @@ public class AboutDialog extends JDialog {
             gridBagConstraints1.gridy = 1;
             lblVersion = new JLabel();
             lblVersion.setText("Version:");
-            lblVersion.setFont(new java.awt.Font("Dialog", java.awt.Font.BOLD, 12));
+            lblVersion.setFont(new java.awt.Font(Settings.getInstance().getFontName(), java.awt.Font.BOLD, 12));
             pnlCenter = new JPanel();
             pnlCenter.setLayout(new GridBagLayout());
             pnlCenter.add(lblVersion, gridBagConstraints1);

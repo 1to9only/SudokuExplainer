@@ -47,6 +47,11 @@ public class UniqueLoopType4Hint extends UniqueLoopHint {
     }
 
     @Override
+    public String getExtraInfo() {
+        return "";
+    }
+
+    @Override
     public String toHtml() {
         String result = HtmlLoader.loadHtml(this, "UniqueLoopType4.html");
         String type = getTypeName();

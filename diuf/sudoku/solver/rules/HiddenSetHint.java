@@ -69,14 +69,17 @@ public class HiddenSetHint extends IndirectHint implements Rule, HasParentPotent
             return 3.4;
         else if (degree == 3)
             return 4.0;
-        else
+        else if (degree == 4)
             return 5.4;
+        else if (degree == 5 || degree == 6 || degree == 7)
+            return 5.4;
+        else
+            return 5.6;
     }
 
     public String getName() {
-        final String[] groupNames = new String[] {"Pair", "Triplet", "Quad"};
-        int degree = values.length;
-        return "Hidden " + groupNames[degree - 2];
+        final String[] groupNames = new String[] {"Pair", "Triplet", "Quad", "Quintuplet", "Sextuplet", "Septuplet", "Octuplet"};
+        return "Hidden " + groupNames[values.length - 2];
     }
 
     public Collection<Potential> getRuleParents(Grid initialGrid, Grid currentGrid) {
@@ -112,7 +115,7 @@ public class HiddenSetHint extends IndirectHint implements Rule, HasParentPotent
         StringBuilder builder = new StringBuilder();
         builder.append(getName());
         builder.append(": ");
-        if (cells.length <= 4)
+        if (cells.length <= 14)
             builder.append(Cell.toFullString(this.cells));
         else
             builder.append("Cells [...]");
@@ -131,7 +134,7 @@ public class HiddenSetHint extends IndirectHint implements Rule, HasParentPotent
         StringBuilder builder = new StringBuilder();
         builder.append(getName());
         builder.append(": ");
-        if (cells.length <= 4)
+        if (cells.length <= 14)
             builder.append(Cell.toFullString(this.cells));
         else
             builder.append("Cells [...]");

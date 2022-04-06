@@ -152,7 +152,35 @@ public class HiddenSet implements IndirectHintProducer {
                 return "Hidden Triplets";
             }
         } else if (degree == 4) {
-            return "Hidden Quads";
+            if (isDirect) {
+                return "Direct Hidden Quads";
+            } else {
+                return "Hidden Quads";
+            }
+        } else if (degree == 5) {
+            if (isDirect) {
+                return "Direct Hidden Quintuplets";
+            } else {
+                return "Hidden Quintuplets";
+            }
+        } else if (degree == 6) {
+            if (isDirect) {
+                return "Direct Hidden Sextuplets";
+            } else {
+                return "Hidden Sextuplets";
+            }
+        } else if (degree == 7) {
+            if (isDirect) {
+                return "Direct Hidden Septuplets";
+            } else {
+                return "Hidden Septuplets";
+            }
+        } else if (degree == 8) {
+            if (isDirect) {
+                return "Direct Hidden Octuplets";
+            } else {
+                return "Hidden Octuplets";
+            }
         }
         return "Hidden Sets " + degree;
     }

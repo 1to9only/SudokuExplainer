@@ -86,6 +86,13 @@ public class UniqueLoopType3NakedHint extends UniqueLoopHint {
     }
 
     @Override
+    public String getExtraInfo() {
+        final String[] setNames = new String[] {"Pair", "Triplet", "Quad", "Quintuplet", "Sextuplet", "Septuplet", "Octuplet"};
+        String setName = setNames[nakedValues.length - 2];
+        return " (w/Naked " +  setName + ")";
+    }
+
+    @Override
     public String toHtml() {
         String result = HtmlLoader.loadHtml(this, "UniqueLoopType3Naked.html");
         String type = getTypeName();

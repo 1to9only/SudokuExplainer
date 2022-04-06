@@ -33,15 +33,16 @@ public class Settings {
 
     private static Settings instance = null;
 
-    private static String jsonFilename = "SudokuExplainer.json";
+    private static String jsonFilename = "Sudoku9Explainer.json";
 
     private boolean isRCNotation = true;
     private boolean isAntialiasing = true;
     private boolean isShowingCandidates = true;
-    private boolean isShowingCandidateMasks = true;
+    private boolean isShowingCandidateMasks = false;
     private String lookAndFeelClassName = null;
     private int iPuzzleFormat = 2;
     private int iGridSize = 9;
+    private int iSaveFormat = 0;
 
     private EnumSet<SolvingTechnique> techniques;
 
@@ -65,8 +66,14 @@ public class Settings {
     private boolean isExact = false;
 
     private boolean isRC33 = true;                  // 3Rx3C or 3Rx3C
+//  private boolean isRC33 = false;                 // 3Rx3C or 3Rx3C
     private boolean isLatinSquare = false;          // latin square
+//  private boolean isLatinSquare = true;           // latin square
     private boolean isDiagonals = false;            // diagonals
+
+    private String FontName = "Verdana";
+
+    private int apply = 23;             // apply button: 23= singles, 28= basics
 
     private int isChanged = 0;          // =1 if a setting changed
 
@@ -150,6 +157,10 @@ public class Settings {
       }
     }
 
+    public String getFontName() {
+        return FontName;
+    }
+
 //  public void setPuzzleFormat(int format) {
 //    if ( this.iPuzzleFormat != format ) {
 //      this.iPuzzleFormat = format;
@@ -163,6 +174,10 @@ public class Settings {
 
     public int getGridSize() {
         return iGridSize;
+    }
+
+    public int getSaveFormat() {
+        return iSaveFormat;
     }
 
     public EnumSet<SolvingTechnique> getTechniques() {
@@ -427,6 +442,17 @@ public class Settings {
         return isDiagonals;
     }
 
+    public void setApply(int apply) {
+      if ( this.apply != apply ) {
+        this.apply = apply;
+        save();
+      }
+    }
+
+    public int getApply() {
+        return apply;
+    }
+
 //  Load / Save
 
     private void init() {
@@ -477,6 +503,16 @@ public class Settings {
                 catch (NullPointerException e) { LoadError = 1;
                     lookAndFeelClassName = UIManager.getSystemLookAndFeelClassName();
                 }
+//              try {
+//                  s = (String)stgDetails.get("iPuzzleFormat");
+//                  iPuzzleFormat = s.charAt(0) - '0';
+//              }
+//              catch (NullPointerException e) { LoadError = 1; }
+                try {
+                    s = (String)stgDetails.get("iSaveFormat");
+                    iSaveFormat = s.charAt(0) - '0';
+                }
+                catch (NullPointerException e) { LoadError = 1; }
 
                 //generate dialog
 
@@ -579,6 +615,21 @@ public class Settings {
                 }
                 catch (NullPointerException e) { LoadError = 1; }
                 try {
+                    FontName = (String)stgDetails.get("FontName");
+                }
+                catch (NullPointerException e) { LoadError = 1; }
+                try {
+                    s = (String)stgDetails.get("apply");
+                  if ( s.length() == 2 ) {
+                    apply = (s.charAt(0)-'0')*10 + s.charAt(1)-'0';
+                  }
+                    if ( apply != 23 && apply != 28 ) {
+                        apply = 23;
+                    }
+                }
+                catch (NullPointerException e) { LoadError = 1; }
+
+                try {
                     methods = (String)stgDetails.get("techniques");
                     if ( methods.length() == techniques.size() ) {
                         unpackmethods();
@@ -588,12 +639,6 @@ public class Settings {
                     }
                 }
                 catch (NullPointerException e) { ; }
-
-//              try {
-//                  s = (String)stgDetails.get("iPuzzleFormat");
-//                  iPuzzleFormat = s.charAt(0) - '0';
-//              }
-//              catch (NullPointerException e) { LoadError = 1; }
             });
             if ( LoadError == 1 ) {
                 save();
@@ -627,6 +672,7 @@ public class Settings {
         stgDetails.put("lookAndFeelClassName", lookAndFeelClassName);
         stgDetails.put("iPuzzleFormat", ""+iPuzzleFormat);
         stgDetails.put("iGridSize", ""+iGridSize);
+        stgDetails.put("iSaveFormat", ""+iSaveFormat);
 
         // generate dialog
 
@@ -652,6 +698,8 @@ public class Settings {
         stgDetails.put("isRC33", isRC33?"true":"false");
         stgDetails.put("isLatinSquare", isLatinSquare?"true":"false");
         stgDetails.put("isDiagonals", isDiagonals?"true":"false");
+        stgDetails.put("FontName", FontName);
+        stgDetails.put("apply", ""+apply);
 
         if ( methods != null ) {
             stgDetails.put("techniques", methods);

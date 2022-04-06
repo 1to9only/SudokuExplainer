@@ -152,7 +152,7 @@ public class GenerateDialog extends JDialog {
         });
         pnlGenerate.add(btnPrev);
         btnGenerate = new JButton();
-        btnGenerate.setFont(new java.awt.Font("Dialog", java.awt.Font.BOLD, 12));
+        btnGenerate.setFont(new java.awt.Font(Settings.getInstance().getFontName(), java.awt.Font.BOLD, 12));
         btnGenerate.setText("Generate");
         btnGenerate.setMnemonic(KeyEvent.VK_G);
         btnGenerate.setToolTipText("Generate a new random Sudoku that matches the given parameters");

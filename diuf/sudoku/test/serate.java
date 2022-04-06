@@ -56,7 +56,7 @@ public class serate {
         System.err.println("        %d  The diamond rating.  This is the highest ER of the methods leading");
         System.err.println("            to the first candidate elimination.");
         System.err.println("        %e  The elapsed time to rate the puzzle.");
-        System.err.println("        %g  The puzzle grid in 81-character [0-9] form.");
+        System.err.println("        %g  The puzzle grid in 81-character [0-9][A-I] form.");
         System.err.println("        %n  The input puzzle ordinal, counting from 1.");
         System.err.println("        %p  The pearl rating.  This is the highest ER of the methods leading");
         System.err.println("            to the first cell placement.");

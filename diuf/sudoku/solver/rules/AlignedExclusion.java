@@ -72,7 +72,7 @@ public class AlignedExclusion implements IndirectHintProducer {
          * continue the iteration on these remaining cells.
          */
         // First iterate on the first two cells
-        Permutations cellSetPerm2 = new Permutations(2, candidateList.size());
+        Twomutations cellSetPerm2 = new Twomutations(2, candidateList.size());
         while (cellSetPerm2.hasNext()) {
             int[] indexes = cellSetPerm2.nextBitNums();
             // Setup the first two cells
@@ -159,7 +159,7 @@ public class AlignedExclusion implements IndirectHintProducer {
                             boolean isAllowed = true;
                             Cell lockingCell = null;
                             // Check if this potential combination is allowed, hidden single rule
-                            Permutations perm = new Permutations(2, degree);
+                            Twomutations perm = new Twomutations(2, degree);
                             while (perm.hasNext()) {
                                 int[] cellIndexes = perm.nextBitNums();
 //a                             assert cellIndexes.length == 2;

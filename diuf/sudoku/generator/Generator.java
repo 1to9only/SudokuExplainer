@@ -17,6 +17,9 @@ public class Generator {
     private final BruteForceAnalysis analyser = new BruteForceAnalysis(true);
     private boolean isInterrupted = false;
 
+    public boolean isButtonStopped() {
+       return isInterrupted;
+    }
 
     /**
      * Generate a Sudoku grid matching the given parameters.
@@ -39,7 +42,9 @@ public class Generator {
             Symmetry symmetry = symmetries.get(symmetryIndex);
             symmetryIndex = (symmetryIndex + 1) % symmetries.size();
             Grid grid = generate(random, symmetry);
-
+            if ( grid == null ) {
+                return null;
+            }
             if (isInterrupted)
                 return null;
 
@@ -69,7 +74,13 @@ public class Generator {
 
         // Build the solution
         Grid grid = new Grid();
-        boolean result = analyser.solveRandom(grid, rnd);
+        boolean result = analyser.solveRandom(this, grid, rnd);
+        if ( !result ) {
+            return null;
+        }
+        if (isInterrupted) {
+            return null;
+        }
 //a     assert result;
         Grid solution = new Grid();
         grid.copyTo(solution);
@@ -130,7 +141,13 @@ public class Generator {
                 }
                 index = (index + 1) % 81; // Next index (indexing scrambled array of indexes)
                 countDown--;
+                if (isInterrupted) {
+                    countDown = 0;
+                }
             } while (!isSuccess && countDown > 0);
+        }
+        if (isInterrupted) {
+            return null;
         }
         return grid;
     }

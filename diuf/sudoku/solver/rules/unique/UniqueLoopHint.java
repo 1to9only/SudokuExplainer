@@ -76,9 +76,9 @@ public abstract class UniqueLoopHint extends IndirectHint implements Rule {
     public String getName() {
         if (loop.size() > 6)
             // Include size of the loop
-            return "Unique " + getTypeName() + " " + loop.size() + " type " + getType();
+            return "Unique " + getTypeName() + " " + loop.size() + " type " + getType() + getExtraInfo();
         else
-            return "Unique " + getTypeName() + " type " + getType();
+            return "Unique " + getTypeName() + " type " + getType() + getExtraInfo();
     }
 
     public String getGroup() {
@@ -86,6 +86,8 @@ public abstract class UniqueLoopHint extends IndirectHint implements Rule {
     }
 
     public abstract int getType();
+
+    public abstract String getExtraInfo();
 
     public double getDifficulty() {
         double result = 4.5;
