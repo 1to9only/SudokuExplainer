@@ -17,6 +17,8 @@ public class Generator {
     private final BruteForceAnalysis analyser = new BruteForceAnalysis(true);
     private boolean isInterrupted = false;
 
+    private final static String wco="ccccccccccooocoooccooocoooccooocooocccccccccccooocoooccooocoooccooocooocccccccccc";
+
     public boolean isButtonStopped() {
        return isInterrupted;
     }
@@ -47,6 +49,15 @@ public class Generator {
             }
             if (isInterrupted)
                 return null;
+
+            String s = ""; int cnt = 0;
+            for (int i = 0; i < 81; i++) {
+                int n = grid.getCellValue(i % 9, i / 9);
+                if ( n != 0 ) { cnt++; }
+            }
+
+            if ( grid.isWindoku() && wco!=null && Settings.getInstance().isWindowsClosed() && cnt == ((3-1)+(3-1))*9 ) { continue; }
+            if ( grid.isWindoku() && wco!=null && Settings.getInstance().isWindowsOpen() && cnt == (9-(3-1)-(3-1))*9 ) { continue; }
 
             // Analyse difficulty
             Grid copy = new Grid();
@@ -85,6 +96,21 @@ public class Generator {
         Grid solution = new Grid();
         grid.copyTo(solution);
 
+        if ( grid.isWindoku() && wco!=null && Settings.getInstance().isWindowsClosed() ) {
+            for (int i = 0; i < 81; i++) {
+                if ( wco.charAt(i)=='c' ) {
+                    grid.getCell(i%9, i/9).setValue(0);
+                }
+            }
+        }
+        if ( grid.isWindoku() && wco!=null && Settings.getInstance().isWindowsOpen() ) {
+            for (int i = 0; i < 81; i++) {
+                if ( wco.charAt(i)=='o' ) {
+                    grid.getCell(i%9, i/9).setValue(0);
+                }
+            }
+        }
+
         // Build running indexes
         int[] indexes = new int[81];
         for (int i = 0; i < indexes.length; i++)
@@ -98,8 +124,8 @@ public class Generator {
             indexes[p2] = temp;
         }
 
-        int attempts = 0;
-        int successes = 0;
+//      int attempts = 0;
+//      int successes = 0;
 
         // Randomly remove clues
         boolean isSuccess = true;
@@ -129,14 +155,14 @@ public class Generator {
                     if (state == 1) {
                         // Cells successfully removed: still a unique solution
                         isSuccess = true;
-                        successes += 1;
-                    } else if (state == 0) { ;
+//                      successes += 1;
+//                  } else if (state == 0) { ;
 //a                     assert false : "Invalid grid";
                     } else {
                         // Failed. Put the cells back and try with next cell
                         for (Point p : points)
                             grid.setCellValue(p.x, p.y, solution.getCellValue(p.x, p.y));
-                        attempts += 1;
+//                      attempts += 1;
                     }
                 }
                 index = (index + 1) % 81; // Next index (indexing scrambled array of indexes)

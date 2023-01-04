@@ -179,6 +179,7 @@ public class SudokuIO {
                     break;
                 }
             }
+            grid.fixGivens();
             return ( cellnum==81 ? RES_OK : RES_WARN);
         }
 //      // try again!!
@@ -252,10 +253,73 @@ public class SudokuIO {
 //                  break;
 //              }
 //          }
+//          grid.fixGivens();
 //          return ( cellnum==81 ? RES_OK : RES_WARN);
 //      }
 //    }
         return RES_ERROR;
+    }
+
+    private static String getSuffix(Grid grid) {
+        String s = "";
+        if ( grid.isLatinSquare()) { s = "L"; }
+        if ( grid.isLatinSquare() && grid.isCustom() && Settings.getInstance().getCount() == 9) { s = "JS"; }
+        if (!grid.isLatinSquare() && grid.isCustom() && Settings.getInstance().getCount() == 9) { s = "JSB"; }
+        if ( grid.isCustom() && Settings.getInstance().getCount() != 9) { s += "U"; }
+        if ( grid.isDisjointGroups()) { s += "DG"; }
+        if ( grid.isWindoku()) { s += "W";
+            if ( Settings.getInstance().isWindowsClosed()) { s += "c"; }
+            if ( Settings.getInstance().isWindowsOpen()) { s += "o"; }
+        }
+        if ( grid.isDiagonals()) {
+            if ( !s.equals("")) { s += "-"; }
+            if ( grid.isXDiagonal() && grid.isXAntiDiagonal()) { s += "X"; }
+            if ( grid.isXDiagonal() && !grid.isXAntiDiagonal()) { s += "/"; }
+            if (!grid.isXDiagonal() && grid.isXAntiDiagonal()) { s += "\\"; }
+        }
+        return s;
+    }
+
+    private static void saveToWriter81(Grid grid, Writer writer) throws IOException {
+        int pformat = Settings.getInstance().getPuzzleFormat();
+        int gSize = Settings.getInstance().getGridSize();
+        String text = "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ";
+        if ( pformat == 5 ) {
+            char[] characters = text.toCharArray();
+            for (int i=0; i <81; i++) { int n1 = (int)( Math.random() * characters.length); int n2 = (int)( Math.random() * characters.length); char temp = characters[n1]; characters[n1] = characters[n2]; characters[n2] = temp; }
+            text = new String( characters);
+        }
+        for (int y = 0; y < 9; y++) {
+            for (int x = 0; x < 9; x++) {
+                int value = grid.getCellValue(x, y);
+                String ch = ".";
+                switch ( pformat ) {
+                case 1:
+                    if (value > 0) ch = ".0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ".substring(value,value+1);
+                    break;
+                case 2:
+                    if (value > 0) ch = ".123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ".substring(value,value+1);
+                    break;
+                case 3:
+                    if (value > 0) ch = ""  + value;
+                  if ( !(y == 0 && x == 0) ) {
+                    ch = " "  + ch;
+                  }
+                    break;
+                case 5:
+                    ch = text.substring(value,value+1);
+                    break;
+                case 4:
+                default:
+                    if (value > 0) ch = ".ABCDEFGHIJKLMNOPQRSTUVWXYZ".substring(value,value+1);
+                    break;
+                }
+                writer.write(ch);
+            }
+        }
+        writer.write("\r");
+        if ( grid.isCustom()) { writer.write( Settings.getInstance().getCustom()); }
+        writer.write("\r"+getSuffix(grid)+"\n");
     }
 
     private static void saveToWriter(Grid grid, Writer writer) throws IOException {
@@ -268,6 +332,7 @@ public class SudokuIO {
             for (int i=0; i <81; i++) { int n1 = (int)( Math.random() * characters.length); int n2 = (int)( Math.random() * characters.length); char temp = characters[n1]; characters[n1] = characters[n2]; characters[n2] = temp; }
             text = new String( characters);
         }
+     if (!grid.isCustom()) {
       if ( sformat != 0 ) {
         for (int y = 0; y < 9; y++) {
             for (int x = 0; x < 9; x++) {
@@ -295,7 +360,7 @@ public class SudokuIO {
                 }
                 writer.write(ch);
             }
-            writer.write("\r\n");
+            writer.write("\r"+getSuffix(grid)+"\n");
         }
       }
       if ( sformat == 0 ) {
@@ -373,19 +438,157 @@ public class SudokuIO {
           if ( j+1 == y || !isLatin )
             s += "-+";
         }
-        writer.write(s + "\r\n");
+        writer.write(s + "\r"+getSuffix(grid)+"\n");
       }
-    }
-
-    private static void saveToWriter81(Grid grid, Writer writer) throws IOException {
-        int pformat = Settings.getInstance().getPuzzleFormat();
-        int gSize = Settings.getInstance().getGridSize();
-        String text = "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ";
-        if ( pformat == 5 ) {
-            char[] characters = text.toCharArray();
-            for (int i=0; i <81; i++) { int n1 = (int)( Math.random() * characters.length); int n2 = (int)( Math.random() * characters.length); char temp = characters[n1]; characters[n1] = characters[n2]; characters[n2] = temp; }
-            text = new String( characters);
+     }
+     if ( grid.isCustom()) {
+        int count = Settings.getInstance().getCount();
+        boolean isLatin = Settings.getInstance().isLatinSquare();
+        int yy = 0, xx = 0;
+        if ( Settings.getInstance().isRC33() ) {
+            yy = 3; xx = 3;
         }
+        else {
+            yy = 3; xx = 3;
+        }
+        writer.write("+");
+        for (int x = 0; x < 9; x++) {
+            writer.write("---");
+            if ( x < 8 ) {
+                if ( grid.getCustomNumAt( x, 0) != grid.getCustomNumAt( x+1, 0) ) {
+                    writer.write("+");
+                }
+                else {
+                  if ( !isLatin && count != 9 && (x+1)%xx == 0 ) {
+                    writer.write("+");
+                  } else {
+                    writer.write("-");
+                  }
+                }
+            }
+        }
+        writer.write("+");
+        writer.write("\r\n");
+
+        for (int y = 0; y < 9; y++) {
+
+            writer.write("|");
+            for (int x = 0; x < 9; x++) {
+                writer.write(" ");
+                int value = grid.getCellValue(x, y);
+                int ch = '.';
+                if (value > 0) {
+                    if ( gSize <=9) ch = '0' + value;
+                    if ( gSize > 9) ch = '@' + value;
+                }
+                writer.write(ch);
+                writer.write(" ");
+                if ( x < 8 ) {
+                    if ( grid.getCustomNumAt( x, y) != grid.getCustomNumAt( x+1, y) ) {
+                        writer.write("|");
+                    }
+                    else {
+                      if ( !isLatin && count != 9 && (x+1)%xx == 0 ) {
+                        writer.write("|");
+                      } else {
+                        writer.write(" ");
+                      }
+                    }
+                }
+            }
+            writer.write("|");
+            writer.write("\r\n");
+
+            if ( y < 8 ) {
+                if ( grid.getCustomNumAt( 0, y) != grid.getCustomNumAt( 0, y+1) ) {
+                    writer.write("+");
+                }
+                else {
+                    if ( !isLatin && count != 9 && (y+1)%yy == 0 ) {
+                      writer.write("+");
+                    } else {
+                      writer.write("|");
+                    }
+                }
+
+                for (int x = 0; x < 9; x++) {
+                    if ( grid.getCustomNumAt( x, y) != grid.getCustomNumAt( x, y+1) ) {
+                        writer.write("---");
+                    }
+                    else {
+                      if ( !isLatin && count != 9 && (y+1)%yy == 0 ) {
+                        writer.write("---");
+                      } else {
+                        writer.write("   ");
+                      }
+                    }
+
+                    if ( x < 8 ) {
+                        if ( grid.getCustomNumAt( x, y)   != grid.getCustomNumAt( x+1, y)
+                          || grid.getCustomNumAt( x, y+1) != grid.getCustomNumAt( x+1, y+1) ) {
+                            if ( grid.getCustomNumAt( x, y)   != grid.getCustomNumAt( x, y+1)
+                              || grid.getCustomNumAt( x+1, y) != grid.getCustomNumAt( x+1, y+1) ) {
+                                writer.write("+");
+                            }
+                            else
+                                writer.write("|");
+                        }
+                        else
+                        if ( grid.getCustomNumAt( x, y)   != grid.getCustomNumAt( x, y+1)
+                          || grid.getCustomNumAt( x+1, y) != grid.getCustomNumAt( x+1, y+1) ) {
+                            if ( grid.getCustomNumAt( x, y)   != grid.getCustomNumAt( x+1, y)
+                              || grid.getCustomNumAt( x, y+1) != grid.getCustomNumAt( x+1, y+1) ) {
+                                writer.write("+");
+                            }
+                            else
+                                writer.write("-");
+                        }
+                        else
+                        if ( !isLatin && count != 9 && (x+1)%xx == 0 && (y+1)%yy == 0 )
+                            writer.write("+");
+                        else
+                        if ( !isLatin && count != 9 && (x+1)%xx == 0 )
+                            writer.write("|");
+                        else
+                        if ( !isLatin && count != 9 && (y+1)%yy == 0 )
+                            writer.write("-");
+                        else
+                            writer.write(" ");
+                    }
+                }
+
+                if ( grid.getCustomNumAt( 8, y) != grid.getCustomNumAt( 8, y+1) ) {
+                    writer.write("+");
+                }
+                else {
+                  if ( !isLatin && count != 9 && (y+1)%yy == 0 ) {
+                    writer.write("+");
+                  } else {
+                    writer.write("|");
+                  }
+                }
+                writer.write("\r\n");
+            }
+        }
+
+        writer.write("+");
+        for (int x = 0; x < 9; x++) {
+            writer.write("---");
+            if ( x < 8 ) {
+                if ( grid.getCustomNumAt( x, 8) != grid.getCustomNumAt( x+1, 8) ) {
+                    writer.write("+");
+                }
+                else {
+                  if ( !isLatin && count != 9 && (x+1)%xx == 0 ) {
+                    writer.write("+");
+                  } else {
+                    writer.write("-");
+                  }
+                }
+            }
+        }
+        writer.write("+");
+        writer.write("\r");
         for (int y = 0; y < 9; y++) {
             for (int x = 0; x < 9; x++) {
                 int value = grid.getCellValue(x, y);
@@ -414,10 +617,17 @@ public class SudokuIO {
                 writer.write(ch);
             }
         }
-        writer.write("\r\n");
+        writer.write("\r");
+        writer.write( Settings.getInstance().getCustom());
+        writer.write("\r"+getSuffix(grid)+"\n");
+     }
     }
 
     private static void savePencilMarksToWriter(Grid grid, Writer writer) throws IOException {
+        int pformat = Settings.getInstance().getPuzzleFormat();
+        int gSize = Settings.getInstance().getGridSize();
+        int sformat = Settings.getInstance().getSaveFormat();
+        String text = "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ";
         boolean isLatin = Settings.getInstance().isLatinSquare();
         int crd = 1;
         for (int y = 0; y < 9; y++) {
@@ -427,6 +637,7 @@ public class SudokuIO {
             }
         }
 
+      if (!grid.isCustom()) {
         int y = 0, x = 0;
         if ( Settings.getInstance().isRC33() ) {
             y = 3; x = 3;
@@ -489,7 +700,201 @@ public class SudokuIO {
           if ( j+1 == y || !isLatin )
             s += "-+";
         }
-        writer.write(s + "\r\n");
+        writer.write(s + "\r"+getSuffix(grid)+"\n");
+      }
+      if ( grid.isCustom()) {
+        int count = Settings.getInstance().getCount();
+
+        int yy = 0, xx = 0;
+        if ( Settings.getInstance().isRC33() ) {
+            yy = 3; xx = 3;
+        }
+        else {
+            yy = 3; xx = 3;
+        }
+        writer.write("+");
+        for (int x = 0; x < 9; x++) {
+            writer.write("-");
+            for (int pad=0; pad<crd; pad++ ) { writer.write("-"); }
+            writer.write("-");
+            if ( x < 8 ) {
+                if ( grid.getCustomNumAt( x, 0) != grid.getCustomNumAt( x+1, 0) ) {
+                    writer.write("+");
+                }
+                else {
+                  if ( !isLatin && count != 9 && (x+1)%xx == 0 ) {
+                    writer.write("+");
+                  } else {
+                    writer.write("-");
+                  }
+                }
+            }
+        }
+        writer.write("+");
+        writer.write("\r\n");
+
+        for (int y = 0; y < 9; y++) {
+
+            writer.write("|");
+            for (int x = 0; x < 9; x++) { int cnt = 0;
+                writer.write(" ");
+                Cell cell = grid.getCell(x, y);
+                int n = cell.getValue();
+                for (int pv=1; pv<=9; pv++ ) {
+                    if ( pv == n || cell.hasPotentialValue( pv) ) {
+                        if ( gSize <=9) { writer.write( '0' + pv); }
+                        if ( gSize > 9) { writer.write( '@' + pv); }
+                        cnt++;
+                    }
+                }
+                for (int pad=cnt; pad<crd; pad++ ) { writer.write(" "); }
+                writer.write(" ");
+                if ( x < 8 ) {
+                    if ( grid.getCustomNumAt( x, y) != grid.getCustomNumAt( x+1, y) ) {
+                        writer.write("|");
+                    }
+                    else {
+                      if ( !isLatin && count != 9 && (x+1)%xx == 0 ) {
+                        writer.write("|");
+                      } else {
+                        writer.write(" ");
+                      }
+                    }
+                }
+            }
+            writer.write("|");
+            writer.write("\r\n");
+
+            if ( y < 8 ) {
+                if ( grid.getCustomNumAt( 0, y) != grid.getCustomNumAt( 0, y+1) ) {
+                    writer.write("+");
+                }
+                else {
+                    if ( !isLatin && count != 9 && (y+1)%yy == 0 ) {
+                      writer.write("+");
+                    } else {
+                      writer.write("|");
+                    }
+                }
+
+                for (int x = 0; x < 9; x++) {
+                    if ( grid.getCustomNumAt( x, y) != grid.getCustomNumAt( x, y+1) ) {
+                        writer.write("-");
+                        for (int pad=0; pad<crd; pad++ ) { writer.write("-"); }
+                        writer.write("-");
+                    }
+                    else {
+                      if ( !isLatin && count != 9 && (y+1)%yy == 0 ) {
+                        writer.write("-");
+                        for (int pad=0; pad<crd; pad++ ) { writer.write("-"); }
+                        writer.write("-");
+                      } else {
+                        writer.write(" ");
+                        for (int pad=0; pad<crd; pad++ ) { writer.write(" "); }
+                        writer.write(" ");
+                      }
+                    }
+
+                    if ( x < 8 ) {
+                        if ( grid.getCustomNumAt( x, y)   != grid.getCustomNumAt( x+1, y)
+                          || grid.getCustomNumAt( x, y+1) != grid.getCustomNumAt( x+1, y+1) ) {
+                            if ( grid.getCustomNumAt( x, y)   != grid.getCustomNumAt( x, y+1)
+                              || grid.getCustomNumAt( x+1, y) != grid.getCustomNumAt( x+1, y+1) ) {
+                                writer.write("+");
+                            }
+                            else
+                                writer.write("|");
+                        }
+                        else
+                        if ( grid.getCustomNumAt( x, y)   != grid.getCustomNumAt( x, y+1)
+                          || grid.getCustomNumAt( x+1, y) != grid.getCustomNumAt( x+1, y+1) ) {
+                            if ( grid.getCustomNumAt( x, y)   != grid.getCustomNumAt( x+1, y)
+                              || grid.getCustomNumAt( x, y+1) != grid.getCustomNumAt( x+1, y+1) ) {
+                                writer.write("+");
+                            }
+                            else
+                                writer.write("-");
+                        }
+                        else
+                        if ( !isLatin && count != 9 && (x+1)%xx == 0 && (y+1)%yy == 0 )
+                            writer.write("+");
+                        else
+                        if ( !isLatin && count != 9 && (x+1)%xx == 0 )
+                            writer.write("|");
+                        else
+                        if ( !isLatin && count != 9 && (y+1)%yy == 0 )
+                            writer.write("-");
+                        else
+                            writer.write(" ");
+                    }
+                }
+
+                if ( grid.getCustomNumAt( 8, y) != grid.getCustomNumAt( 8, y+1) ) {
+                    writer.write("+");
+                }
+                else {
+                  if ( !isLatin && count != 9 && (y+1)%yy == 0 ) {
+                    writer.write("+");
+                  } else {
+                    writer.write("|");
+                  }
+                }
+                writer.write("\r\n");
+            }
+        }
+
+        writer.write("+");
+        for (int x = 0; x < 9; x++) {
+            writer.write("-");
+            for (int pad=0; pad<crd; pad++ ) { writer.write("-"); }
+            writer.write("-");
+            if ( x < 8 ) {
+                if ( grid.getCustomNumAt( x, 8) != grid.getCustomNumAt( x+1, 8) ) {
+                    writer.write("+");
+                }
+                else {
+                  if ( !isLatin && count != 9 && (x+1)%xx == 0 ) {
+                    writer.write("+");
+                  } else {
+                    writer.write("-");
+                  }
+                }
+            }
+        }
+        writer.write("+");
+        writer.write("\r");
+        for (int y = 0; y < 9; y++) {
+            for (int x = 0; x < 9; x++) {
+                int value = grid.getCellValue(x, y);
+                String ch = ".";
+                switch ( pformat ) {
+                case 1:
+                    if (value > 0) ch = ".0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ".substring(value,value+1);
+                    break;
+                case 2:
+                    if (value > 0) ch = ".123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ".substring(value,value+1);
+                    break;
+                case 3:
+                    if (value > 0) ch = ""  + value;
+                  if ( !(y == 0 && x == 0) ) {
+                    ch = " "  + ch;
+                  }
+                    break;
+                case 5:
+                    ch = text.substring(value,value+1);
+                    break;
+                case 4:
+                default:
+                    if (value > 0) ch = ".ABCDEFGHIJKLMNOPQRSTUVWXYZ".substring(value,value+1);
+                    break;
+                }
+                writer.write(ch);
+            }
+        }
+        writer.write("\r");
+        writer.write( Settings.getInstance().getCustom());
+        writer.write("\r"+getSuffix(grid)+"\n");
+      }
     }
 
     /**

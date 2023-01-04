@@ -146,8 +146,8 @@ public class AboutDialog extends JDialog {
             pnlCenter.setLayout(new GridBagLayout());
             pnlCenter.add(lblVersion, gridBagConstraints1);
             pnlCenter.add(txtVersion, gridBagConstraints2);
-            pnlCenter.add(lblCompany, gridBagConstraints3);
-            pnlCenter.add(txtCompany, gridBagConstraints4);
+//          pnlCenter.add(lblCompany, gridBagConstraints3);
+//          pnlCenter.add(txtCompany, gridBagConstraints4);
             pnlCenter.add(lblLicense, gridBagConstraints5);
             pnlCenter.add(txtLicense, gridBagConstraints6);
         }

@@ -83,6 +83,23 @@ public class hints {
                 case 'X':   // Diagonals
                     Settings.getInstance().setDiagonals(true);
                     break;
+                case 'D':   // DisjointGroups
+                    Settings.getInstance().setDisjointGroups(true);
+                    break;
+                case 'W':   // Windoku
+                    Settings.getInstance().setWindoku(true);
+                    break;
+
+                case 'U':   // Custom
+                    Settings.getInstance().setCustom(true);
+                    break;
+
+                case 'd':   // diagonal
+                    Settings.getInstance().setXAntiDiagonal(false);
+                    break;
+                case 'a':   // antidiagonal
+                    Settings.getInstance().setXDiagonal(false);
+                    break;
 
                 case 'T':   // used saved techniques
                     Settings.getInstance().unpackmethods();

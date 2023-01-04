@@ -27,7 +27,10 @@ public class Potential {
         HiddenColumn,
         Advanced,
         Diagonal,
-        AntiDiagonal
+        AntiDiagonal,
+        DisjointGroup,
+        Windoku,
+        Custom
     }
 
     public final Cell cell;

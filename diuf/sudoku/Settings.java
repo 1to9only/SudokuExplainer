@@ -70,6 +70,18 @@ public class Settings {
     private boolean isLatinSquare = false;          // latin square
 //  private boolean isLatinSquare = true;           // latin square
     private boolean isDiagonals = false;            // diagonals
+    private boolean isXDiagonal = true;             // diagonal(/)
+    private boolean isXAntiDiagonal = true;         // antidiagonal(\)
+    private boolean isDisjointGroups = false;       // disjointgroups
+    private boolean isWindoku = false;              // windoku
+    private boolean isWindowsClosed = false;        // windowsclosed
+    private boolean isWindowsOpen = false;          // windowsopen
+
+    private boolean isCustom = false;
+    private String custom = null;       // custom variant regions
+    private int count = 9;              // custom regions
+
+    private boolean isNumbers = true;               // is Numbers (else Alphas)
 
     private String FontName = "Verdana";
 
@@ -100,6 +112,13 @@ public class Settings {
         isRC33 = true;              // 3Rx3C or 3Rx3C
         isLatinSquare = false;      // set to vanilla sudoku
         isDiagonals = false;
+        isXDiagonal = true;
+        isXAntiDiagonal = true;
+        isDisjointGroups = false;
+        isWindoku = false;
+        isWindowsClosed = false;
+        isWindowsOpen = false;
+        isCustom = false;
     }
 
     public void setRCNotation(boolean isRCNotation) {
@@ -442,6 +461,111 @@ public class Settings {
         return isDiagonals;
     }
 
+    public void setXDiagonal(boolean isXDiagonal) {
+      if ( this.isXDiagonal != isXDiagonal ) {
+        this.isXDiagonal = isXDiagonal;
+        isChanged = 1;
+      }
+    }
+    public boolean isXDiagonal() {
+        return isXDiagonal;
+    }
+
+    public void setXAntiDiagonal(boolean isXAntiDiagonal) {
+      if ( this.isXAntiDiagonal != isXAntiDiagonal ) {
+        this.isXAntiDiagonal = isXAntiDiagonal;
+        isChanged = 1;
+      }
+    }
+    public boolean isXAntiDiagonal() {
+        return isXAntiDiagonal;
+    }
+
+    public void setDisjointGroups(boolean isDisjointGroups) {
+      if ( this.isDisjointGroups != isDisjointGroups ) {
+        this.isDisjointGroups = isDisjointGroups;
+        isChanged = 1;
+      }
+    }
+    public boolean isDisjointGroups() {
+        return isDisjointGroups;
+    }
+
+    public void setWindoku(boolean isWindoku) {
+      if ( this.isWindoku != isWindoku ) {
+        this.isWindoku = isWindoku;
+        isChanged = 1;
+      }
+    }
+    public boolean isWindoku() {
+        return isWindoku;
+    }
+
+    public void setWindowsClosed(boolean isWindowsClosed) {
+      if ( this.isWindowsClosed != isWindowsClosed ) {
+        this.isWindowsClosed = isWindowsClosed;
+        isChanged = 1;
+      }
+    }
+    public boolean isWindowsClosed() {
+        return isWindowsClosed;
+    }
+
+    public void setWindowsOpen(boolean isWindowsOpen) {
+      if ( this.isWindowsOpen != isWindowsOpen ) {
+        this.isWindowsOpen = isWindowsOpen;
+        isChanged = 1;
+      }
+    }
+    public boolean isWindowsOpen() {
+        return isWindowsOpen;
+    }
+
+    public void setCustom(boolean isCustom) {
+      if ( this.isCustom != isCustom ) {
+        this.isCustom = isCustom;
+        save();
+      }
+    }
+    public boolean isCustom() {
+        return isCustom;
+    }
+
+    public void setCustom(String custom) {
+      if ( this.custom == null || !(this.custom.equals(custom)) ) {
+        this.custom = custom.replace( "0", ".");
+       if ( this.isCustom != true ) {
+        this.isCustom = true;
+       }
+        save();
+      }
+    }
+
+    public String getCustom() {
+        return custom;
+    }
+
+    public void setCount(int count) {
+      if ( this.count != count ) {
+        this.count = count;
+        save();
+      }
+    }
+
+    public int getCount() {
+        return count;
+    }
+
+    public void setNumbers(boolean isNumbers) {
+      if ( this.isNumbers != isNumbers ) {
+        this.isNumbers = isNumbers;
+        save();
+      }
+    }
+    public boolean isNumbers() {
+        return isNumbers;
+    }
+
     public void setApply(int apply) {
       if ( this.apply != apply ) {
         this.apply = apply;
@@ -615,6 +739,60 @@ public class Settings {
                 }
                 catch (NullPointerException e) { LoadError = 1; }
                 try {
+                    s = (String)stgDetails.get("isXDiagonal");
+                    isXDiagonal = s.equals("true")?true:false;
+                }
+                catch (NullPointerException e) { LoadError = 1; }
+                try {
+                    s = (String)stgDetails.get("isXAntiDiagonal");
+                    isXAntiDiagonal = s.equals("true")?true:false;
+                }
+                catch (NullPointerException e) { LoadError = 1; }
+                try {
+                    s = (String)stgDetails.get("isDisjointGroups");
+                    isDisjointGroups = s.equals("true")?true:false;
+                }
+                catch (NullPointerException e) { LoadError = 1; }
+                try {
+                    s = (String)stgDetails.get("isWindoku");
+                    isWindoku = s.equals("true")?true:false;
+                }
+                catch (NullPointerException e) { LoadError = 1; }
+                try {
+                    s = (String)stgDetails.get("isWindowsClosed");
+                    isWindowsClosed = s.equals("true")?true:false;
+                }
+                catch (NullPointerException e) { LoadError = 1; }
+                try {
+                    s = (String)stgDetails.get("isWindowsOpen");
+                    isWindowsOpen = s.equals("true")?true:false;
+                }
+                catch (NullPointerException e) { LoadError = 1; }
+                try {
+                    s = (String)stgDetails.get("isCustom");
+                    isCustom = s.equals("true")?true:false;
+                }
+                catch (NullPointerException e) { LoadError = 1; }
+                try {
+                    custom = (String)stgDetails.get("custom");
+                }
+                catch (NullPointerException e) { ; }
+                try {
+                    s = (String)stgDetails.get("count");
+                  if ( s.length() == 1 ) {
+                    count = s.charAt(0) - '0';
+                  }
+                  if ( s.length() == 2 ) {
+                    count = (s.charAt(0)-'0')*10 + s.charAt(1)-'0';
+                  }
+                }
+                catch (NullPointerException e) { LoadError = 1; }
+                try {
+                    s = (String)stgDetails.get("isNumbers");
+                    isNumbers = s.equals("true")?true:false;
+                }
+                catch (NullPointerException e) { LoadError = 1; }
+                try {
                     FontName = (String)stgDetails.get("FontName");
                 }
                 catch (NullPointerException e) { LoadError = 1; }
@@ -698,6 +876,18 @@ public class Settings {
         stgDetails.put("isRC33", isRC33?"true":"false");
         stgDetails.put("isLatinSquare", isLatinSquare?"true":"false");
         stgDetails.put("isDiagonals", isDiagonals?"true":"false");
+        stgDetails.put("isXDiagonal", isXDiagonal?"true":"false");
+        stgDetails.put("isXAntiDiagonal", isXAntiDiagonal?"true":"false");
+        stgDetails.put("isDisjointGroups", isDisjointGroups?"true":"false");
+        stgDetails.put("isWindoku", isWindoku?"true":"false");
+        stgDetails.put("isWindowsClosed", isWindowsClosed?"true":"false");
+        stgDetails.put("isWindowsOpen", isWindowsOpen?"true":"false");
+        stgDetails.put("isCustom", isCustom?"true":"false");
+        if ( custom != null ) {
+            stgDetails.put("custom", custom);
+        }
+        stgDetails.put("count", ""+count);
+        stgDetails.put("isNumbers", isNumbers?"true":"false");
         stgDetails.put("FontName", FontName);
         stgDetails.put("apply", ""+apply);
 

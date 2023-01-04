@@ -24,8 +24,21 @@ public class HiddenSingle implements DirectHintProducer {
         getHints(grid, Grid.Column.class, accu, true);
         getHints(grid, Grid.Row.class, accu, true);
       if ( grid.isDiagonals() ) {
+       if ( grid.isXDiagonal() ) {
         getHints(grid, Grid.Diagonal.class, accu, true);
+       }
+       if ( grid.isXAntiDiagonal() ) {
         getHints(grid, Grid.AntiDiagonal.class, accu, true);
+       }
+      }
+      if ( grid.isDisjointGroups() ) {
+        getHints(grid, Grid.DisjointGroup.class, accu, true);
+      }
+      if ( grid.isWindoku() ) {
+        getHints(grid, Grid.Windoku.class, accu, true);
+      }
+      if ( grid.isCustom() ) {
+        getHints(grid, Grid.Custom.class, accu, true);
       }
         // Then hidden cells
       if ( !grid.isLatinSquare() ) {
@@ -34,8 +47,21 @@ public class HiddenSingle implements DirectHintProducer {
         getHints(grid, Grid.Column.class, accu, false);
         getHints(grid, Grid.Row.class, accu, false);
       if ( grid.isDiagonals() ) {
+       if ( grid.isXDiagonal() ) {
         getHints(grid, Grid.Diagonal.class, accu, false);
+       }
+       if ( grid.isXAntiDiagonal() ) {
         getHints(grid, Grid.AntiDiagonal.class, accu, false);
+       }
+      }
+      if ( grid.isDisjointGroups() ) {
+        getHints(grid, Grid.DisjointGroup.class, accu, false);
+      }
+      if ( grid.isWindoku() ) {
+        getHints(grid, Grid.Windoku.class, accu, false);
+      }
+      if ( grid.isCustom() ) {
+        getHints(grid, Grid.Custom.class, accu, false);
       }
     }
 

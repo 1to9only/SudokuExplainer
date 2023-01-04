@@ -211,10 +211,11 @@ public abstract class ChainingHint extends IndirectHint implements Rule, HasPare
             return Column.class;
         case HiddenRow:
             return Row.class;
-        case Diagonal:
-            return Diagonal.class;
-        case AntiDiagonal:
-            return AntiDiagonal.class;
+        case Diagonal:      return Diagonal.class;
+        case AntiDiagonal:  return AntiDiagonal.class;
+        case DisjointGroup: return DisjointGroup.class;
+        case Windoku:       return Windoku.class;
+        case Custom:        return Custom.class;
         default:
             return null;
         }

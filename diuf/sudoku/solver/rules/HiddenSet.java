@@ -38,8 +38,21 @@ public class HiddenSet implements IndirectHintProducer {
         getHints(grid, Grid.Row.class, accu);
 
       if ( grid.isDiagonals() ) {
+       if ( grid.isXDiagonal() ) {
         getHints(grid, Grid.Diagonal.class, accu);
+       }
+       if ( grid.isXAntiDiagonal() ) {
         getHints(grid, Grid.AntiDiagonal.class, accu);
+       }
+      }
+      if ( grid.isDisjointGroups() ) {
+        getHints(grid, Grid.DisjointGroup.class, accu);
+      }
+      if ( grid.isWindoku() ) {
+        getHints(grid, Grid.Windoku.class, accu);
+      }
+      if ( grid.isCustom() ) {
+        getHints(grid, Grid.Custom.class, accu);
       }
     }
 

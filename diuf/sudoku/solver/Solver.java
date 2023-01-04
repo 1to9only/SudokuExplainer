@@ -210,8 +210,21 @@ public class Solver {
         cancelBy(Grid.Column.class);
 
       if ( grid.isDiagonals() ) {
+       if ( grid.isXDiagonal() ) {
         cancelBy(Grid.Diagonal.class);
+       }
+       if ( grid.isXAntiDiagonal() ) {
         cancelBy(Grid.AntiDiagonal.class);
+       }
+      }
+      if ( grid.isDisjointGroups() ) {
+        cancelBy(Grid.DisjointGroup.class);
+      }
+      if ( grid.isWindoku() ) {
+        cancelBy(Grid.Windoku.class);
+      }
+      if ( grid.isCustom() ) {
+        cancelBy(Grid.Custom.class);
       }
     }
 

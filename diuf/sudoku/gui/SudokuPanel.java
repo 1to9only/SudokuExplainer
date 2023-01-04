@@ -61,8 +61,58 @@ public class SudokuPanel extends JPanel {
     private Font bigFont;
     private Font legendFont;
 
+    private Color backgroundColor = new Color(248, 248, 248, 127);      // background
+    private Color altBackgroundColor = new Color(164, 164, 164, 127);   // background
+
     private Color candidateMaskColor = new Color(0, 255, 255, 127);     // candidate mask
     private Color potentialMaskColor = new Color(0, 255, 0, 127);       // potential mask
+
+    private Color DG1 =  new Color(208, 238, 227);
+    private Color DG2 =  new Color(237, 222, 194);
+    private Color DG3 =  new Color(227, 221, 232);
+    private Color DG4 =  new Color(209, 211, 237);
+    private Color DG5 =  new Color(241, 241, 201);
+    private Color DG6 =  new Color(242, 216, 210);
+    private Color DG7 =  new Color(242, 210, 237);
+    private Color DG8 =  new Color(208, 232, 238);
+    private Color DG9 =  new Color(210, 240, 202);
+    private Color[] DG_Colors = {DG1, DG2, DG3, DG4, DG5, DG6, DG7, DG8, DG9};
+    private Color customColor = new Color(244, 138, 138);   // h:0   s:200 l:180
+    private Color Pastel01 = new Color( 119, 221, 119);     // Pastel Green            #77dd77
+    private Color Pastel02 = new Color( 137, 207, 240);     // Baby Blue               #89cff0
+    private Color Pastel03 = new Color( 153, 197, 196);     // Pastel Turquoise        #99c5c4
+    private Color Pastel04 = new Color( 154, 222, 219);     // Blue Green Pastel       #9adedb
+    private Color Pastel05 = new Color( 170, 148, 153);     // Persian Pastel          #aa9499
+    private Color Pastel06 = new Color( 170, 240, 209);     // Magic Mint              #aaf0d1
+    private Color Pastel07 = new Color( 178, 251, 165);     // Light Pastel Green      #b2fba5
+    private Color Pastel08 = new Color( 179, 158, 181);     // Pastel Purple           #b39eb5
+    private Color Pastel09 = new Color( 189, 176, 208);     // Pastel Lilac            #bdb0d0
+    private Color Pastel10 = new Color( 190, 231, 165);     // Pastel Pea              #bee7a5
+    private Color Pastel11 = new Color( 190, 253, 115);     // Light Lime              #befd73
+    private Color Pastel12 = new Color( 193, 198, 252);     // Light Periwinkle        #c1c6fc
+    private Color Pastel13 = new Color( 198, 164, 164);     // Pale Mauve              #c6a4a4
+    private Color Pastel14 = new Color( 200, 255, 176);     // Light Light Green       #c8ffb0
+    private Color Pastel15 = new Color( 203, 153, 201);     // Pastel Violet           #cb99c9
+    private Color Pastel16 = new Color( 206, 240, 204);     // Pastel Mint             #cef0cc
+    private Color Pastel17 = new Color( 207, 207, 196);     // Pastel Grey             #cfcfc4
+    private Color Pastel18 = new Color( 214, 255, 254);     // Pale Blue               #d6fffe
+    private Color Pastel19 = new Color( 216, 161, 196);     // Pastel Lavender         #d8a1c4
+    private Color Pastel20 = new Color( 222, 165, 164);     // Pastel Pink             #dea5a4
+    private Color Pastel21 = new Color( 222, 236, 225);     // Pastel Smirk            #deece1
+    private Color Pastel22 = new Color( 223, 216, 225);     // Pastel Day              #dfd8e1
+    private Color Pastel23 = new Color( 229, 217, 211);     // Pastel Parchment        #e5d9d3
+    private Color Pastel24 = new Color( 233, 209, 191);     // Pastel Rose Tan         #e9d1bf
+    private Color Pastel25 = new Color( 244, 154, 194);     // Pastel Magenta          #f49ac2
+    private Color Pastel26 = new Color( 244, 191, 255);     // Electric Lavender       #f4bfff
+    private Color Pastel27 = new Color( 253, 253, 150);     // Pastel Yellow           #fdfd96
+    private Color Pastel28 = new Color( 255, 105,  97);     // Pastel Red              #ff6961
+    private Color Pastel29 = new Color( 255, 150,  79);     // Pastel Orange           #ff964f
+    private Color Pastel30 = new Color( 255, 152, 153);     // American Pink           #ff9899
+    private Color Pastel31 = new Color( 255, 183, 206);     // Baby Pink               #ffb7ce
+    private Color Pastel32 = new Color( 202, 155, 247);     // Baby Purple             #ca9bf7
+    private Color Pastel33 = new Color( 131, 105,  83);     // Pastel Brown            #836953
+    private Color[] Pastel_Colors = { Pastel01, Pastel02, Pastel03, Pastel04, Pastel05, Pastel06, Pastel07, Pastel08, Pastel09, Pastel10, Pastel11, Pastel12, Pastel13, Pastel14, Pastel15, Pastel16, Pastel17, Pastel18, Pastel19, Pastel20, Pastel21, Pastel22, Pastel23, Pastel24, Pastel25, Pastel26, Pastel27, Pastel28, Pastel29, Pastel30, Pastel31, Pastel32, Pastel33};
+    private int[] Pastel_Index = { 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28, 29, 30, 31, 32};
 
     public SudokuPanel(SudokuFrame parent) {
         super();
@@ -74,6 +124,21 @@ public class SudokuPanel extends JPanel {
         smallFont = new Font(FONT_NAME, Font.BOLD, FONT_SIZE_SMALL);
         bigFont = new Font(FONT_NAME, Font.BOLD, FONT_SIZE_BIG);
         legendFont = new Font(FONT_NAME, Font.BOLD, FONT_SIZE_LEGEND);
+        newColors(0);
+    }
+
+    public void newColors(int paint) {
+        Random random = new Random( System.currentTimeMillis());
+        for (int i = 0; i < 33; i++) {
+            int p1 = random.nextInt(32);
+            int p2 = random.nextInt(32);
+            int temp = Pastel_Index[p1];
+            Pastel_Index[p1] = Pastel_Index[p2];
+            Pastel_Index[p2] = temp;
+        }
+        if ( paint == 1 ) {
+            repaint();
+        }
     }
 
     private void rescale() {
@@ -485,6 +550,23 @@ public class SudokuPanel extends JPanel {
 
     private void initFillColor(Graphics g, Cell cell) {
         Color col = Color.white;
+        if ( grid.isDisjointGroups()) {
+            Grid.DisjointGroup disjointgroup = grid.getDisjointGroupAt(cell.getX(),cell.getY());
+            int dgi = disjointgroup.getDisjointGroupNum();
+            col = Pastel_Colors[ Pastel_Index[ dgi+1]];
+        }
+        if (!grid.isDisjointGroups() && grid.isWindoku() ) {
+            Grid.Windoku windoku = grid.getWindokuAt(cell.getX(),cell.getY());
+            int wdi = windoku.getWindokuNum();
+            if ( wdi < (3-1) * (3-1) ) {
+            //  col = altBackgroundColor;
+                col = Pastel_Colors[ Pastel_Index[ 0]];
+            }
+        }
+        if (grid.isCustom() && grid.getCustomAt(cell.getX(),cell.getY())!=null) {
+            Grid.Custom custom = grid.getCustomAt(cell.getX(),cell.getY());
+            col = Pastel_Colors[ Pastel_Index[ custom.getCustomNum()+1]];
+        }
         if (redCells != null && redCells.contains(cell))
             col = Color.red;
         else if (greenCells != null && greenCells.contains(cell))
@@ -517,6 +599,23 @@ public class SudokuPanel extends JPanel {
 
     private void init2FillColor(Graphics g, Cell cell) {
         Color col = Color.white;
+        if ( grid.isDisjointGroups()) {
+            Grid.DisjointGroup disjointgroup = grid.getDisjointGroupAt(cell.getX(),cell.getY());
+            int dgi = disjointgroup.getDisjointGroupNum();
+            col = Pastel_Colors[ Pastel_Index[ dgi+1]];
+        }
+        if (!grid.isDisjointGroups() && grid.isWindoku() ) {
+            Grid.Windoku windoku = grid.getWindokuAt(cell.getX(),cell.getY());
+            int wdi = windoku.getWindokuNum();
+            if ( wdi < (3-1) * (3-1) ) {
+            //  col = altBackgroundColor;
+                col = Pastel_Colors[ Pastel_Index[ 0]];
+            }
+        }
+        if (grid.isCustom() && grid.getCustomAt(cell.getX(),cell.getY())!=null) {
+            Grid.Custom custom = grid.getCustomAt(cell.getX(),cell.getY());
+            col = Pastel_Colors[ Pastel_Index[ custom.getCustomNum()+1]];
+        }
         if (redCells != null && redCells.contains(cell))
             col = Color.red;
         else if (greenCells != null && greenCells.contains(cell))
@@ -744,8 +843,48 @@ public class SudokuPanel extends JPanel {
         }
         if (grid.isDiagonals()) {
             g.setColor(Color.black);
-            g.drawLine( CELL_OUTER_SIZE / 6+adj, CELL_OUTER_SIZE / 6+adj, 9 * CELL_OUTER_SIZE - CELL_OUTER_SIZE / 6+adj, 9 * CELL_OUTER_SIZE - CELL_OUTER_SIZE / 6+adj);
-            g.drawLine( CELL_OUTER_SIZE / 6+adj, 9 * CELL_OUTER_SIZE - CELL_OUTER_SIZE / 6+adj, 9 * CELL_OUTER_SIZE - CELL_OUTER_SIZE / 6+adj, CELL_OUTER_SIZE / 6+adj);
+          if (grid.isXAntiDiagonal()) {
+            g.drawLine( CELL_OUTER_SIZE / 6+adj, CELL_OUTER_SIZE / 6+adj, 9 * CELL_OUTER_SIZE - CELL_OUTER_SIZE / 6+adj, 9 * CELL_OUTER_SIZE - CELL_OUTER_SIZE / 6+adj); }
+          if (grid.isXDiagonal()) {
+            g.drawLine( CELL_OUTER_SIZE / 6+adj, 9 * CELL_OUTER_SIZE - CELL_OUTER_SIZE / 6+adj, 9 * CELL_OUTER_SIZE - CELL_OUTER_SIZE / 6+adj, CELL_OUTER_SIZE / 6+adj); }
+        }
+        if (grid.isWindoku()) {
+            g.setColor(Color.black);
+                lineWidth = 4;
+                offset = lineWidth / 2;
+            for (int i = 0; i < (3-1) * (3-1); i++) {
+                Grid.Windoku wd = grid.getWindoku(i);
+                Cell cl = wd.getCell(0);
+                int cx = cl.getX();
+                int cy = cl.getY();
+                // verticals
+                g.fillRect( cx * CELL_OUTER_SIZE - offset+adj, cy * CELL_OUTER_SIZE - offset+adj, lineWidth, GRID_SIZE / 3 + lineWidth);
+                g.fillRect( ( cx + 3) * CELL_OUTER_SIZE - offset+adj, cy * CELL_OUTER_SIZE - offset+adj, lineWidth, GRID_SIZE / 3 + lineWidth);
+                // horizontals
+                g.fillRect( cx * CELL_OUTER_SIZE - offset+adj, cy * CELL_OUTER_SIZE - offset+adj, GRID_SIZE / 3 + lineWidth, lineWidth);
+                g.fillRect( cx * CELL_OUTER_SIZE - offset+adj, ( cy + 3) * CELL_OUTER_SIZE - offset+adj, GRID_SIZE / 3 + lineWidth, lineWidth);
+            }
+        }
+        if ( grid.isLatinSquare() && grid.isCustom() ) {
+            g.setColor(Color.black);
+            lineWidth = 4;
+            offset = lineWidth / 2;
+            // vertical lines
+            for (int r = 0; r < 9; r++) {
+                for (int c = 0; c < 8; c++ ) {
+                    if ( grid.getCustomNumAt( c, r) != grid.getCustomNumAt( c+1, r) ) {
+                        g.fillRect((c+1) * CELL_OUTER_SIZE - offset+adj, r * CELL_OUTER_SIZE - offset+adj, lineWidth, CELL_OUTER_SIZE + lineWidth);
+                    }
+                }
+            }
+            // horizontal lines
+            for (int r = 0; r < 8; r++) {
+                for (int c = 0; c < 9; c++ ) {
+                    if ( grid.getCustomNumAt( c, r) != grid.getCustomNumAt( c, r+1) ) {
+                        g.fillRect(c * CELL_OUTER_SIZE - offset+adj, (r+1) * CELL_OUTER_SIZE - offset+adj, CELL_OUTER_SIZE + lineWidth, lineWidth);
+                    }
+                }
+            }
         }
     }
 
@@ -796,8 +935,68 @@ public class SudokuPanel extends JPanel {
                             g.fillRect(x * CELL_OUTER_SIZE + 3+adj, y * CELL_OUTER_SIZE + 3+adj,
                                     w * CELL_OUTER_SIZE - 6, h * CELL_OUTER_SIZE - 6);
                         }
-                      }
-                      else {
+                      } else
+                      if (region instanceof Grid.Windoku) {
+                        Grid.Windoku windoku = (Grid.Windoku)region;
+                        int wdi = windoku.getWindokuNum();
+                        int js = 0, jend = 1, jinc = 1;
+                        w = windoku.getWindokuWCells();
+                        h = windoku.getWindokuHCells();
+                        if ( w != 1 && h == 1) { jend = 9; jinc = 3; }
+                        if ( w == 1 && h != 1) { jend = 3; }
+                        if ( w == 1 && h == 1) { jend = 9; }
+                        for (int j = js; j < jend ; j+=jinc) {
+                            Cell cell = windoku.getCell( j);
+                            x = cell.getX();
+                            y = cell.getY();
+                            g.setColor(colors[index % 2]);
+                            for (int s = -2 + rev; s <= 2; s+= 2) {
+                                g.drawRect(x * CELL_OUTER_SIZE + s+adj, y * CELL_OUTER_SIZE + s+adj,
+                                        w * CELL_OUTER_SIZE - s * 2, h * CELL_OUTER_SIZE - s * 2);
+                            }
+                            if (rev == 0) {
+                                Color base = colors[index % 2];
+                                g.setColor(new Color(base.getRed(), base.getGreen(), base.getBlue(), 12));
+                                g.fillRect(x * CELL_OUTER_SIZE + 3+adj, y * CELL_OUTER_SIZE + 3+adj,
+                                        w * CELL_OUTER_SIZE - 6, h * CELL_OUTER_SIZE - 6);
+                            }
+                        }
+                      } else
+                      if (region instanceof Grid.Custom) {
+                        Grid.Custom custom = (Grid.Custom)region;
+                        int cti = custom.getCustomNum();
+                        int js = 0, jend = 9, jinc = 1; w = 1; h = 1;
+                        int lineWidth = 4;
+                        int offset = lineWidth / 2;
+                        for (int j = js; j < jend ; j+=jinc) {
+                            Cell cell = custom.getCell( j);
+                            x = cell.getX();
+                            y = cell.getY();
+                            g.setColor(colors[index % 2]);
+                            if ( y==0 || (y!=0 && cti != custom.At(x,y-1)) )
+                            {
+                                g.fillRect(x * CELL_OUTER_SIZE - offset+adj, y * CELL_OUTER_SIZE - offset+adj, CELL_OUTER_SIZE + lineWidth, lineWidth);
+                            }
+                            if ( x==0 || (x!=0 && cti != custom.At(x-1,y)) )
+                            {
+                                g.fillRect(x * CELL_OUTER_SIZE - offset+adj, y * CELL_OUTER_SIZE - offset+adj, lineWidth, CELL_OUTER_SIZE + lineWidth);
+                            }
+                            if ( x==8 || (x!=8 && cti != custom.At(x+1,y)) )
+                            {
+                                g.fillRect((x+1) * CELL_OUTER_SIZE - offset+adj, y * CELL_OUTER_SIZE - offset+adj, lineWidth, CELL_OUTER_SIZE + lineWidth);
+                            }
+                            if ( y==8 || (y!=8 && cti != custom.At(x,y+1)) )
+                            {
+                                g.fillRect(x * CELL_OUTER_SIZE - offset+adj, (y+1) * CELL_OUTER_SIZE - offset+adj, CELL_OUTER_SIZE + lineWidth, lineWidth);
+                            }
+                            if (rev == 0) {
+                                Color base = colors[index % 2];
+                                g.setColor(new Color(base.getRed(), base.getGreen(), base.getBlue(), 12));
+                                g.fillRect(x * CELL_OUTER_SIZE + 3+adj, y * CELL_OUTER_SIZE + 3+adj,
+                                        w * CELL_OUTER_SIZE - 6, h * CELL_OUTER_SIZE - 6);
+                            }
+                        }
+                      } else {
                         for (int j = 0; j < 9 ; j++) {
                             Cell cell = region.getCell( j);
                             x = cell.getX();
@@ -852,10 +1051,17 @@ public class SudokuPanel extends JPanel {
                             int cy = y * CELL_OUTER_SIZE + CELL_PAD
                             + (index / 3) * (CELL_INNER_SIZE / 3) + CELL_INNER_SIZE / 6;
                             boolean isHighlighted = initPotentialColor(g, cell, value);
+                          if ( Settings.getInstance().isNumbers() ) {
                             if (isHighlighted)
                                 drawStringCentered3D(g, "" + value, cx, cy);
                             else if (paintIt)
                                 drawStringCentered(g, "" + value, cx, cy);
+                          } else {
+                            if (isHighlighted)
+                                drawStringCentered3D(g, ".ABCDEFGHIJKLMNOPQRSTUVWXYZ".substring(value,value+1), cx, cy);
+                            else if (paintIt)
+                                drawStringCentered(g, ".ABCDEFGHIJKLMNOPQRSTUVWXYZ".substring(value,value+1), cx, cy);
+                          }
                         }
                         index++;
                     }
@@ -879,10 +1085,17 @@ public class SudokuPanel extends JPanel {
                             int cy = y * CELL_OUTER_SIZE + CELL_PAD
                             + (index / 3) * (CELL_INNER_SIZE / 3) + CELL_INNER_SIZE / 6;
                             boolean isHighlighted = init2PotentialColor(g, cell, value);
+                          if ( Settings.getInstance().isNumbers() ) {
                             if (isHighlighted)
                                 drawStringCentered3D(g, "" + value, cx+adj, cy+adj);
                             else if (paintIt)
                                 drawStringCentered(g, "" + value, cx+adj, cy+adj);
+                          } else {
+                            if (isHighlighted)
+                                drawStringCentered3D(g, ".ABCDEFGHIJKLMNOPQRSTUVWXYZ".substring(value,value+1), cx+adj, cy+adj);
+                            else if (paintIt)
+                                drawStringCentered(g, ".ABCDEFGHIJKLMNOPQRSTUVWXYZ".substring(value,value+1), cx+adj, cy+adj);
+                          }
                         }
                         index++;
                     }
@@ -904,7 +1117,12 @@ public class SudokuPanel extends JPanel {
                         int cx = x * CELL_OUTER_SIZE + CELL_PAD + CELL_INNER_SIZE / 2;
                         int cy = y * CELL_OUTER_SIZE + CELL_PAD + CELL_INNER_SIZE / 2;
                         initValueColor(g, cell);
+                      if ( Settings.getInstance().isNumbers() ) {
                         drawStringCentered(g, "" + cell.getValue(), cx, cy);
+                      } else {
+                        int value = cell.getValue();
+                        drawStringCentered(g, ".ABCDEFGHIJKLMNOPQRSTUVWXYZ".substring(value,value+1), cx, cy);
+                      }
                     }
                 }
             }
@@ -921,7 +1139,12 @@ public class SudokuPanel extends JPanel {
                         int cx = x * CELL_OUTER_SIZE + CELL_PAD + CELL_INNER_SIZE / 2;
                         int cy = y * CELL_OUTER_SIZE + CELL_PAD + CELL_INNER_SIZE / 2;
                         initValueColor(g, cell);
+                      if ( Settings.getInstance().isNumbers() ) {
                         drawStringCentered(g, "" + cell.getValue(), cx+adj, cy+adj);
+                      } else {
+                        int value = cell.getValue();
+                        drawStringCentered(g, ".ABCDEFGHIJKLMNOPQRSTUVWXYZ".substring(value,value+1), cx+adj, cy+adj);
+                      }
                     }
             }
         }

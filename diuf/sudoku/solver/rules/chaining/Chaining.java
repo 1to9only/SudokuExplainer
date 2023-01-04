@@ -31,7 +31,6 @@ public class Chaining implements IndirectHintProducer {
     private Grid lastGrid = null;
     private Collection<ChainingHint> lastHints = null;
 
-
     /**
      * Create the engine for searching forcing chains.
      * @param isMultipleEnabled Whether multiple forcing chains (Cell and Region Forcing
@@ -603,6 +602,9 @@ public class Chaining implements IndirectHintProducer {
             return Potential.Cause.HiddenRow;
         else if (region instanceof Diagonal) return Potential.Cause.Diagonal;
         else if (region instanceof AntiDiagonal) return Potential.Cause.AntiDiagonal;
+        else if (region instanceof DisjointGroup) return Potential.Cause.DisjointGroup;
+        else if (region instanceof Windoku) return Potential.Cause.Windoku;
+        else if (region instanceof Custom) return Potential.Cause.Custom;
         return null;
     }
 
