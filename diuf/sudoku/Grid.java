@@ -624,8 +624,32 @@ public class Grid {
         return _regionTypes;
     }
 
+    private List<Class<? extends Grid.Region>> _regionTypes3 = null;
+
+    /**
+     * Get a list containing the three classes corresponding to the
+     * three region types (row, column and block)
+     * @return a list of the three region types. The resulting list
+     * can not be modified
+     */
+    public List<Class<? extends Grid.Region>> getRegionTypes3() {
+        if (_regionTypes3 == null) {
+            int count = 3;
+          if (  isLatinSquare ) { count -= 1; }
+            _regionTypes3 = new ArrayList<Class<? extends Grid.Region>>(count);
+          if ( !isLatinSquare ) {
+            _regionTypes3.add(Grid.Block.class);
+          }
+            _regionTypes3.add(Grid.Row.class);
+            _regionTypes3.add(Grid.Column.class);
+            _regionTypes3 = Collections.unmodifiableList(_regionTypes3);
+        }
+        return _regionTypes3;
+    }
+
     private void reset_regionTypes() {
         _regionTypes = null;
+        _regionTypes3 = null;
     }
 
     // Grid regions implementation (rows, columns, 3x3 squares)

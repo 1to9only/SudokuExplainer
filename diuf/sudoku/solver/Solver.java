@@ -64,6 +64,7 @@ public class Solver {
 
 //  private boolean isUsingAdvanced = false;
 
+    private static String ATA = "@ABCDEFGHIJKLMNOPQRSTUVWXYZ";
 
     private class DefaultHintsAccumulator implements HintsAccumulator {
 
@@ -602,7 +603,7 @@ public class Solver {
                 for (int i = 0; i < 81; i++) {
                     int n = grid.getCellValue(i % 9, i / 9);
                     s += (n==0)?".":n;
-//                  s += (n==0)?".":"@ABCDEFGHIJKLMNOPQRSTUVWXYZ".substring(n,n+1);
+//                  s += (n==0)?".":ATA.substring(n,n+1);
                 }
                 s += " ";
 //t             ms= tt % 1000; tt = tt / 1000;

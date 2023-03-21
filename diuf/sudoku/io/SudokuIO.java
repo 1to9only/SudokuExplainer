@@ -44,6 +44,11 @@ public class SudokuIO {
     private static final String ERROR_MSG = "Unreadable Sudoku format";
     private static final String WARNING_MSG = "Warning: the Sudoku format was not recognized.\nThe Sudoku may not have been read correctly";
 
+    private static String ZERZ =  "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ";
+    private static String DOT0 = ".0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ";
+    private static String DOT1 = ".123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ";
+    private static String DOTA = ".ABCDEFGHIJKLMNOPQRSTUVWXYZ";
+
     private static int loadFromReader(Grid grid, Reader reader) throws IOException {
         List<String> lines = new ArrayList<String>();
         LineNumberReader lineReader = new LineNumberReader(reader);
@@ -283,7 +288,7 @@ public class SudokuIO {
     private static void saveToWriter81(Grid grid, Writer writer) throws IOException {
         int pformat = Settings.getInstance().getPuzzleFormat();
         int gSize = Settings.getInstance().getGridSize();
-        String text = "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ";
+        String text = ZERZ;
         if ( pformat == 5 ) {
             char[] characters = text.toCharArray();
             for (int i=0; i <81; i++) { int n1 = (int)( Math.random() * characters.length); int n2 = (int)( Math.random() * characters.length); char temp = characters[n1]; characters[n1] = characters[n2]; characters[n2] = temp; }
@@ -295,10 +300,10 @@ public class SudokuIO {
                 String ch = ".";
                 switch ( pformat ) {
                 case 1:
-                    if (value > 0) ch = ".0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ".substring(value,value+1);
+                    if (value > 0) ch = DOT0.substring(value,value+1);
                     break;
                 case 2:
-                    if (value > 0) ch = ".123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ".substring(value,value+1);
+                    if (value > 0) ch = DOT1.substring(value,value+1);
                     break;
                 case 3:
                     if (value > 0) ch = ""  + value;
@@ -311,7 +316,7 @@ public class SudokuIO {
                     break;
                 case 4:
                 default:
-                    if (value > 0) ch = ".ABCDEFGHIJKLMNOPQRSTUVWXYZ".substring(value,value+1);
+                    if (value > 0) ch = DOTA.substring(value,value+1);
                     break;
                 }
                 writer.write(ch);
@@ -326,7 +331,7 @@ public class SudokuIO {
         int pformat = Settings.getInstance().getPuzzleFormat();
         int gSize = Settings.getInstance().getGridSize();
         int sformat = Settings.getInstance().getSaveFormat();
-        String text = "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ";
+        String text = ZERZ;
         if ( pformat == 5 ) {
             char[] characters = text.toCharArray();
             for (int i=0; i <81; i++) { int n1 = (int)( Math.random() * characters.length); int n2 = (int)( Math.random() * characters.length); char temp = characters[n1]; characters[n1] = characters[n2]; characters[n2] = temp; }
@@ -340,10 +345,10 @@ public class SudokuIO {
                 String ch = ".";
                 switch ( pformat ) {
                 case 1:
-                    if (value > 0) ch = ".0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ".substring(value,value+1);
+                    if (value > 0) ch = DOT0.substring(value,value+1);
                     break;
                 case 2:
-                    if (value > 0) ch = ".123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ".substring(value,value+1);
+                    if (value > 0) ch = DOT1.substring(value,value+1);
                     break;
                 case 3:
                     if (value > 0) ch = ""  + value;
@@ -355,7 +360,7 @@ public class SudokuIO {
                     break;
                 case 4:
                 default:
-                    if (value > 0) ch = ".ABCDEFGHIJKLMNOPQRSTUVWXYZ".substring(value,value+1);
+                    if (value > 0) ch = DOTA.substring(value,value+1);
                     break;
                 }
                 writer.write(ch);
@@ -402,10 +407,10 @@ public class SudokuIO {
                 String ch = ".";
                 switch ( pformat ) {
                 case 1:
-                    if (n > 0) ch = ".0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ".substring(n,n+1);
+                    if (n > 0) ch = DOT0.substring(n,n+1);
                     break;
                 case 2:
-                    if (n > 0) ch = ".123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ".substring(n,n+1);
+                    if (n > 0) ch = DOT1.substring(n,n+1);
                     break;
                 case 3:
                     if (n > 0) ch = ""  + n;
@@ -416,7 +421,7 @@ public class SudokuIO {
                     break;
                 case 4:
                 default:
-                    if (n > 0) ch = ".ABCDEFGHIJKLMNOPQRSTUVWXYZ".substring(n,n+1);
+                    if (n > 0) ch = DOTA.substring(n,n+1);
                     break;
                 }
                 s += ch;
@@ -595,10 +600,10 @@ public class SudokuIO {
                 String ch = ".";
                 switch ( pformat ) {
                 case 1:
-                    if (value > 0) ch = ".0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ".substring(value,value+1);
+                    if (value > 0) ch = DOT0.substring(value,value+1);
                     break;
                 case 2:
-                    if (value > 0) ch = ".123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ".substring(value,value+1);
+                    if (value > 0) ch = DOT1.substring(value,value+1);
                     break;
                 case 3:
                     if (value > 0) ch = ""  + value;
@@ -611,7 +616,7 @@ public class SudokuIO {
                     break;
                 case 4:
                 default:
-                    if (value > 0) ch = ".ABCDEFGHIJKLMNOPQRSTUVWXYZ".substring(value,value+1);
+                    if (value > 0) ch = DOTA.substring(value,value+1);
                     break;
                 }
                 writer.write(ch);
@@ -627,7 +632,7 @@ public class SudokuIO {
         int pformat = Settings.getInstance().getPuzzleFormat();
         int gSize = Settings.getInstance().getGridSize();
         int sformat = Settings.getInstance().getSaveFormat();
-        String text = "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ";
+        String text = ZERZ;
         boolean isLatin = Settings.getInstance().isLatinSquare();
         int crd = 1;
         for (int y = 0; y < 9; y++) {
@@ -869,10 +874,10 @@ public class SudokuIO {
                 String ch = ".";
                 switch ( pformat ) {
                 case 1:
-                    if (value > 0) ch = ".0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ".substring(value,value+1);
+                    if (value > 0) ch = DOT0.substring(value,value+1);
                     break;
                 case 2:
-                    if (value > 0) ch = ".123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ".substring(value,value+1);
+                    if (value > 0) ch = DOT1.substring(value,value+1);
                     break;
                 case 3:
                     if (value > 0) ch = ""  + value;
@@ -885,7 +890,7 @@ public class SudokuIO {
                     break;
                 case 4:
                 default:
-                    if (value > 0) ch = ".ABCDEFGHIJKLMNOPQRSTUVWXYZ".substring(value,value+1);
+                    if (value > 0) ch = DOTA.substring(value,value+1);
                     break;
                 }
                 writer.write(ch);
@@ -1042,6 +1047,55 @@ public class SudokuIO {
             FileWriter fwriter = new FileWriter(file);
             writer = new BufferedWriter(fwriter);
             savePencilMarksToWriter(grid, writer);
+            return null;
+        } catch (IOException ex) {
+            return new ErrorMessage("Error while writing file {0}:\n{1}", file, ex);
+        } finally {
+            if (writer != null) {
+                try {
+                    writer.close();
+                } catch (IOException ex) {
+                    ex.printStackTrace();
+                }
+            }
+        }
+    }
+
+    private static void savePathToWriter(Stack<String> pathStack, boolean inclpm, Writer writer) throws IOException {
+        Stack<String> tempStack = new Stack<String>();
+        while ( !pathStack.isEmpty() ) {
+            tempStack.push( pathStack.pop());
+        }
+        int crdonce = 0;
+        int lineonce = 0;
+        while ( !tempStack.isEmpty() ) {
+            String z = tempStack.pop();
+            String x = z.substring( 0, 2);
+            pathStack.push(z);
+
+            z = z.substring( 2);
+            if ( x.charAt( 0)=='G' ) {
+                ;   // not implemented here
+            }
+            else
+            if ( x.charAt( 0)==':' ) {
+                if ( z.length() == 81 ) {
+                    writer.write(z + "\r\n");
+                }
+            }
+            else {
+                writer.write(z + "\r\n");
+            }
+            lineonce = 1;
+        }
+    }
+
+    public static ErrorMessage savePathToFile(Stack<String> pathStack, boolean inclpm, File file) {
+        Writer writer = null;
+        try {
+            FileWriter fwriter = new FileWriter(file);
+            writer = new BufferedWriter(fwriter);
+            savePathToWriter(pathStack, inclpm, writer);
             return null;
         } catch (IOException ex) {
             return new ErrorMessage("Error while writing file {0}:\n{1}", file, ex);

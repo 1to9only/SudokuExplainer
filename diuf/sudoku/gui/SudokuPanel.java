@@ -114,6 +114,8 @@ public class SudokuPanel extends JPanel {
     private Color[] Pastel_Colors = { Pastel01, Pastel02, Pastel03, Pastel04, Pastel05, Pastel06, Pastel07, Pastel08, Pastel09, Pastel10, Pastel11, Pastel12, Pastel13, Pastel14, Pastel15, Pastel16, Pastel17, Pastel18, Pastel19, Pastel20, Pastel21, Pastel22, Pastel23, Pastel24, Pastel25, Pastel26, Pastel27, Pastel28, Pastel29, Pastel30, Pastel31, Pastel32, Pastel33};
     private int[] Pastel_Index = { 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28, 29, 30, 31, 32};
 
+    private static String DOTA = ".ABCDEFGHIJKLMNOPQRSTUVWXYZ";
+
     public SudokuPanel(SudokuFrame parent) {
         super();
         this.parent = parent;
@@ -177,19 +179,19 @@ public class SudokuPanel extends JPanel {
                             || (e.getModifiersEx() & InputEvent.CTRL_DOWN_MASK) != 0) {
                         if (value != 0) { // Check that the cell is empty
                             // Toggle a candidate
-                            engine.candidateTyped(target, value);
+                            engine.candidateMouTyped(target, value);
                             repaintCell(target);
                         }
                     } else {
                         if (target.getValue() == 0) { // if unsolved cell and
                           if ( target.hasPotentialValue( value) ) { // has potential candidate
                             // Set the cell's value
-                            engine.cellValueTyped(target, value);
+                            engine.cellValueMouTyped(target, value);
                             repaint();
                           }
                         } else {
                             // Clear the cell's value
-                            engine.cellValueTyped(target, 0);
+                            engine.cellValueMouTyped(target, 0);
                             repaint();
                         }
                     }
@@ -246,14 +248,14 @@ public class SudokuPanel extends JPanel {
                     }
                 } else if (code == KeyEvent.VK_DELETE || code == KeyEvent.VK_BACK_SPACE) {
                     if (selectedCell != null) {
-                        engine.cellValueTyped(selectedCell, 0);
+                        engine.cellValueKbdTyped(selectedCell, 0);
                         repaint();
                     }
                 } else if (code >= KeyEvent.VK_1 && code <= KeyEvent.VK_9) {
                     if ((e.getModifiersEx() & InputEvent.CTRL_DOWN_MASK) != 0) {
                         int value = (code - KeyEvent.VK_0);
                         if (selectedCell != null) {
-                            engine.candidateTyped(selectedCell, value);
+                            engine.candidateKbdTyped(selectedCell, value);
                             repaintCell(selectedCell);
                         }
                     }
@@ -270,21 +272,21 @@ public class SudokuPanel extends JPanel {
                     char ch = e.getKeyChar();
                     if (ch >= '1' && ch <= '9') {
                         int value = ch - '0';
-                        engine.cellValueTyped(selectedCell, value);
+                        engine.cellValueKbdTyped(selectedCell, value);
                         repaint();
                         isProcessed = true;
                     } else if (ch >= 'A' && ch <= 'I') {
                         int value = ch - 'A'+1;
-                        engine.cellValueTyped(selectedCell, value);
+                        engine.cellValueKbdTyped(selectedCell, value);
                         repaint();
                         isProcessed = true;
                     } else if (ch >= 'a' && ch <= 'i') {
                         int value = ch - 'a'+1;
-                        engine.cellValueTyped(selectedCell, value);
+                        engine.cellValueKbdTyped(selectedCell, value);
                         repaint();
                         isProcessed = true;
                     } else if (ch == ' ' || ch == '0') {
-                        engine.cellValueTyped(selectedCell, 0);
+                        engine.cellValueKbdTyped(selectedCell, 0);
                         selectedCell.setValue(0);
                         repaint();
                         isProcessed = true;
@@ -1058,9 +1060,9 @@ public class SudokuPanel extends JPanel {
                                 drawStringCentered(g, "" + value, cx, cy);
                           } else {
                             if (isHighlighted)
-                                drawStringCentered3D(g, ".ABCDEFGHIJKLMNOPQRSTUVWXYZ".substring(value,value+1), cx, cy);
+                                drawStringCentered3D(g, DOTA.substring(value,value+1), cx, cy);
                             else if (paintIt)
-                                drawStringCentered(g, ".ABCDEFGHIJKLMNOPQRSTUVWXYZ".substring(value,value+1), cx, cy);
+                                drawStringCentered(g, DOTA.substring(value,value+1), cx, cy);
                           }
                         }
                         index++;
@@ -1092,9 +1094,9 @@ public class SudokuPanel extends JPanel {
                                 drawStringCentered(g, "" + value, cx+adj, cy+adj);
                           } else {
                             if (isHighlighted)
-                                drawStringCentered3D(g, ".ABCDEFGHIJKLMNOPQRSTUVWXYZ".substring(value,value+1), cx+adj, cy+adj);
+                                drawStringCentered3D(g, DOTA.substring(value,value+1), cx+adj, cy+adj);
                             else if (paintIt)
-                                drawStringCentered(g, ".ABCDEFGHIJKLMNOPQRSTUVWXYZ".substring(value,value+1), cx+adj, cy+adj);
+                                drawStringCentered(g, DOTA.substring(value,value+1), cx+adj, cy+adj);
                           }
                         }
                         index++;
@@ -1121,7 +1123,7 @@ public class SudokuPanel extends JPanel {
                         drawStringCentered(g, "" + cell.getValue(), cx, cy);
                       } else {
                         int value = cell.getValue();
-                        drawStringCentered(g, ".ABCDEFGHIJKLMNOPQRSTUVWXYZ".substring(value,value+1), cx, cy);
+                        drawStringCentered(g, DOTA.substring(value,value+1), cx, cy);
                       }
                     }
                 }
@@ -1143,7 +1145,7 @@ public class SudokuPanel extends JPanel {
                         drawStringCentered(g, "" + cell.getValue(), cx+adj, cy+adj);
                       } else {
                         int value = cell.getValue();
-                        drawStringCentered(g, ".ABCDEFGHIJKLMNOPQRSTUVWXYZ".substring(value,value+1), cx+adj, cy+adj);
+                        drawStringCentered(g, DOTA.substring(value,value+1), cx+adj, cy+adj);
                       }
                     }
             }

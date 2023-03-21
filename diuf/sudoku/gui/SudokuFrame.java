@@ -78,6 +78,10 @@ public class SudokuFrame extends JFrame implements Asker {
     private JMenuItem mitSave = null;
     private JMenuItem mitSavePencilMarks = null;
     private JMenuItem mitSaveAsImage = null;
+    private JMenuItem mitShowPath = null;
+    private JMenuItem mitCopyPath = null;
+    private JMenuItem mitSavePath = null;
+    private JCheckBoxMenuItem mitIncludePencils = null;
     private JMenu editMenu = null;
     private JMenuItem mitCopy81 = null;
     private JMenuItem mitCopy = null;
@@ -884,6 +888,11 @@ public class SudokuFrame extends JFrame implements Asker {
             setCommand(getMitSavePencilMarks(), 'P');
             fileMenu.add(getMitSaveAsImage());
             fileMenu.addSeparator();
+            fileMenu.add(getMitShowPath());
+            fileMenu.add(getMitCopyPath());
+            fileMenu.add(getMitSavePath());
+        //  fileMenu.add(getMitIncludePencils());
+            fileMenu.addSeparator();
             fileMenu.add(getMitQuit());
             setCommand(getMitQuit(), 'Q');
         }
@@ -1165,6 +1174,93 @@ public class SudokuFrame extends JFrame implements Asker {
             });
         }
         return mitSaveAsImage;
+    }
+
+    private JMenuItem getMitShowPath() {
+        if (mitShowPath == null) {
+            mitShowPath = new JMenuItem();
+            mitShowPath.setText("Show Solution Path (hints only)");
+            mitShowPath.setToolTipText("Show the sudoku (partial/complete) solution path so far (hints only)");
+            mitShowPath.addActionListener(new java.awt.event.ActionListener() {
+                public void actionPerformed(java.awt.event.ActionEvent e) {
+                    engine.showPath();
+                }
+            });
+        }
+        return mitShowPath;
+    }
+
+    private JMenuItem getMitCopyPath() {
+        if (mitCopyPath == null) {
+            mitCopyPath = new JMenuItem();
+            mitCopyPath.setText("Copy Solution Path (hints only)");
+            mitCopyPath.setToolTipText("Copy the sudoku (partial/complete) solution path so far (hints only)");
+            mitCopyPath.addActionListener(new java.awt.event.ActionListener() {
+                public void actionPerformed(java.awt.event.ActionEvent e) {
+                    engine.copyPath();
+                }
+            });
+        }
+        return mitCopyPath;
+    }
+
+    private JMenuItem getMitSavePath() {
+        if (mitSavePath == null) {
+            mitSavePath = new JMenuItem();
+            mitSavePath.setText("Save Solution Path...");
+            mitSavePath.setToolTipText("Open the file selector to save the sudoku (partial/complete) solution path to a file");
+            mitSavePath.addActionListener(new java.awt.event.ActionListener() {
+                public void actionPerformed(java.awt.event.ActionEvent e) {
+                  if ( engine.savePath() == 1 ) {
+                    try {
+                        JFileChooser chooser = new JFileChooser();
+                        chooser.setFileFilter(new TextFileFilter());
+                        if (defaultDirectory != null)
+                            chooser.setCurrentDirectory(defaultDirectory);
+                        int result = chooser.showSaveDialog(SudokuFrame.this);
+                        defaultDirectory = chooser.getCurrentDirectory();
+                        if (result == JFileChooser.APPROVE_OPTION) {
+                            File file = chooser.getSelectedFile();
+                            try {
+                                if (!file.getName().endsWith(".txt")) // &&
+                                    //  file.getName().indexOf('.') < 0)
+                                    file = new File(file.getCanonicalPath() + ".txt");
+                            } catch (IOException ex) {
+                                ex.printStackTrace();
+                            }
+                            if (file.exists()) {
+                                if (JOptionPane.showConfirmDialog(SudokuFrame.this,
+                                        "The file \"" + file.getName() + "\" already exists.\n" +
+                                        "Do you want to replace the existing file ?",
+                                        "Save", JOptionPane.OK_CANCEL_OPTION) != JOptionPane.OK_OPTION)
+                                    return;
+                            }
+                        //  engine.savePath(file,mitIncludePencils.isSelected());
+                            engine.savePath(file,false);
+                        }
+                    } catch (AccessControlException ex) {
+                        warnAccessError(ex);
+                    }
+                  }
+                }
+            });
+        }
+        return mitSavePath;
+    }
+
+    private JCheckBoxMenuItem getMitIncludePencils() {
+        if (mitIncludePencils == null) {
+            mitIncludePencils = new JCheckBoxMenuItem();
+            mitIncludePencils.setText("Include pencilmarks");
+            mitIncludePencils.setToolTipText("Include pencilmarks in the saved solution");
+            mitIncludePencils.setSelected(false);
+            mitIncludePencils.addItemListener(new java.awt.event.ItemListener() {
+                public void itemStateChanged(java.awt.event.ItemEvent e) {
+                    /* nop */ ;
+                }
+            });
+        }
+        return mitIncludePencils;
     }
 
     private JMenu getEditMenu() {

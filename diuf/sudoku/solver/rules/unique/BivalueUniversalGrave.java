@@ -159,7 +159,7 @@ public class BivalueUniversalGrave implements IndirectHintProducer {
     private void addBug3Hint(HintsAccumulator accu, List<Cell> bugCells,
             Map<Cell, BitSet> extraValues, BitSet allExtraValues, Set<Cell> commonCells,
             Grid grid) throws InterruptedException {
-        for (Class<? extends Grid.Region> regionType : grid.getRegionTypes()) {
+        for (Class<? extends Grid.Region> regionType : grid.getRegionTypes3()) {
             // Look for a region of this type shared by bugCells
             Grid.Region region = null;
             for (Cell cell : bugCells) {
@@ -255,7 +255,7 @@ public class BivalueUniversalGrave implements IndirectHintProducer {
         if (common.cardinality() != 1)
             return; // No BUG type 4
 
-        for (Class<? extends Grid.Region> regionType : grid.getRegionTypes()) {
+        for (Class<? extends Grid.Region> regionType : grid.getRegionTypes3()) {
             // Look for a region of this type shared by all bugCells
             Grid.Region region = null;
             for (Cell cell : bugCells) {

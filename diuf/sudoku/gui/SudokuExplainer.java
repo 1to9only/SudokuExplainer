@@ -21,6 +21,10 @@ import diuf.sudoku.io.*;
 import diuf.sudoku.solver.*;
 import diuf.sudoku.tools.*;
 
+import java.awt.Toolkit;
+import java.awt.datatransfer.StringSelection;
+import java.awt.datatransfer.Clipboard;
+
 /**
  * The main class and controller. All actions performed in the gui
  * are directly redirected to method of this class, which
@@ -46,6 +50,7 @@ public class SudokuExplainer {
     private boolean isFiltered = true;
     private List<Hint> selectedHints = new ArrayList<Hint>(); // Currently selected hint
     private Stack<Grid> gridStack = new Stack<Grid>(); // Stack for undo
+    private Stack<String> pathStack = new Stack<String>(); // Stack for solution path
 
     // Cache for filter
     Set<Cell> givenCells = new HashSet<Cell>(); // Cell values already encountered
@@ -56,6 +61,7 @@ public class SudokuExplainer {
         grid = new Grid();
         savedgrid = new Grid();
         gridStack = new Stack<Grid>(); // Stack for undo
+        pathStack = new Stack<String>(); // Stack for solution path
         solver = new Solver(grid);
         solver.rebuildPotentialValues();
         frame = new SudokuFrame();
@@ -260,10 +266,12 @@ public class SudokuExplainer {
      * @param value the value typed in the cell, or <code>0</code> if
      * the cell's value was erased.
      */
-    public void cellValueTyped(Cell cell, int value) {
+    public void cellValueKbdTyped(Cell cell, int value) {
         int oldValue = cell.getValue();
         if ( oldValue != value ) {
             pushGrid();
+            pushStep( grid);
+            pushKbdValue( cell.getX(), cell.getY(), value);
         }
         cell.setValue(value);
         if (value == 0 || oldValue != 0)
@@ -277,14 +285,65 @@ public class SudokuExplainer {
             repaintHintsTree();
             repaintHints();
         }
+      if ( solver.isSolved() ) {
+        frame.setExplanations("<html><body><h2>The Sudoku has been solved !</h2></body></html>");
+      }
     }
 
-    public void candidateTyped(Cell cell, int candidate) {
+    public void candidateKbdTyped(Cell cell, int candidate) {
         pushGrid();
-        if (cell.hasPotentialValue(candidate))
+        pushStep( grid);
+        if (cell.hasPotentialValue(candidate)) {
+            pushKbdCandidateRemove( cell.getX(), cell.getY(), candidate);
             cell.removePotentialValue(candidate);
-        else
+        } else {
+            pushKbdCandidateAdd( cell.getX(), cell.getY(), candidate);
             cell.addPotentialValue(candidate);
+        }
+        solver.cancelPotentialValues();
+    }
+
+    /**
+     * Invoked when the user manually types a value in a cell of
+     * the sudoku grid.
+     * @param cell the cell
+     * @param value the value typed in the cell, or <code>0</code> if
+     * the cell's value was erased.
+     */
+    public void cellValueMouTyped(Cell cell, int value) {
+        int oldValue = cell.getValue();
+        if ( oldValue != value ) {
+            pushGrid();
+            pushStep( grid);
+            pushMouValue( cell.getX(), cell.getY(), value);
+        }
+        cell.setValue(value);
+        if (value == 0 || oldValue != 0)
+            solver.rebuildPotentialValues();
+        else
+            solver.cancelPotentialValues();
+        boolean needRepaintHints = (filteredHints != null);
+        clearHints0();
+        this.selectedHints.clear();
+        if (needRepaintHints) {
+            repaintHintsTree();
+            repaintHints();
+        }
+      if ( solver.isSolved() ) {
+        frame.setExplanations("<html><body><h2>The Sudoku has been solved !</h2></body></html>");
+      }
+    }
+
+    public void candidateMouTyped(Cell cell, int candidate) {
+        pushGrid();
+        pushStep( grid);
+        if (cell.hasPotentialValue(candidate)) {
+            pushMouCandidateRemove( cell.getX(), cell.getY(), candidate);
+            cell.removePotentialValue(candidate);
+        } else {
+            pushMouCandidateAdd( cell.getX(), cell.getY(), candidate);
+            cell.addPotentialValue(candidate);
+        }
         solver.cancelPotentialValues();
     }
 
@@ -312,17 +371,29 @@ public class SudokuExplainer {
         grid = new Grid();
         savedgrid = new Grid();
         gridStack = new Stack<Grid>(); // Stack for undo
+        pathStack = new Stack<String>(); // Stack for solution path
         solver = new Solver(grid);
         solver.rebuildPotentialValues();
         panel.setSudokuGrid(grid);
+        panel.clearSelection();
         clearHints();
         frame.showWelcomeText();
     }
 
-    private boolean isGridEmpty() {
+    public boolean isGridEmpty() {
         for (int y = 0; y < 9; y++) {
             for (int x = 0; x < 9; x++) {
                 if (grid.getCellValue(x, y) != 0)
+                    return false;
+            }
+        }
+        return true;
+    }
+
+    public boolean isGridFilled() {
+        for (int y = 0; y < 9; y++) {
+            for (int x = 0; x < 9; x++) {
+                if (grid.getCellValue(x, y) == 0)
                     return false;
             }
         }
@@ -340,15 +411,17 @@ public class SudokuExplainer {
         }
         else {
             if ( solver.isSolved() ||
-                 JOptionPane.showConfirmDialog(frame, "Restart, Are you sure?", "Restart", JOptionPane.OK_CANCEL_OPTION) == JOptionPane.OK_OPTION ) {
+                JOptionPane.showConfirmDialog(frame, "Restart, Are you sure?", "Restart", JOptionPane.OK_CANCEL_OPTION) == JOptionPane.OK_OPTION ) {
                 savedgrid.copyTo(grid);
-                gridStack = new Stack<Grid>();
+                gridStack = new Stack<Grid>(); // Stack for undo
+                pathStack = new Stack<String>(); // Stack for solution path
                 solver = new Solver(grid);
             //  solver.rebuildPotentialValues();
                 panel.setSudokuGrid(grid);
                 panel.clearSelection();
                 clearHints();
                 frame.showWelcomeText();
+                pushSudoku(grid);
             }
         }
     }
@@ -356,6 +429,7 @@ public class SudokuExplainer {
     public void setGrid(Grid grid) {
         this.grid = grid;
         gridStack = new Stack<Grid>(); // Stack for undo
+        pathStack = new Stack<String>(); // Stack for solution path
         solver = new Solver(grid);
         solver.rebuildPotentialValues();
         grid.copyTo(savedgrid);
@@ -499,6 +573,9 @@ public class SudokuExplainer {
         frame.setExplanations("<html><body><h2>The Sudoku has been solved !</h2></body></html>");
         return;
      }
+     if ( this.pathStack.isEmpty() ) {
+        pushSudoku(grid);
+     }
      int basics = 1;
      while ( basics == 1 ) {
       clearHintsOnly();
@@ -509,8 +586,9 @@ public class SudokuExplainer {
           try {
             Rule rule = (Rule)hint;
             String rulename = rule.getName();
-            if ( rulename.equals("Hidden Single") || rulename.equals("Naked Single") ) {
-                pushGrid(); hint.apply(grid);
+            if ( rulename.equals("Hidden Single")       // 1.0-1.5
+              || rulename.equals("Naked Single") ) {    // 2.3
+                pushGrid(); pushStep( grid); hint.apply(grid); pushHint( hint);
             }
             else { basics = 0; }
           } catch (Exception e) {
@@ -543,6 +621,9 @@ public class SudokuExplainer {
         frame.setExplanations("<html><body><h2>The Sudoku has been solved !</h2></body></html>");
         return;
      }
+     if ( this.pathStack.isEmpty() ) {
+        pushSudoku(grid);
+     }
      int basics = 1;
      while ( basics == 1 ) {
       clearHintsOnly();
@@ -561,7 +642,7 @@ public class SudokuExplainer {
               || rulename.equals("Direct Hidden Triplet")   // 2.5
               || rulename.equals("Pointing")                // 2.6
               || rulename.equals("Claiming") ) {            // 2.8
-                pushGrid(); hint.apply(grid);
+                pushGrid(); pushStep( grid); hint.apply(grid); pushHint( hint);
             }
             else { basics = 0; }
           } catch (Exception e) {
@@ -621,20 +702,35 @@ public class SudokuExplainer {
     }
 
     public void UndoStep() {
+      if ( this.pathStack.size() > 1 ) {
+        popStep();
         popGrid();
+      }
     }
 
     public void applySelectedHints() {
+     if ( !solver.isSolved() ) {
+      if ( selectedHints.size() >= 1 ) {
         pushGrid();
-        for (Hint hint : selectedHints)
+        pushStep( grid);
+        for (Hint hint : selectedHints) {
             hint.apply(grid);
+            pushHint( hint);
+        }
         clearHints();
         repaintAll();
+        if ( solver.isSolved() ) {
+            frame.setExplanations("<html><body><h2>The Sudoku has been solved !</h2></body></html>");
+        }
+      }
+     }
     }
 
     public void applySelectedHintsAndContinue() {
         applySelectedHints();
+      if ( !solver.isSolved() ) {
         getNextHint();
+      }
     }
 
     private void repaintHintsTree() {
@@ -659,12 +755,14 @@ public class SudokuExplainer {
         if (message == null || !message.isFatal()) {
             solver.rebuildPotentialValues();
             gridStack = new Stack<Grid>(); // Stack for undo
+            pathStack = new Stack<String>(); // Stack for solution path
+            pushSudoku(grid);
             grid.copyTo(savedgrid);
         } else {
             copy.copyTo(grid);
         }
         if (message != null)
-            JOptionPane.showMessageDialog(frame, message.toString(), "Paste",
+            JOptionPane.showMessageDialog(frame, message.toString(), "Paste Grid",
                     (message.isFatal() ? JOptionPane.ERROR_MESSAGE : JOptionPane.WARNING_MESSAGE));
     }
 
@@ -680,7 +778,8 @@ public class SudokuExplainer {
         SudokuIO.savePencilMarksToClipboard(grid);
     }
 
-    public void loadGrid(File file) {
+    public int loadGrid(File file) {
+        int rc = 0;
         Grid copy = new Grid();
         this.grid.copyTo(copy);
         clearGrid();
@@ -688,13 +787,17 @@ public class SudokuExplainer {
         if (message == null || !message.isFatal()) {
             solver.rebuildPotentialValues();
             gridStack = new Stack<Grid>(); // Stack for undo
+            pathStack = new Stack<String>(); // Stack for solution path
+            pushSudoku(grid);
             grid.copyTo(savedgrid);
+            rc = 1; // success
         } else {
             copy.copyTo(grid);
         }
         if (message != null)
-            JOptionPane.showMessageDialog(frame, message.toString(), "Load",
+            JOptionPane.showMessageDialog(frame, message.toString(), "Load Grid",
                     (message.isFatal() ? JOptionPane.ERROR_MESSAGE : JOptionPane.WARNING_MESSAGE));
+        return rc;
     }
 
     public void saveGrid81(File file) {
@@ -707,7 +810,7 @@ public class SudokuExplainer {
     public void saveGrid(File file) {
         ErrorMessage message = SudokuIO.saveToFile(grid, file);
         if (message != null)
-            JOptionPane.showMessageDialog(frame, message.toString(), "Save",
+            JOptionPane.showMessageDialog(frame, message.toString(), "Save Grid",
                     JOptionPane.ERROR_MESSAGE);
     }
 
@@ -716,6 +819,231 @@ public class SudokuExplainer {
         if (message != null)
             JOptionPane.showMessageDialog(frame, message.toString(), "Save PencilMarks",
                     JOptionPane.ERROR_MESSAGE);
+    }
+
+    public void showPath() {
+      if ( !this.pathStack.isEmpty() ) {
+        int hintscount = 0;
+        String solutionpath = "";
+        Stack<String> tempStack = new Stack<String>();
+        while ( !pathStack.isEmpty() ) {
+            tempStack.push( pathStack.pop());
+        }
+        while ( !tempStack.isEmpty() ) {
+            String z = tempStack.pop();
+            String x = z.substring( 0, 2);
+            pathStack.push(z);
+            z = z.substring( 2); z = z.replaceAll( "<>", "&lt;&gt;");
+            if ( x.charAt( 0)=='H' || x.charAt( 0)=='K' || x.charAt( 0)=='M' || x.charAt( 0)=='N' ) {
+                hintscount += 1;
+                solutionpath += "" + hintscount + ": " + z + "<br>\r\n";
+            }
+        }
+        if ( solutionpath.length() == 0 ) {
+            solutionpath += "&lt;empty&gt;<br>\r\n";
+        }
+        String htmlText = HtmlLoader.loadHtml(this, "SolutionPath.html");
+        htmlText = htmlText.replace("{0}", solutionpath);
+        frame.setExplanations(htmlText);
+      }
+      else
+      {
+        JOptionPane.showMessageDialog(frame, "Solution Path is empty.", "Not Shown", JOptionPane.ERROR_MESSAGE);
+      }
+    }
+
+    public void copyPath() {
+      if ( !this.pathStack.isEmpty() ) {
+        int hintscount = 0;
+        String solutionpath = "Solution Path\r\n";
+        Stack<String> tempStack = new Stack<String>();
+        while ( !pathStack.isEmpty() ) {
+            tempStack.push( pathStack.pop());
+        }
+        while ( !tempStack.isEmpty() ) {
+            String z = tempStack.pop();
+            String x = z.substring( 0, 2);
+            pathStack.push(z);
+            z = z.substring( 2);
+            if ( x.charAt( 0)=='H' || x.charAt( 0)=='K' || x.charAt( 0)=='M' || x.charAt( 0)=='N' ) {
+                hintscount += 1;
+                solutionpath += "" + hintscount + ": " + z + "\r\n";
+            }
+        }
+        if ( solutionpath.length() == 0 ) {
+            solutionpath += "<empty>\r\n";
+        }
+        StringSelection data = new StringSelection(solutionpath);
+        Toolkit.getDefaultToolkit().getSystemClipboard().setContents(data, data);
+      }
+      else
+      {
+        JOptionPane.showMessageDialog(frame, "Solution Path is empty.", "Not Copied", JOptionPane.ERROR_MESSAGE);
+      }
+    }
+
+    public int savePath() {
+      int rc = 0;
+      if ( !this.pathStack.isEmpty() ) {
+        rc = 1;
+      }
+      else
+      {
+        JOptionPane.showMessageDialog(frame, "Solution Path is empty.", "Not Saved", JOptionPane.ERROR_MESSAGE);
+      }
+      return rc;
+    }
+
+    public void savePath(File file, boolean inclpm) {
+      if ( !this.pathStack.isEmpty() ) {
+        ErrorMessage message = SudokuIO.savePathToFile( pathStack, inclpm, file);
+        if (message != null)
+            JOptionPane.showMessageDialog(frame, message.toString(), "Save Solution Path", JOptionPane.ERROR_MESSAGE);
+      }
+      else
+      {
+        JOptionPane.showMessageDialog(frame, "Solution Path is empty.", "Not Saved", JOptionPane.ERROR_MESSAGE);
+      }
+    }
+
+    public void pushSudoku(Grid g) {
+        String s = "";
+        int gSize = Settings.getInstance().getGridSize();
+        for (int y = 0; y < 9; y++) {
+            for (int x = 0; x < 9; x++) {
+                int n = g.getCellValue(x, y);
+                if ( n != 0 ) {
+                    if ( gSize <=9) { s += (char)('0'+n); }
+                    if ( gSize > 9) { s += (char)('@'+n); }
+                }
+                else {
+                    s += ".";
+                }
+            }
+        }
+        this.pathStack.push("::"+s);    // starting sudoku
+    }
+
+    public void pushSukaku(Grid g) {
+        String s = "";
+        int gSize = Settings.getInstance().getGridSize();
+        for (int y = 0; y < 9; y++) {
+            for (int x = 0; x < 9; x++) {
+                Cell cell = grid.getCell(x, y);
+                int n = cell.getValue();
+                for (int pv=1; pv<=9; pv++ ) {
+                    if ( pv == n || cell.hasPotentialValue( pv) ) {
+                        if ( gSize <=9) { s += (char)('0'+pv); }
+                        if ( gSize > 9) { s += (char)('@'+pv); }
+                    }
+                    else {
+                        s += ".";
+                    }
+                }
+            }
+        }
+        this.pathStack.push("::"+s);    // starting sukaku
+    }
+
+    public void pushStep(Grid g) {
+        String s = "";
+        for (int y = 0; y < 9; y++) {
+            for (int x = 0; x < 9; x++) {
+                Cell cell = grid.getCell(x, y);
+                int n = cell.getValue();
+                for (int pv=1; pv<=9; pv++ ) {
+                    if ( pv == n || cell.hasPotentialValue( pv) ) {
+                        s += (char)('0'+pv);
+                    }
+                    else {
+                        s += ".";
+                    }
+                }
+            }
+        }
+        this.pathStack.push("G:"+s);    // current grid + pencilmarks
+    }
+
+    public void pushKbdValue(int x, int y, int value) {
+        String s = "r" + (y+1) + "c" + (x+1) + "=" + value;
+        this.pathStack.push("K:Keyboard:Value:"+s);     // cell solved by keyboard (value)
+    }
+
+    public void pushKbdCandidateRemove(int x, int y, int candidate) {
+        String s = "-" + candidate + "r" + (y+1) + "c" + (x+1);
+        this.pathStack.push("K:Keyboard:Candidate:"+s); // cell solved by keyboard (candidate)
+    }
+
+    public void pushKbdCandidateAdd(int x, int y, int candidate) {
+        String s = "+" + candidate + "r" + (y+1) + "c" + (x+1);
+        this.pathStack.push("K:Keyboard:Candidate:"+s); // cell solved by keyboard (candidate)
+    }
+
+    public void pushMouValue(int x, int y, int value) {
+        String s = "r" + (y+1) + "c" + (x+1) + "=" + value;
+        this.pathStack.push("M:Mouse:Value:"+s);        // cell solved by mouse (value)
+    }
+
+    public void pushMouCandidateRemove(int x, int y, int candidate) {
+        String s = "-" + candidate + "r" + (y+1) + "c" + (x+1);
+        this.pathStack.push("M:Mouse:Candidate:"+s);    // cell solved by mouse (candidate)
+    }
+
+    public void pushMouCandidateAdd(int x, int y, int candidate) {
+        String s = "+" + candidate + "r" + (y+1) + "c" + (x+1);
+        this.pathStack.push("M:Mouse:Candidate:"+s);    // cell solved by mouse (candidate)
+    }
+
+    public void pushHint(Hint hint) {
+      try {
+        String s = "";
+        Rule rule = (Rule)hint;
+        double ruleDiff = rule.getDifficulty();
+        int w = (int)((ruleDiff + 0.05) * 10); int p = w % 10; w /= 10;
+        if (hint instanceof IndirectHint) {
+            IndirectHint iHint = (IndirectHint)hint;
+            if ( iHint.isWorth() ) {
+                int countCells = 0;
+                Map<Cell, BitSet> getPots = iHint.getRemovablePotentials();
+                Map<Integer, BitSet> remPots = new TreeMap<Integer, BitSet>();
+                for (Cell cell : getPots.keySet()) {
+                    remPots.put(cell.getY()*9+cell.getX(), getPots.get(cell));
+                }
+                for (int cellindex : remPots.keySet()) {
+                    BitSet cellPots = remPots.get(cellindex);
+                    if ( countCells == 0 ) { s += ":"; }
+                    if ( countCells > 0 ) { s += ","; }
+                    s += " r" + (cellindex/9+1) + "c" + (cellindex%9+1) + "<>";
+                    int countPots = 0;
+                    for (int pv=1; pv<=9; pv++ ) {
+                        if ( cellPots.get( pv) ) { if ( countPots != 0 ) { s += ","; } s += pv; countPots++; }
+                    }
+                    countCells++;
+                }
+                Cell cell = iHint.getCell();
+                if (cell != null) {
+                    s += ", r" + (cell.getY()+1) + "c" + (cell.getX()+1) + "=" + iHint.getValue();
+                }
+            }
+        }
+        if (hint instanceof DirectHint) {
+            DirectHint iHint = (DirectHint)hint;
+            Cell cell = iHint.getCell();
+            if (cell != null) {
+                s += ": r" + (cell.getY()+1) + "c" + (cell.getX()+1) + "=" + iHint.getValue();
+            }
+        }
+        this.pathStack.push("H:"+w+"."+p +", "+hint.toString2()+s);    // cell solved by hint
+      } catch(Exception e) { ; } // catch any that cannot be cast to (Rule)
+    }
+
+    private void popStep() {
+        while ( !this.pathStack.isEmpty() ) {
+            String x = pathStack.pop();
+            if ( x.charAt( 0)=='G' ) {
+                break;                  // stop after last grid + pencilmarks undone
+            }
+        }
     }
 
     /**
