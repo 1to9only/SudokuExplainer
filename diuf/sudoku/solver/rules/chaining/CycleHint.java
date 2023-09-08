@@ -169,7 +169,7 @@ public class CycleHint extends ChainingHint {
     }
 
     public String toString2() {
-        return getName() + " " + "(w/" + (getComplexity()-2) + " nodes): "
+        return getName() + " " +getTechsInfo()+ "(w/" + (getComplexity()-2) + " nodes)"+getExtraInfo(getDifficulty(),getLengthDifficulty())+": "
             + Cell.toString(getSelectedCells());
     }
 

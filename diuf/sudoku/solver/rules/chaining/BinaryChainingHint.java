@@ -162,15 +162,15 @@ public class BinaryChainingHint extends ChainingHint {
 
     public String toString2() {
         if (isNishio)
-            return "Nishio Forcing Chain " + "(w/" + (getComplexity()-2) + " nodes): "
+            return "Nishio Forcing Chain " +getTechsInfo()+ "(w/" + (getComplexity()-2) + " nodes)"+getExtraInfo(getDifficulty(),getLengthDifficulty())+": "
                 + srcPotential.toString() + (srcPotential.isOn ? " on" : " off") + " ==> "
                 + this.dstOffPotential.toString() + " both on & off";
         else if (isAbsurd)
-            return "Contradiction Forcing Chain " + "(w/" + (getComplexity()-2) + " nodes): "
+            return "Contradiction Forcing Chain " +getTechsInfo()+ "(w/" + (getComplexity()-2) + " nodes)"+getExtraInfo(getDifficulty(),getLengthDifficulty())+": "
                 + srcPotential.toString() + (srcPotential.isOn ? " on" : " off") + " ==> "
                 + this.dstOffPotential.toString() + " both on & off";
         else
-            return "Double Forcing Chain " + "(w/" + (getComplexity()-2) + " nodes): "
+            return "Double Forcing Chain " +getTechsInfo()+ "(w/" + (getComplexity()-2) + " nodes)"+getExtraInfo(getDifficulty(),getLengthDifficulty())+": "
                 + srcPotential.toString() + " on & off ==> "
                 + this.dstOnPotential.toString() + (dstOnPotential.isOn ? " on" : " off");
     }

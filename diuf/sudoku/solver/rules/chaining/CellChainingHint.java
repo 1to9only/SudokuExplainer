@@ -147,7 +147,7 @@ public class CellChainingHint extends ChainingHint {
         if (prefix == null)
             prefix = "Cell Forcing Chains";
         Potential dstPotential = chains.values().iterator().next();
-        return prefix + " " + "(w/" + (getComplexity()-2) + " nodes): "
+        return prefix + " " +getTechsInfo()+ "(w/" + (getComplexity()-2) + " nodes)"+getExtraInfo(getDifficulty(),getLengthDifficulty())+": "
             + srcCell.toString() + " ==> "
             + dstPotential.toString() + (dstPotential.isOn ? " on" : " off");
     }

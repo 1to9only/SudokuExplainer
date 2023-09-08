@@ -359,6 +359,68 @@ public abstract class ChainingHint extends IndirectHint implements Rule, HasPare
         return added;
     }
 
+    public String getTechsInfo() {
+        String s = "[]";
+        Chaining rule = getChainingRule();
+        boolean mu = rule.isMultiple();
+        boolean dy = rule.isDynamic();
+        boolean ni = rule.isNishio();
+        int lv = rule.getLevel();
+    //  int nl = rule.getNestingLimit();
+        if ( !mu ) { if ( !dy ) {                  s = "FC"; }
+                     if (  dy ) {                  s = "NFC"; }
+                   }
+        if (  mu ) { if ( !dy ) {                  s = "MFC"; }
+                     if (  dy ) { if ( lv == 0 ) { s = "DFC"; }
+                                  if ( lv == 1 ) { s = "DFC+"; }
+                                  if ( lv == 2 ) { s = "NFC+FC"; }
+                                  if ( lv == 3 ) { s = "NFC+MFC"; }
+                                  if ( lv == 4 ) { s = "NFC+DFC"; }
+                                  if ( lv == 5 ) { s = "NFC+NFC"; }
+                                }
+        }
+        return s;
+    }
+
+    public String getExtraInfo( double Diff, double LenDiff) {
+        String s = "["; int w; int p;
+        w = (int)((Diff-LenDiff + 0.05) * 10); p = w % 10; w /= 10;
+        s += w + "." + p + "+";
+        w = (int)((LenDiff + 0.05) * 10); p = w % 10; w /= 10;
+        s += w + "." + p;
+        if ( w == 0 && p == 0 ) { s += "(1-4)]"; }
+        if ( w == 0 && p == 1 ) { s += "(5-6)]"; }
+        if ( w == 0 && p == 2 ) { s += "(7-8)]"; }
+        if ( w == 0 && p == 3 ) { s += "(9-12)]"; }
+        if ( w == 0 && p == 4 ) { s += "(13-16)]"; }
+        if ( w == 0 && p == 5 ) { s += "(17-24)]"; }
+        if ( w == 0 && p == 6 ) { s += "(25-32)]"; }
+        if ( w == 0 && p == 7 ) { s += "(33-48)]"; }
+        if ( w == 0 && p == 8 ) { s += "(49-64)]"; }
+        if ( w == 0 && p == 9 ) { s += "(65-96)]"; }
+        if ( w == 1 && p == 0 ) { s += "(97-128)]"; }
+        if ( w == 1 && p == 1 ) { s += "(129-192)]"; }
+        if ( w == 1 && p == 2 ) { s += "(193-256)]"; }
+        if ( w == 1 && p == 3 ) { s += "(257-384)]"; }
+        if ( w == 1 && p == 4 ) { s += "(385-512)]"; }
+        if ( w == 1 && p == 5 ) { s += "(513-768)]"; }
+        if ( w == 1 && p == 6 ) { s += "(769-1024)]"; }
+        if ( w == 1 && p == 7 ) { s += "(1025-1536)]"; }
+        if ( w == 1 && p == 8 ) { s += "(1537-2048)]"; }
+        if ( w == 1 && p == 9 ) { s += "(2049-3072)]"; }
+        if ( w == 2 && p == 0 ) { s += "(3073-4096)]"; }
+        if ( w == 2 && p == 1 ) { s += "(4097-6144)]"; }
+        if ( w == 2 && p == 2 ) { s += "(6145-8192)]"; }
+        if ( w == 2 && p == 3 ) { s += "(8193-12288)]"; }
+        if ( w == 2 && p == 4 ) { s += "(12289-16384)]"; }
+        if ( w == 2 && p == 5 ) { s += "(16385-24576)]"; }
+        if ( w == 2 && p == 6 ) { s += "(24577-32768)]"; }
+        if ( w == 2 && p == 7 ) { s += "(32769-49152)]"; }
+        if ( w == 2 && p == 8 ) { s += "(49153-65536)]"; }
+        if ( w == 2 && p == 9 ) { s += "(65537-98304)]"; }
+        return s;
+    }
+
     protected String getNamePrefix() {
         Chaining rule = getChainingRule();
         if (rule.getLevel() > 0)
