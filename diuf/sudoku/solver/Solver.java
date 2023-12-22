@@ -64,7 +64,7 @@ public class Solver {
 
 //  private boolean isUsingAdvanced = false;
 
-    private static String ATA = "@ABCDEFGHIJKLMNOPQRSTUVWXYZ";
+    private String ATA = "@"+Settings.getInstance().getsA();
 
     private class DefaultHintsAccumulator implements HintsAccumulator {
 
@@ -507,6 +507,70 @@ public class Solver {
             return difficulty;
         } finally {
             normalPriority(oldPriority);
+        }
+    }
+
+    public void getBatchDifficulty() {
+        Grid backup = new Grid();
+        grid.copyTo(backup);
+        try {
+            difficulty = 0.0;
+            pearl = 0.0;
+            diamond = 0.0;
+            SmallestHintAccumulator accu = new SmallestHintAccumulator();
+            while (!isSolved()) {
+///             SingleHintAccumulator accu = new SingleHintAccumulator();
+                try {
+                    for (HintProducer producer : directHintProducers)
+                        producer.getHints(grid, accu);
+                    if ( accu.hasHints() ) throw new InterruptedException();
+                    for (IndirectHintProducer producer : indirectHintProducers)
+                        producer.getHints(grid, accu);
+                    if ( accu.hasHints() ) throw new InterruptedException();
+                    for (IndirectHintProducer producer : chainingHintProducers)
+                        producer.getHints(grid, accu);
+                    if ( accu.hasHints() ) throw new InterruptedException();
+                    for (IndirectHintProducer producer : chainingHintProducers2)
+                        producer.getHints(grid, accu);
+                    if ( accu.hasHints() ) throw new InterruptedException();
+                    for (IndirectHintProducer producer : advancedHintProducers)
+                        producer.getHints(grid, accu);
+                    if ( accu.hasHints() ) throw new InterruptedException();
+                    for (IndirectHintProducer producer : experimentalHintProducers)
+                        producer.getHints(grid, accu);
+                } catch (InterruptedException willHappen) {}
+                List<Hint> hints = accu.getHints();
+                if ( hints.isEmpty() ) {
+                    difficulty = 20.0;
+                    break;
+                }
+//a             assert hint instanceof Rule;
+              for ( Hint hint : hints ) {
+                Rule rule = (Rule)hint;
+                double ruleDiff = rule.getDifficulty();
+                if (ruleDiff > difficulty)
+                    difficulty = ruleDiff;
+                hint.apply(grid);
+                if (pearl == 0.0) {
+                    if (diamond == 0.0)
+                        diamond = difficulty;
+                    if (hint.getCell() != null) {
+                        if (want == 'd' && difficulty > diamond) {
+                            difficulty = 20.0;
+                            break;
+                        }
+                        pearl = difficulty;
+                    }
+                }
+                else if (want != 0 && difficulty > pearl) {
+                    difficulty = 20.0;
+                    break;
+                }
+              }
+              accu.clear();
+            }
+        } finally {
+            backup.copyTo(grid);
         }
     }
 

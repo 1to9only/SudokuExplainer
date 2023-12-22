@@ -44,6 +44,10 @@ public class Settings {
     private int iGridSize = 9;
     private int iSaveFormat = 0;
 
+    private String s0 = "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ";
+    private String s1 = "123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ";
+    private String sA = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
+
     private EnumSet<SolvingTechnique> techniques;
 
     private boolean isVertical = false;             // generate dialog
@@ -80,6 +84,7 @@ public class Settings {
     private boolean isCustom = false;
     private String custom = null;       // custom variant regions
     private int count = 9;              // custom regions
+    private int customconnect = 0;      // custom connections
 
     private boolean isNumbers = true;               // is Numbers (else Alphas)
 
@@ -197,6 +202,16 @@ public class Settings {
 
     public int getSaveFormat() {
         return iSaveFormat;
+    }
+
+    public String gets0() {
+        return s0;
+    }
+    public String gets1() {
+        return s1;
+    }
+    public String getsA() {
+        return sA;
     }
 
     public EnumSet<SolvingTechnique> getTechniques() {
@@ -531,12 +546,33 @@ public class Settings {
         return isCustom;
     }
 
+    public void isCustomConnected() {
+      this.customconnect = 0;
+      for (int y=0; y<8; y++ ) {
+        for (int x=0; x<8; x++ ) {
+          int index = y*9+x;
+          char ch = this.custom.charAt(index);
+          if ( ch != '.' && ch != '0' ) {
+            char cri = this.custom.charAt(index+1);
+            if ( cri != '.' && cri != '0' && cri != ch ) {
+              this.customconnect = 1;
+            }
+            char cbe = this.custom.charAt(index+9);
+            if ( cbe != '.' && cbe != '0' && cbe != ch ) {
+              this.customconnect = 1;
+            }
+          }
+        }
+      }
+    }
+
     public void setCustom(String custom) {
       if ( this.custom == null || !(this.custom.equals(custom)) ) {
         this.custom = custom.replace( "0", ".");
        if ( this.isCustom != true ) {
         this.isCustom = true;
        }
+        isCustomConnected();
         save();
       }
     }
@@ -554,6 +590,10 @@ public class Settings {
 
     public int getCount() {
         return count;
+    }
+
+    public int getCustomConnect() {
+        return customconnect;
     }
 
     public void setNumbers(boolean isNumbers) {
@@ -635,6 +675,31 @@ public class Settings {
                 try {
                     s = (String)stgDetails.get("iSaveFormat");
                     iSaveFormat = s.charAt(0) - '0';
+                }
+                catch (NullPointerException e) { LoadError = 1; }
+
+                try {
+                    s0 = (String)stgDetails.get("s0");
+                    if ( s0 == null ) {
+                        s0 = "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ";
+                        LoadError = 1;
+                    }
+                }
+                catch (NullPointerException e) { LoadError = 1; }
+                try {
+                    s1 = (String)stgDetails.get("s1");
+                    if ( s1 == null ) {
+                        s1 = "123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ";
+                        LoadError = 1;
+                    }
+                }
+                catch (NullPointerException e) { LoadError = 1; }
+                try {
+                    sA = (String)stgDetails.get("sA");
+                    if ( sA == null ) {
+                        sA = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
+                        LoadError = 1;
+                    }
                 }
                 catch (NullPointerException e) { LoadError = 1; }
 
@@ -775,6 +840,7 @@ public class Settings {
                 catch (NullPointerException e) { LoadError = 1; }
                 try {
                     custom = (String)stgDetails.get("custom");
+                    isCustomConnected();
                 }
                 catch (NullPointerException e) { ; }
                 try {
@@ -851,6 +917,10 @@ public class Settings {
         stgDetails.put("iPuzzleFormat", ""+iPuzzleFormat);
         stgDetails.put("iGridSize", ""+iGridSize);
         stgDetails.put("iSaveFormat", ""+iSaveFormat);
+
+        stgDetails.put("s0", s0);   // 0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ
+        stgDetails.put("s1", s1);   // 123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ
+        stgDetails.put("sA", sA);   // ABCDEFGHIJKLMNOPQRSTUVWXYZ
 
         // generate dialog
 

@@ -44,11 +44,6 @@ public class SudokuIO {
     private static final String ERROR_MSG = "Unreadable Sudoku format";
     private static final String WARNING_MSG = "Warning: the Sudoku format was not recognized.\nThe Sudoku may not have been read correctly";
 
-    private static String ZERZ =  "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ";
-    private static String DOT0 = ".0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ";
-    private static String DOT1 = ".123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ";
-    private static String DOTA = ".ABCDEFGHIJKLMNOPQRSTUVWXYZ";
-
     private static int loadFromReader(Grid grid, Reader reader) throws IOException {
         List<String> lines = new ArrayList<String>();
         LineNumberReader lineReader = new LineNumberReader(reader);
@@ -286,6 +281,10 @@ public class SudokuIO {
     }
 
     private static void saveToWriter81(Grid grid, Writer writer) throws IOException {
+        String ZERZ =     Settings.getInstance().gets0();
+        String DOT0 = "."+Settings.getInstance().gets0();
+        String DOT1 = "."+Settings.getInstance().gets1();
+        String DOTA = "."+Settings.getInstance().getsA();
         int pformat = Settings.getInstance().getPuzzleFormat();
         int gSize = Settings.getInstance().getGridSize();
         String text = ZERZ;
@@ -328,6 +327,10 @@ public class SudokuIO {
     }
 
     private static void saveToWriter(Grid grid, Writer writer) throws IOException {
+        String ZERZ =     Settings.getInstance().gets0();
+        String DOT0 = "."+Settings.getInstance().gets0();
+        String DOT1 = "."+Settings.getInstance().gets1();
+        String DOTA = "."+Settings.getInstance().getsA();
         int pformat = Settings.getInstance().getPuzzleFormat();
         int gSize = Settings.getInstance().getGridSize();
         int sformat = Settings.getInstance().getSaveFormat();
@@ -629,6 +632,10 @@ public class SudokuIO {
     }
 
     private static void savePencilMarksToWriter(Grid grid, Writer writer) throws IOException {
+        String ZERZ =     Settings.getInstance().gets0();
+        String DOT0 = "."+Settings.getInstance().gets0();
+        String DOT1 = "."+Settings.getInstance().gets1();
+        String DOTA = "."+Settings.getInstance().getsA();
         int pformat = Settings.getInstance().getPuzzleFormat();
         int gSize = Settings.getInstance().getGridSize();
         int sformat = Settings.getInstance().getSaveFormat();

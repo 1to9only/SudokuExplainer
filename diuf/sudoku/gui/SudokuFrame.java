@@ -971,7 +971,7 @@ public class SudokuFrame extends JFrame implements Asker {
     private JMenuItem getMitLoad() {
         if (mitLoad == null) {
             mitLoad = new JMenuItem();
-            mitLoad.setText("Load...");
+            mitLoad.setText("Load grid...");
             mitLoad.setMnemonic(java.awt.event.KeyEvent.VK_O);
             mitLoad.setToolTipText("Open the file selector to load the grid from a file");
             mitLoad.addActionListener(new java.awt.event.ActionListener() {
@@ -1038,7 +1038,7 @@ public class SudokuFrame extends JFrame implements Asker {
     private JMenuItem getMitSave() {
         if (mitSave == null) {
             mitSave = new JMenuItem();
-            mitSave.setText("Save...");
+            mitSave.setText("Save grid...");
             mitSave.setMnemonic(java.awt.event.KeyEvent.VK_S);
             mitSave.setToolTipText("Open the file selector to save the grid to a file");
             mitSave.addActionListener(new java.awt.event.ActionListener() {

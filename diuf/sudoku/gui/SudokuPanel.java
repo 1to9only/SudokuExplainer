@@ -114,7 +114,7 @@ public class SudokuPanel extends JPanel {
     private Color[] Pastel_Colors = { Pastel01, Pastel02, Pastel03, Pastel04, Pastel05, Pastel06, Pastel07, Pastel08, Pastel09, Pastel10, Pastel11, Pastel12, Pastel13, Pastel14, Pastel15, Pastel16, Pastel17, Pastel18, Pastel19, Pastel20, Pastel21, Pastel22, Pastel23, Pastel24, Pastel25, Pastel26, Pastel27, Pastel28, Pastel29, Pastel30, Pastel31, Pastel32, Pastel33};
     private int[] Pastel_Index = { 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28, 29, 30, 31, 32};
 
-    private static String DOTA = ".ABCDEFGHIJKLMNOPQRSTUVWXYZ";
+    private String DOTA = "."+Settings.getInstance().getsA();
 
     public SudokuPanel(SudokuFrame parent) {
         super();
@@ -566,8 +566,13 @@ public class SudokuPanel extends JPanel {
             }
         }
         if (grid.isCustom() && grid.getCustomAt(cell.getX(),cell.getY())!=null) {
+          if ( Settings.getInstance().getCustomConnect() == 1 ) {
             Grid.Custom custom = grid.getCustomAt(cell.getX(),cell.getY());
             col = Pastel_Colors[ Pastel_Index[ custom.getCustomNum()+1]];
+          }
+          if ( Settings.getInstance().getCustomConnect() == 0 ) {
+            col = Pastel_Colors[ Pastel_Index[ 1]];
+          }
         }
         if (redCells != null && redCells.contains(cell))
             col = Color.red;
@@ -615,8 +620,13 @@ public class SudokuPanel extends JPanel {
             }
         }
         if (grid.isCustom() && grid.getCustomAt(cell.getX(),cell.getY())!=null) {
+          if ( Settings.getInstance().getCustomConnect() == 1 ) {
             Grid.Custom custom = grid.getCustomAt(cell.getX(),cell.getY());
             col = Pastel_Colors[ Pastel_Index[ custom.getCustomNum()+1]];
+          }
+          if ( Settings.getInstance().getCustomConnect() == 0 ) {
+            col = Pastel_Colors[ Pastel_Index[ 1]];
+          }
         }
         if (redCells != null && redCells.contains(cell))
             col = Color.red;
